@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CardStatus {
+  WAITING
+  CALLED
+  IN_ATTENDANCE
+  FINISHED
+}
+
+enum CardPriority {
+  NORMAL
+  PREFERENTIAL
+  URGENT
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model Organization {
+  cnpj             String           @id @unique
+  name             String
+  users            User[]
+  cards            Card[]
+  services         Service[]
+}
+
+model User {
+  cpf              String       @id @unique
+  name             String
+  password         String
+  role             UserRole     @default(USER)
+  organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  organizationCnpj String
+  services         Service[]    @relation("UserServices")
+  cards            Card[]       @relation("UserCards")
+  isActive         Boolean?     @default(true)
+}
+
+model Service {
+  id               Int       @id @default(autoincrement())
+  name             String
+  prefix           String    @db.VarChar(2)
+  organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  organizationCnpj String
+  canCreateCards   Boolean    @default(true)
+  users            User[]       @relation("UserServices")
+  cards            Card[]
+}
+
+model Card {
+  id                Int         @id @default(autoincrement())
+  card              String      
+  priority          CardPriority @default(NORMAL)
+  status            CardStatus  @default(WAITING) 
+  datehour          DateTime    @default(now())
+  datehourAttend    DateTime?
+  concluded         Boolean     @default(false)
+  datehourConcluded DateTime?
+  organization      Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  organizationCnpj  String
+  service           Service     @relation(fields: [serviceId], references: [id])
+  serviceId         Int
+  user              User?       @relation("UserCards", fields: [userCpf], references: [cpf])
+  userCpf           String?
+}
