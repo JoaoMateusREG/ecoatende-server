@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // Configuração de CORS
   app.enableCors({
-    origin: ['http://127.0.0.1:3418'],
+    origin: ['http://10.0.0.175:3418'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     credentials: true,
