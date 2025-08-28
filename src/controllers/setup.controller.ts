@@ -55,6 +55,7 @@ export class SetupController {
           properties: {
             cpf: { type: 'string', example: '123.456.789-01' },
             name: { type: 'string', example: 'João Silva' },
+            password: { type: 'string', example: '123456' },
             role: { type: 'string', example: 'ADMIN' }
           }
         }
