@@ -30,7 +30,7 @@ interface WebSocketMessage {
 @WebSocketGateway({
   namespace: '/ecoatende/websocket',
   cors: {
-    origin: ['http://localhost:3418'],
+    origin: ['http://138.2.244.250:3418'],
     credentials: true,
   },
 })
