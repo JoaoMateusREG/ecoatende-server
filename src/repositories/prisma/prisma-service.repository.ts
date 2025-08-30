@@ -134,7 +134,8 @@ export class PrismaServiceRepository implements ServiceRepository {
       canCreateCards: data.canCreateCards,
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
-        name: data.organization.name
+        name: data.organization.name,
+        active: data.organization.active
       }) : undefined,
       users: data.users?.map((user: any) => 
         User.create({
