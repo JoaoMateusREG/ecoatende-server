@@ -40,6 +40,10 @@ export class AuthService {
       throw new UnauthorizedException('Usuário inativo');
     }
 
+    if (!user.organization?.active) {
+      throw new UnauthorizedException('Organização inativa');
+    }
+
     // Cria uma sessão para o usuário
     const sessionId = await this.sessionService.createSession({
       cpf: user.cpf,

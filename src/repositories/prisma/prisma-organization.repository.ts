@@ -9,7 +9,9 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
     const created = await prisma.organization.create({
       data: {
         cnpj: organization.cnpj,
-        name: organization.name
+        name: organization.name,
+        active: organization.active,
+        logo: organization.logo
       }
     });
 
@@ -20,7 +22,9 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
     const updated = await prisma.organization.update({
       where: { cnpj: organization.cnpj },
       data: {
-        name: organization.name
+        name: organization.name,
+        active: organization.active,
+        logo: organization.logo
       }
     });
 
@@ -115,7 +119,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           password: user.password,
           role: user.role,
           organizationCnpj: user.organizationCnpj,
-          isActive: user.isActive
+          isActive: user.isActive,
+          picture: user.picture
         })
       ),
       services: data.services?.map((service: any) =>
@@ -124,6 +129,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           name: service.name,
           prefix: service.prefix,
           organizationCnpj: service.organizationCnpj,
+          category: service.category ?? undefined,
+          color: service.color ?? undefined,
           canCreateCards: service.canCreateCards,
           users: service.users?.map((user: any) =>
             User.create({
@@ -132,11 +139,14 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
               password: user.password,
               role: user.role,
               organizationCnpj: user.organizationCnpj,
-              isActive: user.isActive
+              isActive: user.isActive,
+              picture: user.picture
             })
           )
         })
-      )
+      ),
+      active: data.active,
+      logo: data.logo
     });
   };
 } 

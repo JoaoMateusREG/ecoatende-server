@@ -42,4 +42,20 @@ export class CreateServiceDto {
   @IsBoolean()
   @IsOptional()
   canCreateCards?: boolean;
+
+  @ApiProperty({
+    description: 'Categoria do serviço',
+    example: 'Atendimento ao Cliente'
+  })
+  @IsString()
+  @IsOptional()
+  category?: string;
+
+  @ApiProperty({
+    description: 'Cor do serviço',
+    example: '#000000'
+  })
+  @IsString()
+  @IsOptional()
+  color?: string;
 } 

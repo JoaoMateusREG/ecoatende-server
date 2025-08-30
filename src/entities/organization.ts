@@ -8,6 +8,8 @@ export interface Organization {
   users?: User[];
   cards?: Card[];
   services?: Service[];
+  active?: boolean;
+  logo?: string;
 }
 
 export class Organization {
@@ -16,7 +18,9 @@ export class Organization {
     public name: string,
     public users?: User[],
     public cards?: Card[],
-    public services?: Service[]
+    public services?: Service[],
+    public active?: boolean,
+    public logo?: string
   ) {}
 
   static create(data: {
@@ -25,13 +29,17 @@ export class Organization {
     users?: User[];
     cards?: Card[];
     services?: Service[];
+    active?: boolean;
+    logo?: string;
   }): Organization {
     return new Organization(
       data.cnpj,
       data.name,
       data.users,
       data.cards,
-      data.services
+      data.services,
+      data.active,
+      data.logo
     );
   }
 } 

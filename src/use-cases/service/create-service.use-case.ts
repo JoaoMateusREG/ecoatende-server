@@ -13,6 +13,8 @@ export class CreateServiceUseCase {
       name: createServiceDto.name,
       prefix: createServiceDto.prefix,
       organizationCnpj: createServiceDto.organizationCnpj,
+      category: createServiceDto.category ?? undefined,
+      color: createServiceDto.color ?? undefined,
       canCreateCards: createServiceDto.canCreateCards ?? true
     });
 

@@ -13,7 +13,8 @@ export class PrismaUserRepository implements UserRepository {
         password: user.password,
         role: user.role as any,
         organizationCnpj: user.organizationCnpj,
-        isActive: user.isActive || true
+        isActive: user.isActive || true,
+        picture: user.picture ?? undefined
       },
       include: {
         organization: true,
@@ -32,7 +33,8 @@ export class PrismaUserRepository implements UserRepository {
         password: user.password,
         role: user.role as any,
         organizationCnpj: user.organizationCnpj,
-        isActive: user.isActive
+        isActive: user.isActive,
+        picture: user.picture ?? undefined
       },
       include: {
         organization: true,
@@ -152,14 +154,17 @@ export class PrismaUserRepository implements UserRepository {
           name: service.name,
           prefix: service.prefix,
           organizationCnpj: service.organizationCnpj,
-          canCreateCards: service.canCreateCards
+          canCreateCards: service.canCreateCards,
+          category: service.category ?? undefined,
+          color: service.color ?? undefined
         })
       ),
       isActive: data.isActive,
+      picture: data.picture,
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
         name: data.organization.name
-      }) : undefined
+      }) : undefined,
     });
   };
 } 

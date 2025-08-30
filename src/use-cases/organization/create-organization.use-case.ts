@@ -10,7 +10,9 @@ export class CreateOrganizationUseCase {
     // Cria a entidade Organization a partir do DTO
     const organization = Organization.create({
       cnpj: createOrganizationDto.cnpj,
-      name: createOrganizationDto.name
+      name: createOrganizationDto.name,
+      active: createOrganizationDto.active,
+      logo: createOrganizationDto.logo
     });
 
     return this.organizationRepository.create(organization);
