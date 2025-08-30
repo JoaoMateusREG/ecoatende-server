@@ -1,6 +1,7 @@
-import { IsString, IsNotEmpty, MinLength } from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, IsEnum, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCPF, TransformCNPJ } from '../transformers/document-transformers';
+import { UserRole } from "@prisma/client";
 
 export class CreateUserDto {
   @ApiProperty({
@@ -46,4 +47,28 @@ export class CreateUserDto {
   @IsNotEmpty()
   @TransformCNPJ()
   organizationCnpj: string;
+
+  @ApiProperty({
+    description: 'Role do usuário',
+    example: UserRole.USER
+  })
+  @IsEnum(UserRole)
+  @IsNotEmpty()
+  role: UserRole;
+
+  @ApiProperty({
+    description: 'Foto do usuário',
+    example: 'https://example.com/picture.png'
+  })
+  @IsString()
+  @IsOptional()
+  picture?: string;
+
+  @ApiProperty({
+    description: 'Se o usuário está ativo',
+    example: true
+  })
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 } 

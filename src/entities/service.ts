@@ -8,6 +8,8 @@ export interface Service {
   prefix: string;
   organizationCnpj: string;
   canCreateCards: boolean;
+  category?: string;
+  color?: string;
   users?: User[];
   cards?: Card[];
   organization?: Organization;
@@ -20,6 +22,8 @@ export class Service {
     public prefix: string,
     public organizationCnpj: string,
     public canCreateCards: boolean,
+    public category?: string,
+    public color?: string,
     public users?: User[],
     public cards?: Card[],
     public organization?: Organization
@@ -31,6 +35,8 @@ export class Service {
     prefix: string;
     organizationCnpj: string;
     canCreateCards: boolean;
+    category?: string;
+    color?: string;
     users?: User[];
     cards?: Card[];
     organization?: Organization;
@@ -41,6 +47,8 @@ export class Service {
       data.prefix,
       data.organizationCnpj,
       data.canCreateCards,
+      data.category,
+      data.color,
       data.users,
       data.cards,
       data.organization

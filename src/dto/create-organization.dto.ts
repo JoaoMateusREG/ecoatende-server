@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
 
@@ -23,4 +23,18 @@ export class CreateOrganizationDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    description: 'Se a organização está ativa',
+    example: true
+  })
+  @IsBoolean()
+  active: boolean;
+
+  @ApiProperty({
+    description: 'Logo da organização',
+    example: 'https://example.com/logo.png'
+  })
+  @IsString()
+  logo: string;
 } 

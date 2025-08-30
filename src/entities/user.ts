@@ -10,6 +10,7 @@ export interface User {
   organizationCnpj: string;
   services?: Service[];
   cards?: Card[];
+  picture?: string;
   isActive?: boolean;
   organization?: Organization;
 }
@@ -23,6 +24,7 @@ export class User {
     public role?: string,
     public services?: Service[],
     public cards?: Card[],
+    public picture?: string,
     public isActive?: boolean,
     public organization?: Organization
   ) {}
@@ -35,6 +37,7 @@ export class User {
     role?: string;
     services?: Service[];
     cards?: Card[];
+    picture?: string;
     isActive?: boolean;
     organization?: Organization;
   }): User {
@@ -46,6 +49,7 @@ export class User {
       data.role,
       data.services,
       data.cards,
+      data.picture,
       data.isActive,
       data.organization
     );

@@ -23,7 +23,9 @@ export class CreateUserUseCase {
       name: createUserDto.name,
       password: hashedPassword,
       organizationCnpj: createUserDto.organizationCnpj,
-      isActive: true
+      role: createUserDto.role,
+      isActive: true,
+      picture: createUserDto.picture ?? undefined
     });
 
     return this.userRepository.create(user);

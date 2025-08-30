@@ -399,7 +399,9 @@ export class PrismaCardRepository implements CardRepository {
         name: data.service.name,
         prefix: data.service.prefix,
         organizationCnpj: data.service.organizationCnpj,
-        canCreateCards: data.service.canCreateCards
+        canCreateCards: data.service.canCreateCards,
+        category: data.service.category ?? undefined,
+        color: data.service.color ?? undefined
       }) : undefined,
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
@@ -411,7 +413,8 @@ export class PrismaCardRepository implements CardRepository {
         password: data.user.password,
         role: data.user.role,
         organizationCnpj: data.user.organizationCnpj,
-        isActive: data.user.isActive
+        isActive: data.user.isActive,
+        picture: data.user.picture
       }) : undefined
     });
   };

@@ -11,7 +11,9 @@ export class PrismaServiceRepository implements ServiceRepository {
         name: service.name,
         prefix: service.prefix,
         organizationCnpj: service.organizationCnpj,
-        canCreateCards: service.canCreateCards
+        canCreateCards: service.canCreateCards,
+        category: service.category ?? undefined,
+        color: service.color ?? undefined
       },
       include: {
         organization: true,
@@ -29,7 +31,9 @@ export class PrismaServiceRepository implements ServiceRepository {
         name: service.name,
         prefix: service.prefix,
         organizationCnpj: service.organizationCnpj,
-        canCreateCards: service.canCreateCards
+        canCreateCards: service.canCreateCards,
+        category: service.category ?? undefined,
+        color: service.color ?? undefined
       },
       include: {
         organization: true,
@@ -139,9 +143,12 @@ export class PrismaServiceRepository implements ServiceRepository {
           password: user.password,
           role: user.role,
           organizationCnpj: user.organizationCnpj,
-          isActive: user.isActive
+          isActive: user.isActive,
+          picture: user.picture
         })
-      )
+      ),
+      category: data.category,
+      color: data.color
     });
   };
 } 

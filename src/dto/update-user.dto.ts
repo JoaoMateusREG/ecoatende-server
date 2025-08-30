@@ -1,6 +1,7 @@
-import { IsString, IsOptional, IsNotEmpty, MinLength } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
+import { UserRole } from '@prisma/client';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -40,10 +41,28 @@ export class UpdateUserDto {
   organizationCnpj?: string;
 
   @ApiProperty({
+    description: 'Role do usuário',
+    example: UserRole.USER,
+    required: false
+  })
+  @IsEnum(UserRole)
+  @IsOptional()
+  role?: UserRole;
+
+  @ApiProperty({
     description: 'Status ativo do usuário',
     example: true,
     required: false
   })
   @IsOptional()
   isActive?: boolean;
+
+  @ApiProperty({
+    description: 'Foto do usuário',
+    example: 'https://example.com/picture.png',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  picture?: string;
 } 
