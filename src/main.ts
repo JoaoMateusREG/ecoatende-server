@@ -14,11 +14,8 @@ async function bootstrap() {
   // Configuração de CORS
   app.enableCors({
     origin: [
-      'http://138.2.244.250:3418',
-      'http://134.65.25.161:3418',
-      'http://www.atende.eco.br',
+      'https://134.65.25.161:3418',
       'https://www.atende.eco.br',
-      'http://atende.eco.br',
       'https://atende.eco.br'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
