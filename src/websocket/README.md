@@ -15,7 +15,7 @@ Este módulo implementa funcionalidade WebSocket para comunicação em tempo rea
 ### 1. Conexão WebSocket
 
 ```javascript
-const ws = new WebSocket('ws://localhost:3000/websocket');
+const ws = new WebSocket('ws://localhost:3000/ecoatende/websocket');
 
 ws.onopen = () => {
   console.log('Conectado ao WebSocket');
