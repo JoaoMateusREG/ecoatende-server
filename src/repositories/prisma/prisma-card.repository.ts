@@ -405,7 +405,8 @@ export class PrismaCardRepository implements CardRepository {
       }) : undefined,
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
-        name: data.organization.name
+        name: data.organization.name,
+        active: data.organization.active
       }) : undefined,
       user: data.user ? User.create({
         cpf: data.user.cpf,
