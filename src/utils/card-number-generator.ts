@@ -18,10 +18,10 @@ export class CardNumberGenerator {
       nextNumber = lastNumber + 1;
     }
     
-    // Formata o número com zeros à esquerda (ex: 1 -> "01")
-    const formattedNumber = nextNumber.toString().padStart(2, '0');
+    // Formata o número com zeros à esquerda (ex: 1 -> "001")
+    const formattedNumber = nextNumber.toString().padStart(3, '0');
     
-    // Retorna o card no formato: PREFIX + NÚMERO (ex: "A01")
+    // Retorna o card no formato: PREFIX + NÚMERO (ex: "A001")
     return `${servicePrefix}${formattedNumber}`;
   }
 } 
