@@ -13,7 +13,7 @@ export class CardNumberGenerator {
     let nextNumber = 1;
     
     if (lastCard) {
-      // Extrai o número do último card (ex: "A001" -> 1)
+      // Extrai o número do último card (ex: "A100" -> 100)
       const lastNumber = parseInt(lastCard.card.substring(servicePrefix.length));
       if (!isNaN(lastNumber)) {
         nextNumber = lastNumber + 1;

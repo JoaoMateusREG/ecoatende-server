@@ -151,7 +151,8 @@ export class PrismaCardRepository implements CardRepository {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const card = await prisma.card.findFirst({
+    // Busca todos os cartões do serviço para a data específica
+    const cards = await prisma.card.findMany({
       where: {
         serviceId,
         datehour: {
@@ -159,16 +160,28 @@ export class PrismaCardRepository implements CardRepository {
           lte: endOfDay
         }
       },
-      orderBy: {
-        card: 'desc'
-      },
       include: {
         service: true,
         organization: true
       },
     });
 
-    return card ? this.mapToEntity(card) : null;
+    if (cards.length === 0) {
+      return null;
+    }
+
+    // Ordena numericamente os cartões (extraindo o número do prefixo)
+    const sortedCards = cards.sort((a, b) => {
+      // Extrai o número do cartão (ex: "A100" -> 100)
+      const aNumber = parseInt(a.card.replace(/[^0-9]/g, ''));
+      const bNumber = parseInt(b.card.replace(/[^0-9]/g, ''));
+      
+      // Ordena numericamente (maior número primeiro)
+      return bNumber - aNumber;
+    });
+
+    // Retorna o cartão com o maior número
+    return this.mapToEntity(sortedCards[0]);
   }
 
   async findPendingByServices(serviceIds?: number[]): Promise<Card[]> {
