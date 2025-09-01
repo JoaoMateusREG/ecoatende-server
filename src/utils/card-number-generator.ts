@@ -15,7 +15,14 @@ export class CardNumberGenerator {
     if (lastCard) {
       // Extrai o número do último card (ex: "A001" -> 1)
       const lastNumber = parseInt(lastCard.card.substring(servicePrefix.length));
-      nextNumber = lastNumber + 1;
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1;
+      }
+    }
+    
+    // Valida se o número não excedeu o limite de 999
+    if (nextNumber > 999) {
+      throw new Error(`Limite máximo de cartões (999) atingido para o serviço ${servicePrefix} na data ${dateStr}`);
     }
     
     // Formata o número com zeros à esquerda (ex: 1 -> "001")
