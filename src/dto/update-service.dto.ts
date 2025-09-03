@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty, MaxLength, IsArray, IsString as IsStringArray, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, MaxLength, IsArray, IsString as IsStringArray, IsBoolean, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateServiceDto {
@@ -48,6 +48,14 @@ export class UpdateServiceDto {
     example: 'Atendimento ao Cliente',
     required: false
   })
+    @IsNumber()
+    @IsOptional()
+    cardLimit?: number;
+  
+    @ApiProperty({
+      description: 'Limite de fichas diárias para o serviço',
+      example: 'Limite de 150 fichas por dia',
+    })
   @IsString()
   @IsOptional()
   category?: string;

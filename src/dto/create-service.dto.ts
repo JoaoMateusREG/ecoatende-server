@@ -1,11 +1,19 @@
-import { IsString, IsNotEmpty, MaxLength, IsBoolean, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsBoolean,
+  IsOptional,
+  isNumber,
+  IsNumber,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
 
 export class CreateServiceDto {
   @ApiProperty({
     description: 'Nome do serviço',
-    example: 'Atendimento ao Cliente'
+    example: 'Atendimento ao Cliente',
   })
   @IsString()
   @IsNotEmpty()
@@ -14,7 +22,7 @@ export class CreateServiceDto {
   @ApiProperty({
     description: 'Prefixo do serviço (máximo 2 caracteres)',
     example: 'A',
-    maxLength: 2
+    maxLength: 2,
   })
   @IsString()
   @IsNotEmpty()
@@ -22,12 +30,10 @@ export class CreateServiceDto {
   prefix: string;
 
   @ApiProperty({
-    description: 'CNPJ da organização (aceita formatação: XX.XXX.XXX/XXXX-XX ou XXXXXXXXXXXXXX). Exemplo válido: 60.301.979/0001-60',
+    description:
+      'CNPJ da organização (aceita formatação: XX.XXX.XXX/XXXX-XX ou XXXXXXXXXXXXXX). Exemplo válido: 60.301.979/0001-60',
     example: '60.301.979/0001-60',
-    examples: [
-      '60.301.979/0001-60',
-      '60301979000160'
-    ]
+    examples: ['60.301.979/0001-60', '60301979000160'],
   })
   @IsString()
   @IsNotEmpty()
@@ -37,7 +43,7 @@ export class CreateServiceDto {
   @ApiProperty({
     description: 'Se o serviço permite criação de fichas',
     example: true,
-    default: true
+    default: true,
   })
   @IsBoolean()
   @IsOptional()
@@ -45,7 +51,15 @@ export class CreateServiceDto {
 
   @ApiProperty({
     description: 'Categoria do serviço',
-    example: 'Atendimento ao Cliente'
+    example: 'Atendimento ao Cliente',
+  })
+  @IsNumber()
+  @IsOptional()
+  cardLimit?: number;
+
+  @ApiProperty({
+    description: 'Limite de fichas diárias para o serviço',
+    example: 'Limite de 150 fichas por dia',
   })
   @IsString()
   @IsOptional()
@@ -53,9 +67,9 @@ export class CreateServiceDto {
 
   @ApiProperty({
     description: 'Cor do serviço',
-    example: '#000000'
+    example: '#000000',
   })
   @IsString()
   @IsOptional()
   color?: string;
-} 
+}

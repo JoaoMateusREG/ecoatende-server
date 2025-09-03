@@ -58,6 +58,7 @@ model Service {
   organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj String
   canCreateCards   Boolean    @default(true)
+  cardLimit        Int?       @default(150)
   category         String?
   color            String?
   users            User[]       @relation("UserServices")

@@ -155,6 +155,7 @@ export class PrismaUserRepository implements UserRepository {
           prefix: service.prefix,
           organizationCnpj: service.organizationCnpj,
           canCreateCards: service.canCreateCards,
+          cardLimit: service.cardLimit ?? undefined,
           category: service.category ?? undefined,
           color: service.color ?? undefined
         })

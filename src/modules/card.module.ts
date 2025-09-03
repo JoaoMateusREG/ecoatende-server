@@ -23,6 +23,7 @@ import { PrismaCardRepository } from '../repositories/prisma/prisma-card.reposit
 import { PrismaServiceRepository } from '../repositories/prisma/prisma-service.repository';
 import { WebsocketModule } from '../websocket/websocket.module';
 import { AuthModule } from '../auth/auth.module';
+import { CardNumberGenerator } from 'src/utils/card-number-generator';
 
 @Module({
   imports: [WebsocketModule, AuthModule],
@@ -47,12 +48,17 @@ import { AuthModule } from '../auth/auth.module';
     GetAverageServiceTimeUseCase,
     GetCompletedCardsCountUseCase,
     FindTodayCreatedByOrganizationAndServiceUseCase,
+    CardNumberGenerator,
     {
       provide: 'CardRepository',
       useClass: PrismaCardRepository,
     },
     {
       provide: 'ServiceRepository',
+      useClass: PrismaServiceRepository,
+    },
+    {
+      provide: 'CreateCardUseCase',
       useClass: PrismaServiceRepository,
     }
   ]
