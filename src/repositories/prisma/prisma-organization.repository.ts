@@ -132,6 +132,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           category: service.category ?? undefined,
           color: service.color ?? undefined,
           canCreateCards: service.canCreateCards,
+          cardLimit: service.cardLimit ?? undefined,
           users: service.users?.map((user: any) =>
             User.create({
               cpf: user.cpf,

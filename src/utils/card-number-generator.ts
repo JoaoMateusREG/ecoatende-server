@@ -1,34 +1,46 @@
-import { CardRepository } from '../repositories/card.repository';
+import type { CardRepository } from '../repositories/card.repository';
+import { Service } from 'src/entities/service';
+import { Injectable, Inject } from '@nestjs/common';
 
+@Injectable()
 export class CardNumberGenerator {
-  constructor(private cardRepository: CardRepository) {}
+  constructor(@Inject('CardRepository') private cardRepository: CardRepository) {}
 
-  async generateCardNumber(serviceId: number, servicePrefix: string, date: Date = new Date()): Promise<string> {
+
+
+  async generateCardNumber(
+    serviceId: number,
+    servicePrefix: string,
+    date: Date = new Date(),
+    cardLimit?: number
+  ): Promise<string> {
     // Formata a data para YYYY-MM-DD
     const dateStr = date.toISOString().split('T')[0];
-    
-    // Busca o último card do serviço para a data específica
+
+    // Busca o último cartão do serviço para a data específica
     const lastCard = await this.cardRepository.findLastCardByServiceAndDate(serviceId, date);
-    
+
     let nextNumber = 1;
-    
+
     if (lastCard) {
-      // Extrai o número do último card (ex: "A100" -> 100)
+      // Extrai o número do último cartão (ex: "A100" -> 100)
       const lastNumber = parseInt(lastCard.card.substring(servicePrefix.length));
       if (!isNaN(lastNumber)) {
         nextNumber = lastNumber + 1;
       }
     }
-    
-    // Valida se o número não excedeu o limite de 999
-    if (nextNumber > 999) {
-      throw new Error(`Limite máximo de cartões (999) atingido para o serviço ${servicePrefix} na data ${dateStr}`);
+
+    // Valida se o número não excedeu o limite. Primeiro verifica o limite do serviço, depois o limite padrão de 999.
+    if (cardLimit && nextNumber > cardLimit) {
+      throw new Error(`Limite diário de cartões atingido para este serviço.`);
     }
-    
-    // Formata o número com zeros à esquerda (ex: 1 -> "001")
-    const formattedNumber = nextNumber.toString().padStart(3, '0');
-    
-    // Retorna o card no formato: PREFIX + NÚMERO (ex: "A001")
-    return `${servicePrefix}${formattedNumber}`;
+
+    // Se o limite do serviço não for definido, valida o padrão de 999
+    if (nextNumber > 999) {
+      throw new Error(`Limite máximo de cartões atingido para este serviço`);
+    }
+
+    // Retorna o cartão no formato: PREFIX + NÚMERO
+    return `${servicePrefix}${nextNumber}`;
   }
-} 
+}
