@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE "public"."Payment" ALTER COLUMN "dateCreated" DROP DEFAULT,
+ALTER COLUMN "dateCreated" SET DATA TYPE TEXT,
+ALTER COLUMN "dueDate" SET DATA TYPE TEXT,
+ALTER COLUMN "originalDueDate" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "public"."Subscription" ALTER COLUMN "dateCreated" DROP DEFAULT,
+ALTER COLUMN "dateCreated" SET DATA TYPE TEXT,
+ALTER COLUMN "nextDueDate" SET DATA TYPE TEXT;

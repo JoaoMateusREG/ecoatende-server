@@ -11,6 +11,8 @@ export class CreateOrganizationUseCase {
     const organization = Organization.create({
       cnpj: createOrganizationDto.cnpj,
       name: createOrganizationDto.name,
+      customerId: createOrganizationDto.customerId,
+      creationDate: new Date(),
       active: createOrganizationDto.active,
       logo: createOrganizationDto.logo
     });

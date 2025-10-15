@@ -29,13 +29,18 @@ enum UserRole {
 }
 
 model Organization {
-  cnpj             String           @id @unique
-  name             String
-  users            User[]
-  cards            Card[]
-  services         Service[]
-  active           Boolean?       @default(true)
-  logo             String?
+  cnpj           String        @id @unique
+  name           String
+  creationDate   DateTime      @default(now())
+  users          User[]
+  cards          Card[]
+  services       Service[]
+  payments       Payment[]
+  customerId     String?       @unique
+  subscription   Subscription? @relation
+  subscriptionId String?
+  active         Boolean?      @default(true)
+  logo           String?
 }
 
 model User {
@@ -52,13 +57,13 @@ model User {
 }
 
 model Service {
-  id               Int       @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   name             String
-  prefix           String    @db.VarChar(2)
+  prefix           String       @db.VarChar(2)
   organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj String
-  canCreateCards   Boolean    @default(true)
-  cardLimit        Int?       @default(150)
+  canCreateCards   Boolean      @default(true)
+  cardLimit        Int?         @default(150)
   category         String?
   color            String?
   users            User[]       @relation("UserServices")
@@ -66,18 +71,50 @@ model Service {
 }
 
 model Card {
-  id                Int         @id @default(autoincrement())
-  card              String      
+  id                Int          @id @default(autoincrement())
+  card              String
   priority          CardPriority @default(NORMAL)
-  status            CardStatus  @default(WAITING) 
-  datehour          DateTime    @default(now())
+  status            CardStatus   @default(WAITING)
+  datehour          DateTime     @default(now())
   datehourAttend    DateTime?
-  concluded         Boolean     @default(false)
+  concluded         Boolean      @default(false)
   datehourConcluded DateTime?
   organization      Organization @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj  String
-  service           Service     @relation(fields: [serviceId], references: [id])
+  service           Service      @relation(fields: [serviceId], references: [id])
   serviceId         Int
-  user              User?       @relation("UserCards", fields: [userCpf], references: [cpf])
+  user              User?        @relation("UserCards", fields: [userCpf], references: [cpf])
   userCpf           String?
+}
+
+model Subscription {
+  id               String       @id
+  dateCreated      String     
+  customer         String       @unique
+  value            Float
+  nextDueDate      String
+  cycle            String
+  billingType      String?
+  status           String?
+  organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  organizationCnpj String       @unique
+  payments         Payment[]
+}
+
+model Payment {
+  id                    String       @id
+  dateCreated           String    
+  customer              String
+  organization          Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  organizationCnpj      String
+  subscription          Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId        String
+  dueDate               String
+  originalDueDate       String
+  value                 Float
+  netValue              Float
+  originalValue         Float?
+  billingType           String
+  status                String
+  transactionReceiptUrl String?
 }
