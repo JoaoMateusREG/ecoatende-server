@@ -36,23 +36,35 @@ export class CreateSubscriptionUseCase {
       payments: createSubscriptionDto.payments,
     });
 
-    const createdSubscription =
-      await this.subscriptionRepository.create(subscription);
+    // 🔍 Verifica se já existe uma subscription com esse ID
+    const existingSubscription = await this.subscriptionRepository.findById(
+      subscription.id,
+    );
+
+    let savedSubscription: Subscription;
+
+    if (existingSubscription) {
+      // ✅ Atualiza se já existir
+      savedSubscription = await this.subscriptionRepository.update(subscription);
+    } else {
+      // 🆕 Cria se não existir
+      savedSubscription = await this.subscriptionRepository.create(subscription);
+    }
 
     if (organization) {
       const updatePayload: UpdateOrganizationDto & { cnpj: string } = {
         cnpj: organization.cnpj,
-        subscriptionId: createdSubscription.id,
+        subscriptionId: savedSubscription.id,
       };
 
       const updatedOrganizationEntity = Organization.create({
         ...organization,
-        subscriptionId: createdSubscription.id,
+        subscriptionId: savedSubscription.id,
       });
 
       await this.organizationRepository.update(updatedOrganizationEntity);
     }
 
-    return createdSubscription;
+    return savedSubscription;
   }
 }
