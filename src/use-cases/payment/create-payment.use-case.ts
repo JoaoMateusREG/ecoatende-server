@@ -10,29 +10,38 @@ export class CreatePaymentUseCase {
     @Inject('OrganizationRepository') private organizationRepository: OrganizationRepository,
   ) {}
 
-  async execute(createpaymentDto: CreatePaymentDto): Promise<Payment> {
-
+  async execute(createPaymentDto: CreatePaymentDto): Promise<Payment> {
     const organization = await this.organizationRepository.findByCustomer(
-      createpaymentDto.customer,
+      createPaymentDto.customer,
     );
+
     const organizationCnpj: string = organization?.cnpj ?? '';
 
     const payment = Payment.create({
-      id: createpaymentDto.id,
-      dateCreated: createpaymentDto.dateCreated,
-      customer: createpaymentDto.customer,
+      id: createPaymentDto.id,
+      dateCreated: createPaymentDto.dateCreated,
+      customer: createPaymentDto.customer,
       organizationCnpj: organizationCnpj,
-      subscriptionId: createpaymentDto.subscription,
-      dueDate: createpaymentDto.dueDate,
-      originalDueDate: createpaymentDto.originalDueDate,
-      value: createpaymentDto.value,
-      netValue: createpaymentDto.netValue,
-      billingType: createpaymentDto.billingType,
-      status: createpaymentDto.status,
-      originalValue: createpaymentDto.originalValue,
-      transactionReceiptUrl: createpaymentDto.transactionReceiptUrl,
+      subscriptionId: createPaymentDto.subscription,
+      dueDate: createPaymentDto.dueDate,
+      originalDueDate: createPaymentDto.originalDueDate,
+      value: createPaymentDto.value,
+      netValue: createPaymentDto.netValue,
+      billingType: createPaymentDto.billingType,
+      status: createPaymentDto.status,
+      originalValue: createPaymentDto.originalValue,
+      transactionReceiptUrl: createPaymentDto.transactionReceiptUrl,
     });
 
-    return await this.paymentRepository.create(payment);
+    // 🔍 Verifica se já existe um pagamento com esse ID
+    const existingPayment = await this.paymentRepository.findById(payment.id);
+
+    if (existingPayment) {
+      // ✅ Atualiza o registro existente
+      return await this.paymentRepository.update(payment);
+    } else {
+      // 🆕 Cria um novo pagamento
+      return await this.paymentRepository.create(payment);
+    }
   }
 }

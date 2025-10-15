@@ -22,7 +22,7 @@ async function bootstrap() {
       'https://www.atende.eco.br',
       'http://atende.eco.br',
       'https://atende.eco.br',
-      'http://localhost:3418',
+      '*'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],

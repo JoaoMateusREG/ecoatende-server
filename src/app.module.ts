@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AppService } from './app.service';
 import { UserModule } from './modules/user.module';
 import { CardModule } from './modules/card.module';
 import { ServiceModule } from './modules/service.module';
@@ -10,6 +11,7 @@ import { ReportModule } from './modules/report.module';
 import { GatewayModule } from './modules/gateway.module';
 import { PaymentModule } from './modules/payment.module';
 import { SubscriptionModule } from './modules/subscription.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -25,5 +27,7 @@ import { SubscriptionModule } from './modules/subscription.module';
     PaymentModule,
     SubscriptionModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
