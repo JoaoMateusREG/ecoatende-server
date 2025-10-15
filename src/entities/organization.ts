@@ -9,7 +9,6 @@ export interface Organization {
   name: string;
   creationDate?: Date,
   customerId?: string,
-  subscriptionId?: string;
   subscription?: Subscription[];
   users?: User[];
   cards?: Card[];
@@ -25,7 +24,6 @@ export class Organization {
     public name: string,
     public creationDate?: Date,
     public customerId?: string,
-    public subscriptionId?: string,
     public subscription?: Subscription[],
     public users?: User[],
     public cards?: Card[],
@@ -39,7 +37,6 @@ export class Organization {
     cnpj: string;
     name: string;
     customerId?: string;
-    subscriptionId?: string;
     subscription?: Subscription[];
     creationDate?: Date,
     users?: User[];
@@ -54,7 +51,6 @@ export class Organization {
       data.name,
       data.creationDate,
       data.customerId,
-      data.subscriptionId,
       data.subscription,
       data.users,
       data.cards,

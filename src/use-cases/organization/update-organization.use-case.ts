@@ -13,8 +13,6 @@ export class UpdateOrganizationUseCase {
       throw new Error("Organização não encontrada");
     }
 
-    console.log(updateOrganizationDto)
-
     // Atualiza apenas os campos fornecidos
     const updatedOrganization = Organization.create({
       ...existingOrganization,
