@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean, IsDate, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
 
@@ -25,6 +25,13 @@ export class CreateOrganizationDto {
   name: string;
 
   @ApiProperty({
+  description: 'ID do cliente no sistema do gateway de pagamento',
+  example: '@fdsa$%fdsgfhgfsfadsf61265'
+  })
+  @IsOptional()
+  customerId: string;
+
+  @ApiProperty({
     description: 'Se a organização está ativa',
     example: true
   })
@@ -32,9 +39,18 @@ export class CreateOrganizationDto {
   active: boolean;
 
   @ApiProperty({
+    description: 'Data de criação da organização',
+    example: '2024-06-01T12:00:00Z'
+  })
+  @IsDate()
+  @IsOptional()
+  creationDate: Date;
+
+  @ApiProperty({
     description: 'Logo da organização',
     example: 'https://example.com/logo.png'
   })
   @IsString()
+  @IsOptional()
   logo: string;
 } 

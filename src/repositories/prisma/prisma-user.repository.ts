@@ -165,6 +165,8 @@ export class PrismaUserRepository implements UserRepository {
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
         name: data.organization.name,
+        customerId: data.organization.customerId,
+        creationDate: data.organization.creationDate,
         active: data.organization.active
       }) : undefined,
     });

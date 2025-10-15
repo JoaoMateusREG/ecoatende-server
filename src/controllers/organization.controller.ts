@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
+import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
 import { UpdateOrganizationUseCase } from '../use-cases/organization/update-organization.use-case';
 import { DeleteOrganizationUseCase } from '../use-cases/organization/delete-organization.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
@@ -36,6 +37,7 @@ import { UpdateOrganizationDto } from '../dto/update-organization.dto';
 export class OrganizationController {
   constructor(
     private readonly createOrganizationUseCase: CreateOrganizationUseCase,
+    private readonly createdOrganizationGatewayUseCase: CreatedOrganizationGatewayUseCase,
     private readonly updateOrganizationUseCase: UpdateOrganizationUseCase,
     private readonly deleteOrganizationUseCase: DeleteOrganizationUseCase,
     private readonly findOrganizationByCnpjUseCase: FindOrganizationByCnpjUseCase,
@@ -48,16 +50,31 @@ export class OrganizationController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar nova organização' })
+  @ApiOperation({ summary: 'Criar nova organização (com registro no Gateway)' })
   @ApiResponse({ status: 201, description: 'Organização criada com sucesso' })
-  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos ou falha no Gateway' })
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     try {
-      const organization = await this.createOrganizationUseCase.execute(createOrganizationDto);
+      const gatewayResponse = await this.createdOrganizationGatewayUseCase.execute(
+        createOrganizationDto,
+      );
+      const customerId = gatewayResponse.id; 
+      const organizationWithCustomerId = {
+        ...createOrganizationDto,
+        customerId: customerId, 
+      };
+
+      const organization = await this.createOrganizationUseCase.execute(
+        organizationWithCustomerId,
+      );
       return organization;
-    } catch (error: any) {
+      
+    } catch (error: any) {console.error('Erro no fluxo de criação da organização:', error.message);
       throw new HttpException(
-        { error: error.message },
+        { 
+            error: error.message,
+            details: error.response || error.message,
+        },
         HttpStatus.BAD_REQUEST
       );
     }

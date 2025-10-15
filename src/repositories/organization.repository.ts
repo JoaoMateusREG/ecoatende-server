@@ -11,5 +11,6 @@ export interface OrganizationRepository {
   findWithUsers(cnpj: string): Promise<Organization | null>;
   findWithServices(cnpj: string): Promise<Organization | null>;
   findWithCards(cnpj: string): Promise<Organization | null>;
+  findByCustomer(customer: string): Promise <Organization | null>
   mapToEntity(data: any): Organization;
 } 

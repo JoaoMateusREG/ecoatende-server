@@ -1,0 +1,14 @@
+import { Inject } from "@nestjs/common";
+import type { PaymentRepository } from "../../repositories/payment.repository";
+import { Payment } from "../../entities/payment";
+
+export class FindPaymentByCustomerUseCase {
+  constructor(
+    @Inject('PaymentRepository')
+    private paymentRepository: PaymentRepository,
+  ) {}
+  
+  async execute(customerId: string): Promise<Payment[] | null> {
+    return this.paymentRepository.findByCustomer(customerId);
+  }
+}

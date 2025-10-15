@@ -1,6 +1,5 @@
 import { Card } from "../entities/card";
 
-
 export interface CardRepository {
   create(card: Card): Promise<Card>;
   update(card: Card): Promise<Card>;
@@ -19,11 +18,8 @@ export interface CardRepository {
   findLastCardByServiceAndDate(serviceId: number, date: Date): Promise<Card | null>;
   countConcludedTodayByOrganization(organizationCnpj: string): Promise<number>;
   countInAttendanceByOrganization(organizationCnpj: string): Promise<number>;
-  
-  // Métodos para relatórios
   getAverageWaitTime(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number>;
   getAverageServiceTime(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number>;
   getCompletedCardsCount(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number>;
-  
   mapToEntity(data: any): Card;
 } 
