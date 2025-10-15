@@ -37,13 +37,4 @@ export class UpdateOrganizationDto {
   @IsString()
   @IsOptional()
   logo?: string;
-
-  @ApiProperty({
-    description: 'ID da inscrição',
-    example: 'sub_983249821493',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  subscriptionId?: string;
 }

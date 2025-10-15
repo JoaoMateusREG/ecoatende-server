@@ -36,9 +36,8 @@ model Organization {
   cards          Card[]
   services       Service[]
   payments       Payment[]
+  subscription   Subscription[]
   customerId     String?       @unique
-  subscription   Subscription? @relation
-  subscriptionId String?
   active         Boolean?      @default(true)
   logo           String?
 }
@@ -90,14 +89,14 @@ model Card {
 model Subscription {
   id               String       @id
   dateCreated      String     
-  customer         String       @unique
+  customer         String       
   value            Float
   nextDueDate      String
   cycle            String
   billingType      String?
   status           String?
   organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
-  organizationCnpj String       @unique
+  organizationCnpj String
   payments         Payment[]
 }
 

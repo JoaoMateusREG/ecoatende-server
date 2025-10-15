@@ -26,7 +26,6 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       data: {
         name: organization.name,
         customerId: organization.customerId,
-        subscriptionId: organization.subscriptionId,
         active: organization.active,
         logo: organization.logo,
       },
@@ -183,8 +182,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           transactionReceiptUrl: payment.transactionReceiptUrl? payment.transactionReceiptUrl : null,
       })),
       active: data.active,
-      logo: data.logo,
-      subscriptionId: data.subscriptionId
+      logo: data.logo,      
     });
   };
 }
