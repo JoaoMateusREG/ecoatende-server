@@ -70,6 +70,64 @@ export class AuthController {
     }
   }
 
+    @Post('site')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Fazer login' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Login realizado com sucesso. Session ID enviado como cookie HttpOnly.',
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'object',
+          properties: {
+            cpf: { type: 'string', example: '123.456.789-01' },
+            name: { type: 'string', example: 'João Silva' },
+            organizationCnpj: { type: 'string', example: '12.345.678/0001-90' },
+            isActive: { type: 'boolean', example: true },
+            services: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'number', example: 1 },
+                  name: { type: 'string', example: 'CIRURGIA' },
+                  prefix: { type: 'string', example: 'C' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  async site(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
+    try {
+      const result = await this.authService.site(loginDto);
+      
+      // Define o cookie HttpOnly com session ID
+      response.cookie('session_id', result.sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // true em produção (HTTPS)
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        path: '/'
+      });
+
+      // Retorna apenas os dados do usuário (sem o token)
+      return {
+        user: result.user
+      };
+    } catch (error: any) {
+      throw new HttpException(
+        { error: error.message },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
+
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Fazer logout' })
@@ -178,6 +236,36 @@ export class AuthController {
     try {
       const user = await this.authService.getCurrentUser(session.cpf);
       return user;
+    } catch (error: any) {
+      throw new HttpException(
+        { error: error.message },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
+
+  @Get('organization')
+  @UseGuards(SessionAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obter dados da organização do usuário atual' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Dados da organização obtidos com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        cnpj: { type: 'string', example: '12.345.678/0001-90' },
+        name: { type: 'string', example: 'CLINICA SAUDE PLUS' },
+        active: { type: 'boolean', example: true }
+      }
+    }
+  })
+  @ApiResponse({ status: 401, description: 'Token inválido ou expirado' })
+  @ApiResponse({ status: 404, description: 'Usuário não possui organização associada' })
+  async getCurrentUserOrganization(@CurrentSession() session: SessionData) {
+    try {
+      const organization = await this.authService.getCurrentUserOrganization(session.cpf);
+      return organization;
     } catch (error: any) {
       throw new HttpException(
         { error: error.message },
