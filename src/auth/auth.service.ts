@@ -66,6 +66,50 @@ export class AuthService {
     };
   }
 
+    async site(loginDto: LoginDto): Promise<LoginResponse> {
+    const user = await this.userRepository.findByCpfAndPassword(
+      loginDto.cpf,
+      loginDto.password
+    );
+
+    if (!user) {
+      throw new UnauthorizedException('CPF ou senha inválidos');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Usuário inativo');
+    }
+
+    if (!user.organization?.active) {
+      throw new UnauthorizedException('Organização inativa');
+    }
+    
+    if (user.role !== 'ADMIN'){
+      throw new UnauthorizedException('Apenas os administradores da empresa podem acessar')
+    }
+
+    // Cria uma sessão para o usuário
+    const sessionId = await this.sessionService.createSession({
+      cpf: user.cpf,
+      organizationCnpj: user.organizationCnpj,
+    });
+
+    return {
+      sessionId,
+      user: {
+        cpf: user.cpf,
+        name: user.name,
+        organizationCnpj: user.organizationCnpj,
+        isActive: user.isActive,
+        services: user.services?.map(service => ({
+          id: service.id,
+          name: service.name,
+          prefix: service.prefix
+        })) || []
+      },
+    };
+  }
+
   async validateUser(cpf: string): Promise<any> {
     const user = await this.userRepository.findByCpf(cpf);
     if (user && user.isActive) {
@@ -107,5 +151,28 @@ export class AuthService {
 
   getSessionStats() {
     return this.sessionService.getSessionStats();
+  }
+
+  async getCurrentUserOrganization(cpf: string) {
+    try {
+      // Busca o usuário atualizado no banco com todos os dados
+      const user = await this.userRepository.findByCpf(cpf);
+      
+      if (!user || !user.isActive) {
+        throw new UnauthorizedException('Usuário não encontrado ou inativo');
+      }
+
+      if (!user.organization) {
+        throw new UnauthorizedException('Usuário não possui organização associada');
+      }
+
+      // Retorna apenas os dados da organização
+      return user.organization;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Erro ao buscar organização do usuário');
+    }
   }
 } 
