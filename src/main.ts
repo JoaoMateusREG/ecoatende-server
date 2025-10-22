@@ -16,9 +16,8 @@ async function bootstrap() {
     origin: [
       'http://138.2.244.250:3418',
       'https://138.2.244.250:3418',
-      'https://*.atende.eco.br',
-      'http://localhost:6287',
-      '*'
+      'https://site.atende.eco.br',
+      'http://localhost:6287'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
