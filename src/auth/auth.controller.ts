@@ -256,7 +256,75 @@ export class AuthController {
       properties: {
         cnpj: { type: 'string', example: '12.345.678/0001-90' },
         name: { type: 'string', example: 'CLINICA SAUDE PLUS' },
-        active: { type: 'boolean', example: true }
+        creationDate: { type: 'string', format: 'date-time', example: '2024-01-15T10:30:00.000Z' },
+        customerId: { type: 'string', example: '1234567890' },
+        active: { type: 'boolean', example: true },
+        logo: { type: 'string', example: 'https://example.com/logo.png' },
+        users: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              cpf: { type: 'string', example: '123.456.789-01' },
+              name: { type: 'string', example: 'João Silva' },
+              role: { type: 'string', example: 'ADMIN' },
+              isActive: { type: 'boolean', example: true }
+            }
+          }
+        },
+        services: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', example: 1 },
+              name: { type: 'string', example: 'CIRURGIA' },
+              prefix: { type: 'string', example: 'C' },
+              canCreateCards: { type: 'boolean', example: true },
+              cardLimit: { type: 'number', example: 150 },
+              category: { type: 'string', example: 'MEDICAL' },
+              color: { type: 'string', example: '#FF5733' }
+            }
+          }
+        },
+        cards: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', example: 1 },
+              card: { type: 'string', example: 'C001' },
+              priority: { type: 'string', example: 'NORMAL' },
+              status: { type: 'string', example: 'WAITING' },
+              datehour: { type: 'string', format: 'date-time', example: '2024-01-15T10:30:00.000Z' }
+            }
+          }
+        },
+        payments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'pay_123456789' },
+              dateCreated: { type: 'string', example: '2024-01-15' },
+              value: { type: 'number', example: 99.90 },
+              status: { type: 'string', example: 'PAID' }
+            }
+          }
+        },
+        subscription: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'sub_123456789' },
+              dateCreated: { type: 'string', example: '2024-01-15' },
+              value: { type: 'number', example: 99.90 },
+              nextDueDate: { type: 'string', example: '2024-02-15' },
+              status: { type: 'string', example: 'ACTIVE' }
+            }
+          }
+        }
       }
     }
   })

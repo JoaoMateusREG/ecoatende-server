@@ -53,7 +53,15 @@ export class PrismaUserRepository implements UserRepository {
     const user = await prisma.user.findUnique({
       where: { cpf },
       include: {
-        organization: true,
+        organization: {
+          include: {
+            users: true,
+            services: true,
+            cards: true,
+            payments: true,
+            subscription: true
+          }
+        },
         services: true
       },
     });
@@ -167,7 +175,70 @@ export class PrismaUserRepository implements UserRepository {
         name: data.organization.name,
         customerId: data.organization.customerId,
         creationDate: data.organization.creationDate,
-        active: data.organization.active
+        active: data.organization.active,
+        logo: data.organization.logo,
+        users: data.organization.users?.map((user: any) => 
+          User.create({
+            cpf: user.cpf,
+            name: user.name,
+            password: user.password,
+            role: user.role,
+            organizationCnpj: user.organizationCnpj,
+            isActive: user.isActive,
+            picture: user.picture
+          })
+        ),
+        services: data.organization.services?.map((service: any) => 
+          Service.create({
+            id: service.id,
+            name: service.name,
+            prefix: service.prefix,
+            organizationCnpj: service.organizationCnpj,
+            canCreateCards: service.canCreateCards,
+            cardLimit: service.cardLimit ?? undefined,
+            category: service.category ?? undefined,
+            color: service.color ?? undefined
+          })
+        ),
+        cards: data.organization.cards?.map((card: any) => ({
+          id: card.id,
+          card: card.card,
+          priority: card.priority,
+          status: card.status,
+          datehour: card.datehour,
+          datehourAttend: card.datehourAttend,
+          concluded: card.concluded,
+          datehourConcluded: card.datehourConcluded,
+          organizationCnpj: card.organizationCnpj,
+          serviceId: card.serviceId,
+          userCpf: card.userCpf
+        })),
+        payments: data.organization.payments?.map((payment: any) => ({
+          id: payment.id,
+          dateCreated: payment.dateCreated,
+          customer: payment.customer,
+          organizationCnpj: payment.organizationCnpj,
+          subscriptionId: payment.subscriptionId,
+          dueDate: payment.dueDate,
+          originalDueDate: payment.originalDueDate,
+          value: payment.value,
+          netValue: payment.netValue,
+          originalValue: payment.originalValue,
+          billingType: payment.billingType,
+          status: payment.status,
+          transactionReceiptUrl: payment.transactionReceiptUrl
+        })),
+        subscription: data.organization.subscription?.map((sub: any) => ({
+          id: sub.id,
+          dateCreated: sub.dateCreated,
+          customer: sub.customer,
+          value: sub.value,
+          nextDueDate: sub.nextDueDate,
+          cycle: sub.cycle,
+          billingType: sub.billingType,
+          status: sub.status,
+          organizationCnpj: sub.organizationCnpj
+        }))
       }) : undefined,
     });
   };
