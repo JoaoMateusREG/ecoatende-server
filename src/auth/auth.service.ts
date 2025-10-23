@@ -166,7 +166,7 @@ export class AuthService {
         throw new UnauthorizedException('Usuário não possui organização associada');
       }
 
-      // Retorna apenas os dados da organização
+      // Retorna a organização com todas as relações
       return user.organization;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
