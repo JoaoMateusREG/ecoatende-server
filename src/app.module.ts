@@ -11,6 +11,7 @@ import { ReportModule } from './modules/report.module';
 import { GatewayModule } from './modules/gateway.module';
 import { PaymentModule } from './modules/payment.module';
 import { SubscriptionModule } from './modules/subscription.module';
+import { SiteOrganizationAdmModule } from './modules/site.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -26,6 +27,7 @@ import { AppController } from './app.controller';
     GatewayModule,
     PaymentModule,
     SubscriptionModule,
+    SiteOrganizationAdmModule,
   ],
   controllers: [AppController],
   providers: [AppService],

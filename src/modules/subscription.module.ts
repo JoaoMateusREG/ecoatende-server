@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CreateSubscriptionUseCase } from '../use-cases/subscription/create-subscription.use-case';
+import { CreateSubscriptionGatewayUseCase } from '../use-cases/subscription/create-subscription-gateway.use-case';
 import { UpdateSubscriptionUseCase } from '../use-cases/subscription/update-subscription.use-case';
 import { DeleteSubscriptionUseCase } from '../use-cases/subscription/delete-subscription.use-case';
 import { FindSubscriptionByIdUseCase } from 'src/use-cases/subscription/find-subscription-by-id.use-case';
@@ -16,6 +17,7 @@ import { PrismaOrganizationRepository } from 'src/repositories/prisma/prisma-org
   controllers: [SubscriptionController],
   providers: [
     CreateSubscriptionUseCase,
+    CreateSubscriptionGatewayUseCase,
     UpdateSubscriptionUseCase,
     DeleteSubscriptionUseCase,
     FindSubscriptionByIdUseCase,

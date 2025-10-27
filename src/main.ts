@@ -18,6 +18,8 @@ async function bootstrap() {
       'https://138.2.244.250:3418',
       'https://atende.eco.br',
       'https://site.atende.eco.br',
+      'http://localhost:6287',
+      'http://localhost:3418',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
@@ -56,3 +58,5 @@ async function bootstrap() {
   console.log(`📚 Swagger disponível em: http://${host}:${port}/api`);
 }
 bootstrap();
+
+export function apiCall(route, body = {}, method = 'GET') {console.log(route, body, method)}

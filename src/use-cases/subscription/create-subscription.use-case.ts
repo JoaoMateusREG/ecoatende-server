@@ -3,8 +3,6 @@ import { Subscription } from '../../entities/subscription';
 import type { SubscriptionRepository } from '../../repositories/subscription.repository';
 import { CreateSubscriptionDto } from '../../dto/create-subscription.dto';
 import type { OrganizationRepository } from 'src/repositories/organization.repository';
-import { UpdateOrganizationDto } from 'src/dto/update-organization.dto';
-import { Organization } from '../../entities/organization';
 
 export class CreateSubscriptionUseCase {
   constructor(

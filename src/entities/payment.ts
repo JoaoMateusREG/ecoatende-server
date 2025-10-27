@@ -16,6 +16,7 @@ export interface Payment {
   originalValue?: number | null;
   billingType: string;
   status: string;
+  invoiceUrl?: string;
   transactionReceiptUrl?: string;
 }
 
@@ -35,6 +36,7 @@ export class Payment {
     public organization?: Organization,
     public subscription?: Subscription,
     public originalValue?: number | null,
+    public invoiceUrl?: string,
     public transactionReceiptUrl?: string,
   ) {}
 
@@ -53,6 +55,7 @@ export class Payment {
     organization?: Organization;
     subscription?: Subscription;
     originalValue?: number | null;
+    invoiceUrl?: string;
     transactionReceiptUrl?: string;
   }): Payment {
     return new Payment(
@@ -70,6 +73,7 @@ export class Payment {
       data.organization,
       data.subscription,
       data.originalValue,
+      data.invoiceUrl,
       data.transactionReceiptUrl,
     );
   }

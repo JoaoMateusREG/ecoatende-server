@@ -95,12 +95,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       billingType: data.billingType,
       status: data.status,
       organizationCnpj: data.organizationCnpj,
-      organization: data.organization?.map((organization: any) => 
-        Organization.create({
-        cnpj: organization.cnpj,
-        name: organization.name,
-      }),
-    ),
+      organization: data.organization,
       payments: data.payments?.map((payment: any) => 
         Payment.create({
         id: payment.id,
@@ -128,6 +123,7 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
         originalValue: payment.originalValue? payment.originalValue : undefined,
         billingType: payment.billingType,
         status: payment.status,
+        invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       }),
     ),

@@ -420,6 +420,8 @@ export class PrismaCardRepository implements CardRepository {
       organization: data.organization ? Organization.create({
         cnpj: data.organization.cnpj,
         name: data.organization.name,
+        email: data.organization.email,
+        phone: data.organization.phone,
         customerId: data.organization.customerId,
         creationDate: data.organization.creationDate,
         active: data.organization.active

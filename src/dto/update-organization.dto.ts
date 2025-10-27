@@ -13,6 +13,22 @@ export class UpdateOrganizationDto {
   name?: string;
 
   @ApiProperty({
+    description: 'Email da organização',
+    example: 'empresaltds@exemple.com'
+  })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({
+    description: 'Contato da organização',
+    example: '88 99999-9999'
+  })
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({
     description: 'ID do cliente no sistema de pagamentos',
     example: '@$2dfsgfsvsbnsghfsdhsh6465dfsh6s15',
     required: false,

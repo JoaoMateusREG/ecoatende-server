@@ -92,6 +92,14 @@ export class CreatePaymentDto {
   status: string;
 
   @ApiProperty({
+    description: 'URL da cobranca (se aplicável)',
+    example: 'https://www.asaas.com/i/080225913252',
+  })
+  @IsString()
+  @IsOptional()
+  invoiceUrl?: string;
+
+  @ApiProperty({
     description: 'URL do recibo da transação (se aplicável)',
     example: 'https://example.com/receipt/pay_1234567890',
   })

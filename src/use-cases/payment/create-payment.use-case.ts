@@ -30,6 +30,7 @@ export class CreatePaymentUseCase {
       billingType: createPaymentDto.billingType,
       status: createPaymentDto.status,
       originalValue: createPaymentDto.originalValue,
+      invoiceUrl: createPaymentDto.invoiceUrl,
       transactionReceiptUrl: createPaymentDto.transactionReceiptUrl,
     });
 
