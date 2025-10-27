@@ -1,17 +1,25 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateOrganizationDto } from '../../dto/create-organization.dto';
 import axios, { AxiosInstance } from 'axios';
 
 interface GatewayResponse {
+  object: string;
   id: string;
-  name: string;
-  cpfCnpj: string
+  dateCreated: string;
+  customer: string;
+  billingType: string;
+  cycle: string;
+  value: number;
+  nextDueDate: string;
+}
+
+export interface CreateSubscriptionGatewayDto {
+    customer: string;
 }
 
 @Injectable()
-export class CreatedOrganizationGatewayUseCase {
+export class CreateSubscriptionGatewayUseCase {
 
-  private readonly GATEWAY_URL = 'https://api-sandbox.asaas.com/v3/customers';
+  private readonly GATEWAY_URL = 'https://api-sandbox.asaas.com/v3/subscriptions';
   private readonly GATEWAY_API_KEY = process.env.ACESS_TOKEN_ASAAS; 
   private readonly http: AxiosInstance;
 
@@ -24,12 +32,32 @@ export class CreatedOrganizationGatewayUseCase {
       },
     });
   }
-  async execute(organizationData: CreateOrganizationDto): Promise<GatewayResponse> {
+
+  /**
+   * @returns {string}
+   */
+  private getCurrentFormattedDate(): string {
+    const today = new Date();
+    
+    const year = today.getFullYear();
+    
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  async execute(subscriptionData: CreateSubscriptionGatewayDto): Promise<GatewayResponse> {
+    
+    const nextDueDate = this.getCurrentFormattedDate(); 
+
     const payload = {
-        name: organizationData.name,
-        cpfCnpj: organizationData.cnpj,
-        email: organizationData.email,
-        phone: organizationData.phone,
+      billingType: 'UNDEFINED',
+      cycle: 'MONTHLY',
+      customer: subscriptionData.customer,
+      value: 100,
+      nextDueDate: nextDueDate, 
     };
     
     try {

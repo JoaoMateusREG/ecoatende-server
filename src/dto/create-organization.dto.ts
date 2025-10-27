@@ -25,6 +25,22 @@ export class CreateOrganizationDto {
   name: string;
 
   @ApiProperty({
+    description: 'Email da organização',
+    example: 'empresaltds@exemple.com'
+  })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({
+    description: 'Contato da organização',
+    example: '88 99999-9999'
+  })
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({
   description: 'ID do cliente no sistema do gateway de pagamento',
   example: '@fdsa$%fdsgfhgfsfadsf61265'
   })
@@ -52,5 +68,5 @@ export class CreateOrganizationDto {
   })
   @IsString()
   @IsOptional()
-  logo: string;
+  logo?: string;
 } 

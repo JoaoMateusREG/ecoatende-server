@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CreatePaymentUseCase } from '../use-cases/payment/create-payment.use-case';
 import { UpdatePaymentUseCase } from '../use-cases/payment/update-payment.use-case';
 import { DeletePaymentUseCase } from '../use-cases/payment/delete-payment.use-case';
@@ -24,7 +23,6 @@ import { Subscription } from 'rxjs';
 
 @ApiTags('Payments')
 @Controller('payments')
-//@UseGuards(SessionAuthGuard)
 export class PaymentController {
   constructor(
     private readonly createPaymentUseCase: CreatePaymentUseCase,
@@ -75,6 +73,7 @@ export class PaymentController {
         billingType: payment.billingType,
         status: payment.status,
         originalValue: payment.originalValue,
+        invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       };
     } catch (error) {

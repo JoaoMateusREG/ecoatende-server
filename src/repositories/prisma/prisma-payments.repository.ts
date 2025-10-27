@@ -19,6 +19,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
         netValue: payment.netValue,
         billingType: payment.billingType,
         status: payment.status,
+        invoiceUrl:payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       },
     });
@@ -35,6 +36,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
         netValue: payment.netValue,
         billingType: payment.billingType,
         status: payment.status,
+        invoiceUrl:payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       },
     });
@@ -75,6 +77,9 @@ export class PrismaPaymentsRepository implements PaymentRepository {
       Organization.create({
         cnpj: organization.cnpj,
         name: organization.name,
+        email: organization.email,
+        phone: organization.phone,
+        customerId: organization.customerId,
       })),
       organizationCnpj: data.organizationCnpj,
       subscription: data.subscription?.map((subsctiption: any) => 
@@ -98,6 +103,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
       billingType: data.billingType,
       status: data.status,
       originalValue: data.originalValue,
+      invoiceUrl: data.invoiceUrl,
       transactionReceiptUrl: data.transactionReceiptUrl,
     });
   };

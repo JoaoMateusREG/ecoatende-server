@@ -4,6 +4,7 @@ import { Organization } from '../../entities/organization';
 import { User } from '../../entities/user';
 import { Service } from '../../entities/service';
 import { Payment } from 'src/entities/payment';
+import { Subscription } from 'src/entities/subscription';
 
 export class PrismaOrganizationRepository implements OrganizationRepository {
   async create(organization: Organization): Promise<Organization> {
@@ -11,6 +12,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       data: {
         cnpj: organization.cnpj,
         name: organization.name,
+        email: organization.email,
+        phone: organization.phone,
         customerId: organization.customerId,
         active: organization.active,
         logo: organization.logo,
@@ -25,6 +28,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       where: { cnpj: organization.cnpj },
       data: {
         name: organization.name,
+        email: organization.email,
+        phone: organization.phone,
         customerId: organization.customerId,
         active: organization.active,
         logo: organization.logo,
@@ -41,6 +46,10 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   async findByCnpj(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
+      include: {
+        subscription: true,
+        payments: true,
+    }
     });
 
     return organization ? this.mapToEntity(organization) : null;
@@ -111,15 +120,17 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
 
   async findByCustomer(customerId: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
-      where: {customerId},
-    })
-    return organization ? this.mapToEntity(organization) : null
+      where: { customerId },
+    });
+    return organization ? this.mapToEntity(organization) : null;
   }
 
   public mapToEntity = (data: any): Organization => {
     return Organization.create({
       cnpj: data.cnpj,
       name: data.name,
+      email: data.email,
+      phone: data.phone,
       customerId: data.customerId,
       creationDate: data.creationDate,
       users: data.users?.map((user: any) =>
@@ -143,46 +154,40 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           color: service.color ?? undefined,
           canCreateCards: service.canCreateCards,
           cardLimit: service.cardLimit ?? undefined,
-          users: service.users?.map((user: any) =>
-            User.create({
-              cpf: user.cpf,
-              name: user.name,
-              password: user.password,
-              role: user.role,
-              organizationCnpj: user.organizationCnpj,
-              isActive: user.isActive,
-              picture: user.picture,
-            }),
-          ),
+          users: service.users ?? [],
         }),
       ),
-      payments: data.payments?.map((payment:any) => 
-      Payment.create({
+      payments: data.payments?.map((payment: any) =>
+        Payment.create({
           id: payment.id,
           dateCreated: payment.dateCreated,
           customer: payment.customer,
-          organization: payment.organization?.map((organization:any) => 
-          Organization.create({
-            cnpj: organization.cnpj,
-            name: organization.name,
-            customerId: organization.customerId,
-            creationDate: organization.creationDate,
-            active: organization.active,
-            logo: organization.logo
-          })),
           organizationCnpj: payment.organizationCnpj,
           subscriptionId: payment.subscriptionId,
           dueDate: payment.dueDate,
           originalDueDate: payment.originalDueDate,
           value: payment.value,
           netValue: payment.netValue,
-          originalValue: payment.originalValue? payment.originalValue : null,
+          originalValue: payment.originalValue ? payment.originalValue : null,
           billingType: payment.billingType,
           status: payment.status,
-          transactionReceiptUrl: payment.transactionReceiptUrl? payment.transactionReceiptUrl : null,
-      })),
-      active: data.active,
-      logo: data.logo,      
+          invoiceUrl: payment.invoiceUrl,
+          transactionReceiptUrl: payment.transactionReceiptUrl,
+        }),
+      ),
+      subscription: data.subscription?.map((subscription: any) =>
+        Subscription.create({
+          id: subscription.id,
+          dateCreated: subscription.dateCreated,
+          customer: subscription.customer,
+          value: subscription.value,
+          nextDueDate: subscription.nextDueDate,
+          cycle: subscription.cycle,
+          billingType: subscription.billingType,
+          status: subscription.status,
+          organizationCnpj: subscription.organizationCnpj,
+        }),
+      ),
     });
   };
 }

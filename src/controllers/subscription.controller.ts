@@ -12,8 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CreateSubscriptionUseCase } from '../use-cases/subscription/create-subscription.use-case';
+import { CreateSubscriptionGatewayUseCase } from '../use-cases/subscription/create-subscription-gateway.use-case';
 import { UpdateSubscriptionUseCase } from '../use-cases/subscription/update-subscription.use-case';
 import { DeleteSubscriptionUseCase } from '../use-cases/subscription/delete-subscription.use-case';
 import { FindSubscriptionByIdUseCase } from '../use-cases/subscription/find-subscription-by-id.use-case';
@@ -22,13 +22,14 @@ import { FindSubscriptionByOrganizationUseCase } from '../use-cases/subscription
 import { FindSubscriptionByStatusUseCase } from '../use-cases/subscription/find-subscription-by-status.use-case';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
+import type { CreateSubscriptionGatewayDto } from '../use-cases/subscription/create-subscription-gateway.use-case';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
-//@UseGuards(SessionAuthGuard)
 export class SubscriptionController {
   constructor(
     private readonly createSubscriptionUseCase: CreateSubscriptionUseCase,
+    private readonly createSubscriptionGatewayUseCase: CreateSubscriptionGatewayUseCase,
     private readonly updateSubscriptionUseCase: UpdateSubscriptionUseCase,
     private readonly deleteSubscriptionUseCase: DeleteSubscriptionUseCase,
     private readonly findSubscriptionByIdUseCase: FindSubscriptionByIdUseCase,
@@ -37,7 +38,54 @@ export class SubscriptionController {
     private readonly findSubscriptionByStatusUseCase: FindSubscriptionByStatusUseCase,
   ) {}
 
-  @Post()
+  
+  @Post('gateway')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Criar uma nova inscrição no gateway de pagamento' })
+  @ApiResponse({
+    status: 201,
+    description: 'Inscrição criada com sucesso.',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'sub_1234567890' },
+        dateCreated: {
+          type: 'string',
+          format: 'date-time',
+          example: '2023-10-01T12:00:00Z',
+        },
+        customer: { type: 'string', example: 'customer_123456' },
+        value: { type: 'number', example: 99.99 },
+        nextDueDate: {
+          type: 'string',
+          format: 'date-time',
+          example: '2023-11-01T12:00:00Z',
+        },
+        cycle: { type: 'string', example: 'monthly' },
+        billingType: { type: 'string', example: 'credit_card' },
+        status: { type: 'string', example: 'active' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async createGateway(@Body() createSubscriptionGatewayDto: CreateSubscriptionGatewayDto) {
+    try {
+      const subscription = await this.createSubscriptionGatewayUseCase.execute(
+        createSubscriptionGatewayDto,
+      );
+      return {
+      billingType: subscription.billingType,
+      cycle: subscription.cycle,
+      customer: subscription.customer,
+      value: subscription.value,
+      nextDueDate: subscription.nextDueDate,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+    @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Criar uma nova inscrição' })
   @ApiResponse({
