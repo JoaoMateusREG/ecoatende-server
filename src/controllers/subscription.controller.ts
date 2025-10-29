@@ -12,25 +12,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { CreateSubscriptionUseCase } from '../use-cases/subscription/create-subscription.use-case';
 import { CreateSubscriptionGatewayUseCase } from '../use-cases/subscription/create-subscription-gateway.use-case';
-import { UpdateSubscriptionUseCase } from '../use-cases/subscription/update-subscription.use-case';
+import { UpdateSubscriptionGatewayUseCase } from '../use-cases/subscription/update-subscription.use-case';
 import { DeleteSubscriptionUseCase } from '../use-cases/subscription/delete-subscription.use-case';
 import { FindSubscriptionByIdUseCase } from '../use-cases/subscription/find-subscription-by-id.use-case';
 import { FindSubscriptionByCustomerUseCase } from '../use-cases/subscription/find-subscription-by-customer.use-case';
 import { FindSubscriptionByOrganizationUseCase } from '../use-cases/subscription/find-subscription-by-organization.use-case';
 import { FindSubscriptionByStatusUseCase } from '../use-cases/subscription/find-subscription-by-status.use-case';
-import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
-import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
+import type { UpdateSubscriptionGatewayDto } from '../use-cases/subscription/update-subscription.use-case';
 import type { CreateSubscriptionGatewayDto } from '../use-cases/subscription/create-subscription-gateway.use-case';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
 export class SubscriptionController {
   constructor(
-    private readonly createSubscriptionUseCase: CreateSubscriptionUseCase,
     private readonly createSubscriptionGatewayUseCase: CreateSubscriptionGatewayUseCase,
-    private readonly updateSubscriptionUseCase: UpdateSubscriptionUseCase,
+    private readonly updateSubscriptionGatewayUseCase: UpdateSubscriptionGatewayUseCase,
     private readonly deleteSubscriptionUseCase: DeleteSubscriptionUseCase,
     private readonly findSubscriptionByIdUseCase: FindSubscriptionByIdUseCase,
     private readonly findSubscriptionByCustomerUseCase: FindSubscriptionByCustomerUseCase,
@@ -85,7 +82,7 @@ export class SubscriptionController {
     }
   }
 
-    @Post()
+  @Put('id')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Criar uma nova inscrição' })
   @ApiResponse({
@@ -114,63 +111,20 @@ export class SubscriptionController {
     },
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto) {
+  async update(@Body() updateSubscriptionGatewayDto: UpdateSubscriptionGatewayDto) {
     try {
-      const subscription = await this.createSubscriptionUseCase.execute(
-        createSubscriptionDto,
+      const subscription = await this.updateSubscriptionGatewayUseCase.execute(
+        updateSubscriptionGatewayDto,
       );
       return {
         id: subscription.id,
-        dateCreated: subscription.dateCreated,
         customer: subscription.customer,
-        value: subscription.value,
         nextDueDate: subscription.nextDueDate,
-        cycle: subscription.cycle,
         billingType: subscription.billingType,
         status: subscription.status,
-        organizationCnpj: subscription.organizationCnpj,
-        organization: subscription.organization,
-        payments: subscription.payments,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Put(':id')
-  @ApiOperation({ summary: 'Atualizar uma inscrição existente' })
-  @ApiParam({
-    name: 'id',
-    description: 'ID da inscrição',
-    example: 'sub_1234567890',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Inscrição atualizada com sucesso.',
-  })
-  @ApiResponse({ status: 404, description: 'Inscrição não encontrada' })
-  async update(
-    @Param('id') id: string,
-    @Body() updateSubscriptionDto: UpdateSubscriptionDto,
-  ) {
-    try {
-      const subscription = await this.findSubscriptionByIdUseCase.execute(id);
-      if (!subscription) {
-        throw new HttpException(
-          'Inscrição não encontrada',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      const updatedSubscription = await this.updateSubscriptionUseCase.execute({
-        ...subscription,
-        ...updateSubscriptionDto,
-        id,
-      });
-
-      return updatedSubscription;
-    } catch (error: any) {
-      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 

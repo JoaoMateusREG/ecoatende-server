@@ -21,6 +21,11 @@ export class CreateSubscriptionUseCase {
 
     const organizationCnpj: string = organization?.cnpj ?? '';
 
+    const existingSubscription =
+      await this.subscriptionRepository.findByCustomer(
+        createSubscriptionDto.customer,
+      );
+
     const subscription = Subscription.create({
       id: createSubscriptionDto.id,
       dateCreated: createSubscriptionDto.dateCreated,
@@ -34,6 +39,10 @@ export class CreateSubscriptionUseCase {
       payments: createSubscriptionDto.payments,
     });
 
+    if (existingSubscription) {
+      return await this.subscriptionRepository.update(subscription);
+    } else {
       return this.subscriptionRepository.create(subscription);
+    }
   }
 }
