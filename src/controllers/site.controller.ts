@@ -15,6 +15,7 @@ import {
   ApiBody
 } from '@nestjs/swagger';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
+import { FindOrganizationByCnpjUseCase } from 'src/use-cases/organization/find-organization-by-cnpj.use-case';
 import { CreateUserUseCase } from '../use-cases/user/create-user.use-case';
 import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -43,6 +44,7 @@ interface CreateOrganizationResponse {
 export class SiteOrganizationAdmController {
   constructor(
     private readonly createOrganizationUseCase: CreateOrganizationUseCase,
+    private readonly findOrganizationByCnpjUseCase: FindOrganizationByCnpjUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly createdOrganizationGatewayUseCase: CreatedOrganizationGatewayUseCase,
   ) {}
@@ -62,6 +64,12 @@ export class SiteOrganizationAdmController {
     @Body() organizationAndAdm: OrganizationAndAdmDto
   ): Promise<CreateOrganizationResponse> {
     try {
+      const existingOrganization = await this.findOrganizationByCnpjUseCase.execute(organizationAndAdm.organization.cnpj);
+
+      if (existingOrganization) {
+        throw new BadRequestException(`Organização com CNPJ ${organizationAndAdm.organization.cnpj} já existe. Faça login ou entre em contato com o suporte.`);
+      }
+
       // 1. Registrar organização no Gateway
       const gatewayResponse = await this.createdOrganizationGatewayUseCase.execute(
         organizationAndAdm.organization,
