@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { SetupModule } from './modules/setup.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { ReportModule } from './modules/report.module';
-import { GatewayModule } from './modules/gateway.module';
 import { PaymentModule } from './modules/payment.module';
 import { SubscriptionModule } from './modules/subscription.module';
 import { SiteOrganizationAdmModule } from './modules/site.module';
@@ -24,7 +23,6 @@ import { AppController } from './app.controller';
     SetupModule,
     WebsocketModule,
     ReportModule,
-    GatewayModule,
     PaymentModule,
     SubscriptionModule,
     SiteOrganizationAdmModule,
