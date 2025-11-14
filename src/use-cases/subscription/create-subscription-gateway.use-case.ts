@@ -56,7 +56,7 @@ export class CreateSubscriptionGatewayUseCase {
       billingType: 'UNDEFINED',
       cycle: 'MONTHLY',
       customer: subscriptionData.customer,
-      value: 100,
+      value: 99,
       nextDueDate: nextDueDate, 
     };
     

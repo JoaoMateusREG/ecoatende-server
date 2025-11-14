@@ -73,7 +73,7 @@ export class CreatePaymentDto {
     example: 199.99,
   })
   @IsOptional()
-  originalValue?: number;
+  originalValue: number;
 
   @ApiProperty({
     description: 'Tipo de cobrança (ex: cartão de crédito, boleto)',

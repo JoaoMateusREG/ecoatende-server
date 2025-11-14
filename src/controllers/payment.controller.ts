@@ -33,10 +33,10 @@ export class PaymentController {
   ) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Criar um novo pagamento' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Pagamento criado com sucesso.',
     schema: {
       type: 'object',
@@ -58,6 +58,17 @@ export class PaymentController {
       },
     },
   })
+  @ApiResponse({
+  status: 200,
+  description: 'Erro ao criar pagamento.',
+  schema: {
+    type: 'object',
+    properties: {
+      success: { type: 'boolean', example: false },
+      error: { type: 'string', example: 'Mensagem de erro' },
+    },
+  },
+})
   async create(@Body('payment') createPaymentDto: CreatePaymentDto) {
     try {
       const payment = await this.createPaymentUseCase.execute(createPaymentDto);
@@ -76,17 +87,13 @@ export class PaymentController {
         invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       };
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Erro ao criar o pagamento.',
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
   }
+}
 
   @Put(':id')
   @ApiOperation({ summary: 'Atualizar um pagamento existente' })
