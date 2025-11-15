@@ -157,29 +157,15 @@ async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto)
 
   @Put('id')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar uma nova inscrição' })
+  @ApiOperation({ summary: 'Desativar ou ativar uma inscrição' })
   @ApiResponse({
     status: 201,
-    description: 'Inscrição criada com sucesso.',
+    description: 'Inscrição alterada com sucesso.',
     schema: {
       type: 'object',
       properties: {
-        id: { type: 'string', example: 'sub_1234567890' },
-        dateCreated: {
-          type: 'string',
-          format: 'date-time',
-          example: '2023-10-01T12:00:00Z',
-        },
-        customer: { type: 'string', example: 'customer_123456' },
-        value: { type: 'number', example: 99.99 },
-        nextDueDate: {
-          type: 'string',
-          format: 'date-time',
-          example: '2023-11-01T12:00:00Z',
-        },
-        cycle: { type: 'string', example: 'monthly' },
-        billingType: { type: 'string', example: 'credit_card' },
-        status: { type: 'string', example: 'active' },
+        status: { type: 'string', example: 'INACTIVE' },
+        subscriptionId: { type: 'string', example: 'sub_bk32154433c14idr' },
       },
     },
   })
@@ -190,11 +176,8 @@ async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto)
         updateSubscriptionGatewayDto,
       );
       return {
-        id: subscription.id,
-        customer: subscription.customer,
-        nextDueDate: subscription.nextDueDate,
-        billingType: subscription.billingType,
         status: subscription.status,
+        subscriptionId: subscription.id,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
