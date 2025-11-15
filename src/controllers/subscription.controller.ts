@@ -155,7 +155,7 @@ async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto)
 }
 
 
-  @Put('id')
+  @Put(':id')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Desativar ou ativar uma inscrição' })
   @ApiResponse({
