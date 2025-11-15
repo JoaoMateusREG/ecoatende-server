@@ -130,7 +130,7 @@ export class SubscriptionController {
     },
   },
 })
-async create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
+async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto) {
   try {
     const subscription = await this.createSubscriptionUseCase.execute(
       createSubscriptionDto,

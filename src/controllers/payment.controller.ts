@@ -32,6 +32,7 @@ export class PaymentController {
     private readonly findPaymentBySubscriptionUseCase: FindPaymentBySubscriptionUseCase,
   ) {}
 
+  // rota utilizada pelo webhook para criar pagamento no sistema
   @Post()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Criar um novo pagamento' })
