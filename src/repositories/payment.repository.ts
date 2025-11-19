@@ -6,6 +6,7 @@ export interface PaymentRepository {
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Payment | null>;
   findBySubscription(subscriptionId: string): Promise<Payment[]>;
+  findByOrganizationCnpj(organizationCnpj: string): Promise<Payment[]>;
   findByCustomer(customerId: string): Promise<Payment[]>;
   mapToEntity(data: any): Payment;
 }
