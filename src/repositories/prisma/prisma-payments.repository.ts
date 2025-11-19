@@ -61,6 +61,13 @@ export class PrismaPaymentsRepository implements PaymentRepository {
     return payments.map(this.mapToEntity);
   }
 
+  async findByOrganizationCnpj(organizationCnpj: string): Promise<Payment[]> {
+    const payments = await prisma.payment.findMany({
+      where: { organizationCnpj },
+    });
+    return payments.map(this.mapToEntity);
+  }
+
   async findByCustomer(customerId: string): Promise<Payment[]> {
     const payments = await prisma.payment.findMany({
       where: { customer: customerId },

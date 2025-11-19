@@ -20,6 +20,7 @@ import { FindPaymentBySubscriptionUseCase } from '../use-cases/payment/find-paym
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { UpdatePaymentDto } from '../dto/update-payment.dto';
 import { Subscription } from 'rxjs';
+import { FindPaymentByCustomerUseCase } from '../use-cases/payment/find-by-customer.use-case';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -30,6 +31,7 @@ export class PaymentController {
     private readonly deletePaymentUseCase: DeletePaymentUseCase,
     private readonly findPaymentByIdUseCase: FindPaymentByIdUseCase,
     private readonly findPaymentBySubscriptionUseCase: FindPaymentBySubscriptionUseCase,
+    private readonly findPaymentByCustomerUseCase: FindPaymentByCustomerUseCase,
   ) {}
 
   // rota utilizada pelo webhook para criar pagamento no sistema
@@ -209,7 +211,7 @@ export class PaymentController {
   async findByCustomer(@Param('customer') customer: string) {
     try {
       const payment =
-        await this.findPaymentBySubscriptionUseCase.execute(customer);
+        await this.findPaymentByCustomerUseCase.execute(customer);
       if (!payment) {
         throw new HttpException(
           'Pagamento não encontrado',

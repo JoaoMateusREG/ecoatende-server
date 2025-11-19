@@ -3,6 +3,8 @@ import * as bcrypt from 'bcryptjs';
 import type { UserRepository } from '../repositories/user.repository';
 import { LoginDto } from './dto/login.dto';
 import { SessionService } from './session.service';
+import type { PaymentRepository } from '../repositories/payment.repository';
+import { Payment } from 'src/entities/payment';
 
 export interface LoginResponse {
   sessionId: string;
@@ -24,6 +26,7 @@ export class AuthService {
   constructor(
     @Inject('UserRepository') private userRepository: UserRepository,
     private sessionService: SessionService,
+    @Inject('PaymentRepository') private paymentRepository: PaymentRepository,
   ) {}
 
   async login(loginDto: LoginDto): Promise<LoginResponse> {
@@ -42,6 +45,31 @@ export class AuthService {
 
     if (!user.organization?.active) {
       throw new UnauthorizedException('Organização inativa');
+    }
+
+    // Busca todos os pagamentos da organização
+    const payments = await this.paymentRepository.findByOrganizationCnpj(user.organizationCnpj);
+
+    // Filtra pagamentos com status RECEIVED e ordena por dueDate (mais recente primeiro)
+    const receivedPayments = payments
+      .filter(payment => payment.status === 'RECEIVED')
+      .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+
+    // Verifica se existe pelo menos um pagamento recebido
+    if (receivedPayments.length > 0) {
+      const lastReceivedPayment = receivedPayments[0];
+      const dueDate = new Date(lastReceivedPayment.dueDate);
+      
+      // Adiciona 31 dias à data de vencimento
+      const expirationDate = new Date(dueDate);
+      expirationDate.setDate(expirationDate.getDate() + 31);
+      
+      const currentDate = new Date();
+      
+      // Se a data atual for maior que a data de expiração, bloqueia o login
+      if (currentDate > expirationDate) {
+        throw new UnauthorizedException('Pagamento expirado. Entre em contato com o suporte.');
+      }
     }
 
     // Cria uma sessão para o usuário
@@ -66,7 +94,7 @@ export class AuthService {
     };
   }
 
-    async site(loginDto: LoginDto): Promise<LoginResponse> {
+  async site(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.userRepository.findByCpfAndPassword(
       loginDto.cpf,
       loginDto.password
