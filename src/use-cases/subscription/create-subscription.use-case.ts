@@ -15,36 +15,41 @@ export class CreateSubscriptionUseCase {
   async execute(
     createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<Subscription> {
-    const organization = await this.organizationRepository.findByCustomer(
-      createSubscriptionDto.customer,
-    );
-
-    const organizationCnpj: string = organization?.cnpj ?? '';
-
-    const subscriptions =
-      await this.subscriptionRepository.findByCustomer(
+    try {
+      const organization = await this.organizationRepository.findByCustomer(
         createSubscriptionDto.customer,
       );
 
-      const existingSubscription = subscriptions.length > 0;
+      const organizationCnpj: string = organization?.cnpj ?? '';
 
-    const subscription = Subscription.create({
-      id: createSubscriptionDto.id,
-      dateCreated: createSubscriptionDto.dateCreated,
-      customer: createSubscriptionDto.customer,
-      value: createSubscriptionDto.value,
-      nextDueDate: createSubscriptionDto.nextDueDate,
-      cycle: createSubscriptionDto.cycle,
-      billingType: createSubscriptionDto.billingType,
-      status: createSubscriptionDto.status,
-      organizationCnpj: organizationCnpj,
-      payments: createSubscriptionDto.payments,
-    });
+      const subscriptions =
+        await this.subscriptionRepository.findByCustomer(
+          createSubscriptionDto.customer,
+        );
 
-    if (existingSubscription) {
-      return await this.subscriptionRepository.update(subscription);
-    } else {
-      return this.subscriptionRepository.create(subscription);
+        const existingSubscription = subscriptions.length > 0;
+
+      const subscription = Subscription.create({
+        id: createSubscriptionDto.id,
+        dateCreated: createSubscriptionDto.dateCreated,
+        customer: createSubscriptionDto.customer,
+        value: createSubscriptionDto.value,
+        nextDueDate: createSubscriptionDto.nextDueDate,
+        cycle: createSubscriptionDto.cycle,
+        billingType: createSubscriptionDto.billingType,
+        status: createSubscriptionDto.status,
+        organizationCnpj: organizationCnpj,
+        payments: createSubscriptionDto.payments,
+      });
+
+      if (existingSubscription) {
+        return await this.subscriptionRepository.update(subscription);
+      } else {
+        return this.subscriptionRepository.create(subscription);
+      }
+    } catch (error) {
+      console.error('Erro ao criar/atualizar assinatura:', error);
+      throw error;
     }
   }
 }

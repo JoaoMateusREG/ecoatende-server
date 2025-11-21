@@ -62,7 +62,7 @@ export class PaymentController {
     },
   })
   @ApiResponse({
-  status: 200,
+  status: 400,
   description: 'Erro ao criar pagamento.',
   schema: {
     type: 'object',

@@ -120,7 +120,7 @@ export class SubscriptionController {
   },
 })
 @ApiResponse({
-  status: 200,
+  status: 400,
   description: 'Erro ao criar inscrição',
   schema: {
     type: 'object',
