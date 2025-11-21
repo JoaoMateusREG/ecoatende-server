@@ -50,15 +50,21 @@ export class AuthService {
     // Busca todos os pagamentos da organização
     const payments = await this.paymentRepository.findByOrganizationCnpj(user.organizationCnpj);
 
+    console.log(payments)
+
     // Filtra pagamentos com status RECEIVED e ordena por dueDate (mais recente primeiro)
     const receivedPayments = payments
       .filter(payment => payment.status === 'RECEIVED')
       .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
 
+      console.log(receivedPayments)
+
     // Verifica se existe pelo menos um pagamento recebido
     if (receivedPayments.length > 0) {
       const lastReceivedPayment = receivedPayments[0];
       const dueDate = new Date(lastReceivedPayment.dueDate);
+
+      console.log(lastReceivedPayment)
       
       // Adiciona 31 dias à data de vencimento
       const expirationDate = new Date(dueDate);
