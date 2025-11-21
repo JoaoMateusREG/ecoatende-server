@@ -112,7 +112,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true em produção (HTTPS)
         sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        maxAge: 12 * 60 * 60 * 1000, // 12 horas
         path: '/'
       });
 

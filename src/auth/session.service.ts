@@ -15,7 +15,7 @@ export interface SessionData {
 export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   private sessions: Map<string, SessionData> = new Map();
-  private readonly SESSION_DURATION_HOURS = 24; // 24 horas
+  private readonly SESSION_DURATION_HOURS = 12; // 12 horas
 
   /**
    * Cria uma nova sessão para o usuário
