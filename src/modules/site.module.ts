@@ -17,7 +17,7 @@ import { PrismaUserRepository } from '../repositories/prisma/prisma-user.reposit
     CreateUserUseCase,
     CreatedOrganizationGatewayUseCase,
     FindOrganizationByCnpjUseCase,
-    FindOrganizationByCnpjUseCase,
+    FindUserByCpfUseCase,
     {
       provide: 'OrganizationRepository',
       useClass: PrismaOrganizationRepository,
