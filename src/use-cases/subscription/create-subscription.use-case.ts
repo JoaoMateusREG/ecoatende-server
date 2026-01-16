@@ -22,12 +22,11 @@ export class CreateSubscriptionUseCase {
 
       const organizationCnpj: string = organization?.cnpj ?? '';
 
-      const subscriptions =
-        await this.subscriptionRepository.findByCustomer(
-          createSubscriptionDto.customer,
-        );
+      const subscriptions = await this.subscriptionRepository.findByCustomer(
+        createSubscriptionDto.customer,
+      );
 
-        const existingSubscription = subscriptions.length > 0;
+      const existingSubscription = subscriptions.length > 0;
 
       const subscription = Subscription.create({
         id: createSubscriptionDto.id,

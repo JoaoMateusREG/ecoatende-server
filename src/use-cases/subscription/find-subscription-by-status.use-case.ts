@@ -7,7 +7,7 @@ export class FindSubscriptionByStatusUseCase {
     @Inject('SubscriptionRepository')
     private subscriptionRepository: SubscriptionRepository,
   ) {}
-    async execute(status: string): Promise<Subscription[] | null> {
-        return this.subscriptionRepository.findByStatus(status);
-            }
-        }
+  async execute(status: string): Promise<Subscription[] | null> {
+    return this.subscriptionRepository.findByStatus(status);
+  }
+}

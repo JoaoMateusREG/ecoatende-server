@@ -15,10 +15,13 @@ export class SetupService {
 
   constructor(
     @Inject('UserRepository') private userRepository: UserRepository,
-    @Inject('OrganizationRepository') private organizationRepository: OrganizationRepository,
+    @Inject('OrganizationRepository')
+    private organizationRepository: OrganizationRepository,
   ) {}
 
-  async createFirstOrganization(createFirstOrganizationDto: CreateFirstOrganizationDto): Promise<Organization> {
+  async createFirstOrganization(
+    createFirstOrganizationDto: CreateFirstOrganizationDto,
+  ): Promise<Organization> {
     // Verificar se já existe uma organização
     const existingOrganization = await this.organizationRepository.findFirst();
     if (existingOrganization) {
@@ -26,7 +29,10 @@ export class SetupService {
     }
 
     // Validar CNPJ (implementar validação de CNPJ se necessário)
-    if (!createFirstOrganizationDto.cnpj || createFirstOrganizationDto.cnpj.length < 14) {
+    if (
+      !createFirstOrganizationDto.cnpj ||
+      createFirstOrganizationDto.cnpj.length < 14
+    ) {
       throw new Error('CNPJ inválido');
     }
 
@@ -38,7 +44,9 @@ export class SetupService {
     return await this.organizationRepository.create(organization);
   }
 
-  async createFirstAdmin(createFirstAdminDto: CreateFirstAdminDto): Promise<User> {
+  async createFirstAdmin(
+    createFirstAdminDto: CreateFirstAdminDto,
+  ): Promise<User> {
     // Verificar se já existe um admin
     const existingAdmin = await this.userRepository.findByRole('ADMIN');
     if (existingAdmin) {
@@ -48,7 +56,9 @@ export class SetupService {
     // Verificar se existe uma organização
     const organization = await this.organizationRepository.findFirst();
     if (!organization) {
-      throw new Error('É necessário criar uma organização antes de criar o administrador');
+      throw new Error(
+        'É necessário criar uma organização antes de criar o administrador',
+      );
     }
 
     // Validar CPF
@@ -57,7 +67,9 @@ export class SetupService {
     }
 
     // Verificar se o CPF já existe
-    const existingUser = await this.userRepository.findByCpf(createFirstAdminDto.cpf);
+    const existingUser = await this.userRepository.findByCpf(
+      createFirstAdminDto.cpf,
+    );
     if (existingUser) {
       throw new Error('CPF já cadastrado');
     }
@@ -75,4 +87,4 @@ export class SetupService {
 
     return await this.userRepository.create(admin);
   }
-} 
+}

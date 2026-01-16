@@ -18,4 +18,4 @@ import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-orga
     },
   ],
 })
-export class SetupModule {} 
+export class SetupModule {}

@@ -27,7 +27,7 @@ export class Subscription {
     public status: string,
     public organizationCnpj: string,
     public organization?: Organization[],
-    public payments?: Payment[]
+    public payments?: Payment[],
   ) {}
 
   static create(data: {
@@ -54,7 +54,7 @@ export class Subscription {
       data.status,
       data.organizationCnpj,
       data.organization,
-      data.payments
+      data.payments,
     );
   }
 }

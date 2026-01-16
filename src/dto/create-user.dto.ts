@@ -1,16 +1,24 @@
-import { IsString, IsNotEmpty, MinLength, IsEnum, IsBoolean, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  IsEnum,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TransformCPF, TransformCNPJ } from '../transformers/document-transformers';
-import { UserRole } from "@prisma/client";
+import {
+  TransformCPF,
+  TransformCNPJ,
+} from '../transformers/document-transformers';
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'CPF do usuário (aceita formatação: XXX.XXX.XXX-XX ou XXXXXXXXXXX). Exemplo válido: 123.456.789-09',
+    description:
+      'CPF do usuário (aceita formatação: XXX.XXX.XXX-XX ou XXXXXXXXXXX). Exemplo válido: 123.456.789-09',
     example: '123.456.789-09',
-    examples: [
-      '123.456.789-09',
-      '12345678909'
-    ]
+    examples: ['123.456.789-09', '12345678909'],
   })
   @IsString()
   @IsNotEmpty()
@@ -19,7 +27,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'Nome completo do usuário',
-    example: 'João Silva'
+    example: 'João Silva',
   })
   @IsString()
   @IsNotEmpty()
@@ -28,7 +36,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: 'Senha do usuário (mínimo 6 caracteres)',
     example: 'senha123',
-    minLength: 6
+    minLength: 6,
   })
   @IsString()
   @IsNotEmpty()
@@ -36,12 +44,10 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    description: 'CNPJ da organização (aceita formatação: XX.XXX.XXX/XXXX-XX ou XXXXXXXXXXXXXX). Exemplo válido: 60.301.979/0001-60',
+    description:
+      'CNPJ da organização (aceita formatação: XX.XXX.XXX/XXXX-XX ou XXXXXXXXXXXXXX). Exemplo válido: 60.301.979/0001-60',
     example: '60.301.979/0001-60',
-    examples: [
-      '60.301.979/0001-60',
-      '60301979000160'
-    ]
+    examples: ['60.301.979/0001-60', '60301979000160'],
   })
   @IsString()
   @IsNotEmpty()
@@ -50,7 +56,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'Role do usuário',
-    example: UserRole.USER
+    example: UserRole.USER,
   })
   @IsEnum(UserRole)
   @IsNotEmpty()
@@ -58,7 +64,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'Foto do usuário',
-    example: 'https://example.com/picture.png'
+    example: 'https://example.com/picture.png',
   })
   @IsString()
   @IsOptional()
@@ -66,9 +72,9 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'Se o usuário está ativo',
-    example: true
+    example: true,
   })
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
-} 
+}

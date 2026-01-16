@@ -14,7 +14,7 @@ export class UpdateOrganizationDto {
 
   @ApiProperty({
     description: 'Email da organização',
-    example: 'empresaltds@exemple.com'
+    example: 'empresaltds@exemple.com',
   })
   @IsString()
   @IsOptional()
@@ -22,7 +22,7 @@ export class UpdateOrganizationDto {
 
   @ApiProperty({
     description: 'Contato da organização',
-    example: '88 99999-9999'
+    example: '88 99999-9999',
   })
   @IsString()
   @IsOptional()

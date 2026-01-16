@@ -24,7 +24,7 @@ import { AuthModule } from '../auth/auth.module';
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,
-    }
-  ]
+    },
+  ],
 })
-export class UserModule {} 
+export class UserModule {}

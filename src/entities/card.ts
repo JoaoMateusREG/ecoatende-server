@@ -1,18 +1,18 @@
-import { Organization } from "./organization";
-import { Service } from "./service";
-import { User } from "./user";
+import { Organization } from './organization';
+import { Service } from './service';
+import { User } from './user';
 
 export enum CardStatus {
-  WAITING = "WAITING",
-  CALLED = "CALLED",
-  IN_ATTENDANCE = "IN_ATTENDANCE",
-  FINISHED = "FINISHED"
+  WAITING = 'WAITING',
+  CALLED = 'CALLED',
+  IN_ATTENDANCE = 'IN_ATTENDANCE',
+  FINISHED = 'FINISHED',
 }
 
 export enum CardPriority {
-  NORMAL = "NORMAL",
-  PREFERENTIAL = "PREFERENTIAL",
-  URGENT = "URGENT"
+  NORMAL = 'NORMAL',
+  PREFERENTIAL = 'PREFERENTIAL',
+  URGENT = 'URGENT',
 }
 
 export interface Card {
@@ -47,7 +47,7 @@ export class Card {
     public userCpf?: string,
     public organization?: Organization,
     public service?: Service,
-    public user?: User
+    public user?: User,
   ) {}
 
   static create(data: {
@@ -80,7 +80,7 @@ export class Card {
       data.userCpf,
       data.organization,
       data.service,
-      data.user
+      data.user,
     );
   }
-} 
+}

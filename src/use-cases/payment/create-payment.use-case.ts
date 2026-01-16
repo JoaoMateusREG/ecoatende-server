@@ -7,7 +7,8 @@ import type { OrganizationRepository } from '../../repositories/organization.rep
 export class CreatePaymentUseCase {
   constructor(
     @Inject('PaymentRepository') private paymentRepository: PaymentRepository,
-    @Inject('OrganizationRepository') private organizationRepository: OrganizationRepository,
+    @Inject('OrganizationRepository')
+    private organizationRepository: OrganizationRepository,
   ) {}
 
   async execute(createPaymentDto: CreatePaymentDto): Promise<Payment> {

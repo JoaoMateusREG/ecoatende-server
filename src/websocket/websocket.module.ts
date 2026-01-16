@@ -8,4 +8,4 @@ import { SessionService } from '../auth/session.service';
   providers: [WebsocketGateway, SessionService],
   exports: [WebsocketGateway],
 })
-export class WebsocketModule {} 
+export class WebsocketModule {}

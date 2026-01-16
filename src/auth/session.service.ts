@@ -50,6 +50,19 @@ export class SessionService {
   }
 
   /**
+   * Retorna os dados da sessao pelo CPF
+   */
+  async cpfIdentification(cpf: string): Promise<SessionData | null> {
+    const session = this.sessions.get(cpf);
+    
+    if (!session) {
+      return null;
+    }
+
+    return session;
+  }
+
+    /**
    * Valida uma sessão e retorna os dados se válida
    */
   async validateSession(sessionId: string): Promise<SessionData | null> {

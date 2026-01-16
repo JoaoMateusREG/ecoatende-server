@@ -1,4 +1,4 @@
-import { Service } from "../entities/service";
+import { Service } from '../entities/service';
 
 export interface ServiceRepository {
   create(service: Service): Promise<Service>;
@@ -11,4 +11,4 @@ export interface ServiceRepository {
   findActive(): Promise<Service[]>;
   associateUsers(serviceId: number, userCpfs: string[]): Promise<void>;
   mapToEntity(data: any): Service;
-} 
+}

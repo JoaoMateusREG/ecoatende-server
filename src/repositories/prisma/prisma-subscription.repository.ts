@@ -1,8 +1,7 @@
-import { prisma } from "src/infra/prisma/client";
-import { SubscriptionRepository } from "../subscription.repository";
-import { Subscription } from "../../entities/subscription";
-import { Organization } from "src/entities/organization";
-import { Payment } from "src/entities/payment";
+import { prisma } from '../../infra/prisma/client';
+import { SubscriptionRepository } from '../subscription.repository';
+import { Subscription } from '../../entities/subscription';
+import { Payment } from '../../entities/payment';
 
 export class PrismaSubscriptionRepository implements SubscriptionRepository {
   async create(subscription: Subscription): Promise<Subscription> {
@@ -96,37 +95,39 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
       status: data.status,
       organizationCnpj: data.organizationCnpj,
       organization: data.organization,
-      payments: data.payments?.map((payment: any) => 
+      payments: data.payments?.map((payment: any) =>
         Payment.create({
-        id: payment.id,
-        dateCreated: payment.dateCreated,
-        customer: payment.customer,
-        organizationCnpj: payment.organizationCnpj,
-        subscription: payment.subscription?.map((subsctiption: any) => 
-          Subscription.create ({
-          id: subsctiption.id,
-          dateCreated: subsctiption.dateCreated,
-          customer: subsctiption.customer,
-          value: subsctiption.value,
-          nextDueDate: subsctiption.nextDueDate,
-          cycle: subsctiption.cycle,
-          billingType: subsctiption.billingType,
-          status: subsctiption.status,
-          organizationCnpj: subsctiption.organizationCnpj,
+          id: payment.id,
+          dateCreated: payment.dateCreated,
+          customer: payment.customer,
+          organizationCnpj: payment.organizationCnpj,
+          subscription: payment.subscription?.map((subsctiption: any) =>
+            Subscription.create({
+              id: subsctiption.id,
+              dateCreated: subsctiption.dateCreated,
+              customer: subsctiption.customer,
+              value: subsctiption.value,
+              nextDueDate: subsctiption.nextDueDate,
+              cycle: subsctiption.cycle,
+              billingType: subsctiption.billingType,
+              status: subsctiption.status,
+              organizationCnpj: subsctiption.organizationCnpj,
+            }),
+          ),
+          subscriptionId: payment.subscriptionId,
+          dueDate: payment.dueDate,
+          originalDueDate: payment.originalDueDate,
+          value: payment.value,
+          netValue: payment.netValue,
+          originalValue: payment.originalValue
+            ? payment.originalValue
+            : undefined,
+          billingType: payment.billingType,
+          status: payment.status,
+          invoiceUrl: payment.invoiceUrl,
+          transactionReceiptUrl: payment.transactionReceiptUrl,
         }),
       ),
-        subscriptionId: payment.subscriptionId,
-        dueDate: payment.dueDate,
-        originalDueDate: payment.originalDueDate,
-        value: payment.value,
-        netValue: payment.netValue,
-        originalValue: payment.originalValue? payment.originalValue : undefined,
-        billingType: payment.billingType,
-        status: payment.status,
-        invoiceUrl: payment.invoiceUrl,
-        transactionReceiptUrl: payment.transactionReceiptUrl,
-      }),
-    ),
     });
   }
 }
