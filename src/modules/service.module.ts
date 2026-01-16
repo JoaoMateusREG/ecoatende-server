@@ -36,7 +36,7 @@ import { AuthModule } from '../auth/auth.module';
     {
       provide: 'CardRepository',
       useClass: PrismaCardRepository,
-    }
-  ]
+    },
+  ],
 })
-export class ServiceModule {} 
+export class ServiceModule {}

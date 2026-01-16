@@ -2,7 +2,7 @@ import { prisma } from '../../infra/prisma/client';
 import { PaymentRepository } from '../payment.repository';
 import { Payment } from '../../entities/payment';
 import { Subscription } from '../../entities/subscription';
-import { Organization } from 'src/entities/organization';
+import { Organization } from '../../entities/organization';
 
 export class PrismaPaymentsRepository implements PaymentRepository {
   async create(payment: Payment): Promise<Payment> {
@@ -19,7 +19,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
         netValue: payment.netValue,
         billingType: payment.billingType,
         status: payment.status,
-        invoiceUrl:payment.invoiceUrl,
+        invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       },
     });
@@ -36,7 +36,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
         netValue: payment.netValue,
         billingType: payment.billingType,
         status: payment.status,
-        invoiceUrl:payment.invoiceUrl,
+        invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       },
     });
@@ -80,28 +80,29 @@ export class PrismaPaymentsRepository implements PaymentRepository {
       id: data.id,
       dateCreated: data.dateCreated,
       customer: data.customer,
-      organization: data.organization?.map((organization:any) => 
-      Organization.create({
-        cnpj: organization.cnpj,
-        name: organization.name,
-        email: organization.email,
-        phone: organization.phone,
-        customerId: organization.customerId,
-      })),
+      organization: data.organization?.map((organization: any) =>
+        Organization.create({
+          cnpj: organization.cnpj,
+          name: organization.name,
+          email: organization.email,
+          phone: organization.phone,
+          customerId: organization.customerId,
+        }),
+      ),
       organizationCnpj: data.organizationCnpj,
-      subscription: data.subscription?.map((subsctiption: any) => 
-        Subscription.create ({
-        id: subsctiption.id,
-        dateCreated: subsctiption.dateCreated,
-        customer: subsctiption.customer,
-        value: subsctiption.value,
-        nextDueDate: subsctiption.nextDueDate,
-        cycle: subsctiption.cycle,
-        billingType: subsctiption.billingType,
-        status: subsctiption.status,
-        organizationCnpj: subsctiption.organizationCnpj,
-      }),
-    ),
+      subscription: data.subscription?.map((subsctiption: any) =>
+        Subscription.create({
+          id: subsctiption.id,
+          dateCreated: subsctiption.dateCreated,
+          customer: subsctiption.customer,
+          value: subsctiption.value,
+          nextDueDate: subsctiption.nextDueDate,
+          cycle: subsctiption.cycle,
+          billingType: subsctiption.billingType,
+          status: subsctiption.status,
+          organizationCnpj: subsctiption.organizationCnpj,
+        }),
+      ),
       subscriptionId: data.subscriptionId,
       dueDate: data.dueDate,
       originalDueDate: data.originalDueDate,

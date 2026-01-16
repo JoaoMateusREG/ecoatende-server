@@ -4,7 +4,6 @@ import type { UserRepository } from '../repositories/user.repository';
 import { LoginDto } from './dto/login.dto';
 import { SessionService } from './session.service';
 import type { PaymentRepository } from '../repositories/payment.repository';
-import { Payment } from 'src/entities/payment';
 
 export interface LoginResponse {
   sessionId: string;

@@ -52,11 +52,15 @@ async function bootstrap() {
   const port = process.env.PORT ?? 9868;
   const host = process.env.HOST ?? '0.0.0.0';
   await app.listen(port, host);
-  
+
   console.log(`🚀 Servidor rodando em http://${host}:${port}`);
-  console.log(`📡 WebSocket disponível em: ws://${host}:${port}/ecoatende/websocket`);
+  console.log(
+    `📡 WebSocket disponível em: ws://${host}:${port}/ecoatende/websocket`,
+  );
   console.log(`📚 Swagger disponível em: http://${host}:${port}/api`);
 }
 bootstrap();
 
-export function apiCall(route, body = {}, method = 'GET') {console.log(route, body, method)}
+export function apiCall(route, body = {}, method = 'GET') {
+  console.log(route, body, method);
+}

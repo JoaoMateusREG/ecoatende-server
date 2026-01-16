@@ -1,6 +1,6 @@
-import { Service } from "./service";
-import { Organization } from "./organization";
-import { Card } from "./card";
+import { Service } from './service';
+import { Organization } from './organization';
+import { Card } from './card';
 
 export interface User {
   cpf: string;
@@ -26,7 +26,7 @@ export class User {
     public cards?: Card[],
     public picture?: string,
     public isActive?: boolean,
-    public organization?: Organization
+    public organization?: Organization,
   ) {}
 
   static create(data: {
@@ -51,7 +51,7 @@ export class User {
       data.cards,
       data.picture,
       data.isActive,
-      data.organization
+      data.organization,
     );
   }
-} 
+}

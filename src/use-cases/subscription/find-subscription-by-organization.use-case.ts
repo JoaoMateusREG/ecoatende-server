@@ -7,7 +7,7 @@ export class FindSubscriptionByOrganizationUseCase {
     @Inject('SubscriptionRepository')
     private subscriptionRepository: SubscriptionRepository,
   ) {}
-    async execute(organizationCnpj: string): Promise<Subscription[] | null> {
-        return this.subscriptionRepository.findByOrganization(organizationCnpj);
-            }
-        }
+  async execute(organizationCnpj: string): Promise<Subscription[] | null> {
+    return this.subscriptionRepository.findByOrganization(organizationCnpj);
+  }
+}

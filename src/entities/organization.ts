@@ -1,16 +1,16 @@
-import { User } from "./user";
-import { Card } from "./card";
-import { Service } from "./service";
-import { Subscription } from "./subscription";
-import { Payment } from "./payment";
+import { User } from './user';
+import { Card } from './card';
+import { Service } from './service';
+import { Subscription } from './subscription';
+import { Payment } from './payment';
 
 export interface Organization {
   cnpj: string;
   name: string;
   email?: string;
   phone?: string;
-  creationDate?: Date,
-  customerId?: string,
+  creationDate?: Date;
+  customerId?: string;
   subscription?: Subscription[];
   users?: User[];
   cards?: Card[];
@@ -34,7 +34,7 @@ export class Organization {
     public services?: Service[],
     public payments?: Payment[],
     public active?: boolean,
-    public logo?: string
+    public logo?: string,
   ) {}
 
   static create(data: {
@@ -44,7 +44,7 @@ export class Organization {
     phone?: string;
     customerId?: string;
     subscription?: Subscription[];
-    creationDate?: Date,
+    creationDate?: Date;
     users?: User[];
     cards?: Card[];
     services?: Service[];
@@ -65,7 +65,7 @@ export class Organization {
       data.services,
       data.payments,
       data.active,
-      data.logo
+      data.logo,
     );
   }
-} 
+}

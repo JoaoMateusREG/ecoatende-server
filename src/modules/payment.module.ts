@@ -6,7 +6,7 @@ import { FindPaymentByCustomerUseCase } from '../use-cases/payment/find-by-custo
 import { FindPaymentByIdUseCase } from '../use-cases/payment/find-payment-by-id.use-case';
 import { FindPaymentBySubscriptionUseCase } from '../use-cases/payment/find-payment-by-subscription.use-case';
 import { PaymentController } from '../controllers/payment.controller';
-import { PrismaPaymentsRepository } from 'src/repositories/prisma/prisma-payments.repository';
+import { PrismaPaymentsRepository } from '../repositories/prisma/prisma-payments.repository';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-organization.repository';
 
@@ -26,8 +26,8 @@ import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-orga
     },
     {
       provide: 'OrganizationRepository',
-      useClass: PrismaOrganizationRepository
-    }
-  ]
+      useClass: PrismaOrganizationRepository,
+    },
+  ],
 })
-export class PaymentModule {} 
+export class PaymentModule {}

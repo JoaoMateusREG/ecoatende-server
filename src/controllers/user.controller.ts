@@ -44,7 +44,15 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar novo usuário' })
+  @ApiOperation({
+    summary: 'Criar novo usuário',
+    description: `
+      Permissões:
+      - ADMIN: pode criar usuários em qualquer organização
+      - ORGANIZATION_ADMIN: pode criar usuários apenas na própria organização
+      - USER: não pode criar usuários
+    `,
+  })
   @ApiResponse({
     status: 201,
     description: 'Usuário criado com sucesso',
@@ -59,9 +67,16 @@ export class UserController {
     },
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
-  async create(@Body() createUserDto: CreateUserDto) {
+  @ApiResponse({ status: 403, description: 'Sem permissão' })
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
     try {
-      const user = await this.createUserUseCase.execute(createUserDto);
+      const user = await this.createUserUseCase.execute(
+        createUserDto,
+        currentUser.cpf,
+      );
       return {
         cpf: user.cpf,
         name: user.name,
@@ -94,7 +109,15 @@ export class UserController {
   }
 
   @Put(':cpf')
-  @ApiOperation({ summary: 'Atualizar usuário' })
+  @ApiOperation({
+    summary: 'Atualizar usuário',
+    description: `
+      Permissões:
+      - ADMIN: pode atualizar qualquer usuário
+      - ORGANIZATION_ADMIN: pode atualizar apenas usuários da própria organização
+      - USER: pode atualizar apenas a si mesmo
+    `,
+  })
   @ApiParam({
     name: 'cpf',
     description: 'CPF do usuário',
@@ -102,12 +125,14 @@ export class UserController {
   })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  @ApiResponse({ status: 403, description: 'Sem permissão' })
   async update(
     @Param('cpf') cpf: string,
     @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: CurrentUserType,
   ) {
     try {
-      const user = await this.getUserUseCase.execute(cpf);
+      const user = await this.getUserUseCase.execute(cpf, currentUser.cpf);
       if (!user) {
         throw new HttpException(
           { error: 'Usuário não encontrado' },
@@ -115,11 +140,14 @@ export class UserController {
         );
       }
 
-      const updatedUser = await this.updateUserUseCase.execute({
-        ...user,
-        ...updateUserDto,
-        cpf,
-      });
+      const updatedUser = await this.updateUserUseCase.execute(
+        {
+          ...user,
+          ...updateUserDto,
+          cpf,
+        },
+        currentUser.cpf,
+      );
 
       return updatedUser;
     } catch (error: any) {
@@ -132,27 +160,47 @@ export class UserController {
 
   @Delete(':cpf')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Deletar usuário' })
+  @ApiOperation({
+    summary: 'Deletar usuário',
+    description: `
+      Permissões:
+      - ADMIN: pode deletar qualquer usuário
+      - ORGANIZATION_ADMIN: pode deletar apenas usuários da própria organização
+      - USER: não pode deletar usuários
+    `,
+  })
   @ApiParam({
     name: 'cpf',
     description: 'CPF do usuário',
     example: '123.456.789-01',
   })
   @ApiResponse({ status: 204, description: 'Usuário deletado com sucesso' })
-  async remove(@Param('cpf') cpf: string) {
+  @ApiResponse({ status: 403, description: 'Sem permissão' })
+  async remove(
+    @Param('cpf') cpf: string,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
     try {
-      await this.deleteUserUseCase.execute(cpf);
+      await this.deleteUserUseCase.execute(cpf, currentUser.cpf);
     } catch (error: any) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todos os usuários' })
+  @ApiOperation({
+    summary: 'Listar usuários',
+    description: `
+      Permissões:
+      - ADMIN: retorna todos os usuários
+      - ORGANIZATION_ADMIN: retorna apenas usuários da própria organização
+      - USER: retorna apenas o próprio usuário
+    `,
+  })
   @ApiResponse({ status: 200, description: 'Lista de usuários' })
-  async findAll() {
+  async findAll(@CurrentUser() currentUser: CurrentUserType) {
     try {
-      const users = await this.listUsersUseCase.execute();
+      const users = await this.listUsersUseCase.execute(currentUser.cpf);
       return users;
     } catch (error: any) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
@@ -160,15 +208,25 @@ export class UserController {
   }
 
   @Get('organization/:organizationCnpj')
-  @ApiOperation({ summary: 'Buscar usuários por organização' })
+  @ApiOperation({
+    summary: 'Buscar usuários por organização',
+    description: `
+      Permissões:
+      - ADMIN: pode buscar usuários de qualquer organização
+      - ORGANIZATION_ADMIN: pode buscar apenas usuários da própria organização
+      - USER: não pode usar esta rota
+    `,
+  })
   @ApiParam({
     name: 'organizationCnpj',
     description: 'CNPJ da organização',
     example: '12.345.678/0001-90',
   })
   @ApiResponse({ status: 200, description: 'Lista de usuários da organização' })
+  @ApiResponse({ status: 403, description: 'Sem permissão' })
   async findByOrganization(
     @Param('organizationCnpj') organizationCnpj: string,
+    @CurrentUser() currentUser: CurrentUserType,
   ) {
     try {
       const users =
@@ -180,7 +238,15 @@ export class UserController {
   }
 
   @Get(':cpf')
-  @ApiOperation({ summary: 'Buscar usuário por CPF' })
+  @ApiOperation({
+    summary: 'Buscar usuário por CPF',
+    description: `
+      Permissões:
+      - ADMIN: pode buscar qualquer usuário
+      - ORGANIZATION_ADMIN: pode buscar apenas usuários da própria organização
+      - USER: pode buscar apenas a si mesmo
+    `,
+  })
   @ApiParam({
     name: 'cpf',
     description: 'CPF do usuário',
@@ -188,9 +254,13 @@ export class UserController {
   })
   @ApiResponse({ status: 200, description: 'Usuário encontrado' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async findOne(@Param('cpf') cpf: string) {
+  @ApiResponse({ status: 403, description: 'Sem permissão' })
+  async findOne(
+    @Param('cpf') cpf: string,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
     try {
-      const user = await this.getUserUseCase.execute(cpf);
+      const user = await this.getUserUseCase.execute(cpf, currentUser.cpf);
       if (!user) {
         throw new HttpException(
           { error: 'Usuário não encontrado' },

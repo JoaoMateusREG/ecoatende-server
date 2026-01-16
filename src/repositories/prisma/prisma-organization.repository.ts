@@ -3,8 +3,8 @@ import { OrganizationRepository } from '../organization.repository';
 import { Organization } from '../../entities/organization';
 import { User } from '../../entities/user';
 import { Service } from '../../entities/service';
-import { Payment } from 'src/entities/payment';
-import { Subscription } from 'src/entities/subscription';
+import { Payment } from '../../entities/payment';
+import { Subscription } from '../../entities/subscription';
 
 export class PrismaOrganizationRepository implements OrganizationRepository {
   async create(organization: Organization): Promise<Organization> {
@@ -49,7 +49,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       include: {
         subscription: true,
         payments: true,
-    }
+      },
     });
 
     return organization ? this.mapToEntity(organization) : null;

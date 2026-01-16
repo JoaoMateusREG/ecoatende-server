@@ -20,8 +20,8 @@ import { FindSubscriptionByOrganizationUseCase } from '../use-cases/subscription
 import { FindSubscriptionByStatusUseCase } from '../use-cases/subscription/find-subscription-by-status.use-case';
 import type { UpdateSubscriptionGatewayDto } from '../use-cases/subscription/update-subscription.use-case';
 import type { CreateSubscriptionGatewayDto } from '../use-cases/subscription/create-subscription-gateway.use-case';
-import type { CreateSubscriptionDto } from 'src/dto/create-subscription.dto';
-import { CreateSubscriptionUseCase } from 'src/use-cases/subscription/create-subscription.use-case';
+import type { CreateSubscriptionDto } from '../dto/create-subscription.dto';
+import { CreateSubscriptionUseCase } from '../use-cases/subscription/create-subscription.use-case';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
@@ -67,17 +67,19 @@ export class SubscriptionController {
     },
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async createGateway(@Body() createSubscriptionGatewayDto: CreateSubscriptionGatewayDto) {
+  async createGateway(
+    @Body() createSubscriptionGatewayDto: CreateSubscriptionGatewayDto,
+  ) {
     try {
       const subscription = await this.createSubscriptionGatewayUseCase.execute(
         createSubscriptionGatewayDto,
       );
       return {
-      billingType: subscription.billingType,
-      cycle: subscription.cycle,
-      customer: subscription.customer,
-      value: subscription.value,
-      nextDueDate: subscription.nextDueDate,
+        billingType: subscription.billingType,
+        cycle: subscription.cycle,
+        customer: subscription.customer,
+        value: subscription.value,
+        nextDueDate: subscription.nextDueDate,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -85,75 +87,76 @@ export class SubscriptionController {
   }
 
   //rota que o webhook vai utilizar - precisa retornar sempre 200
-@Post()
-@HttpCode(HttpStatus.OK)
-@ApiOperation({ summary: 'Criar uma nova inscrição' })
-@ApiResponse({
-  status: 200,
-  description: 'Inscrição criada com sucesso.',
-  schema: {
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', example: true },
-      data: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', example: 'sub_1234567890' },
-          dateCreated: {
-            type: 'string',
-            format: 'date-time',
-            example: '2023-10-01T12:00:00Z',
+  @Post()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Criar uma nova inscrição' })
+  @ApiResponse({
+    status: 200,
+    description: 'Inscrição criada com sucesso.',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'sub_1234567890' },
+            dateCreated: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-10-01T12:00:00Z',
+            },
+            customer: { type: 'string', example: 'customer_123456' },
+            value: { type: 'number', example: 99.99 },
+            nextDueDate: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-11-01T12:00:00Z',
+            },
+            cycle: { type: 'string', example: 'monthly' },
+            billingType: { type: 'string', example: 'credit_card' },
+            status: { type: 'string', example: 'active' },
           },
-          customer: { type: 'string', example: 'customer_123456' },
-          value: { type: 'number', example: 99.99 },
-          nextDueDate: {
-            type: 'string',
-            format: 'date-time',
-            example: '2023-11-01T12:00:00Z',
-          },
-          cycle: { type: 'string', example: 'monthly' },
-          billingType: { type: 'string', example: 'credit_card' },
-          status: { type: 'string', example: 'active' },
         },
       },
     },
-  },
-})
-@ApiResponse({
-  status: 400,
-  description: 'Erro ao criar inscrição',
-  schema: {
-    type: 'object',
-    properties: {
-      success: { type: 'boolean', example: false },
-      error: { type: 'string', example: 'Mensagem de erro' },
-    },
-  },
-})
-async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto) {
-  try {
-    const subscription = await this.createSubscriptionUseCase.execute(
-      createSubscriptionDto,
-    );
-    
-    return {
-      success: true,
-      data: {
-        billingType: subscription.billingType,
-        cycle: subscription.cycle,
-        customer: subscription.customer,
-        value: subscription.value,
-        nextDueDate: subscription.nextDueDate,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao criar inscrição',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: false },
+        error: { type: 'string', example: 'Mensagem de erro' },
       },
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-    };
-  }
-}
+    },
+  })
+  async create(
+    @Body('subscription') createSubscriptionDto: CreateSubscriptionDto,
+  ) {
+    try {
+      const subscription = await this.createSubscriptionUseCase.execute(
+        createSubscriptionDto,
+      );
 
+      return {
+        success: true,
+        data: {
+          billingType: subscription.billingType,
+          cycle: subscription.cycle,
+          customer: subscription.customer,
+          value: subscription.value,
+          nextDueDate: subscription.nextDueDate,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
 
   @Put(':id')
   @HttpCode(HttpStatus.CREATED)
@@ -170,7 +173,9 @@ async create(@Body('subscription') createSubscriptionDto: CreateSubscriptionDto)
     },
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async update(@Body() updateSubscriptionGatewayDto: UpdateSubscriptionGatewayDto) {
+  async update(
+    @Body() updateSubscriptionGatewayDto: UpdateSubscriptionGatewayDto,
+  ) {
     try {
       const subscription = await this.updateSubscriptionGatewayUseCase.execute(
         updateSubscriptionGatewayDto,

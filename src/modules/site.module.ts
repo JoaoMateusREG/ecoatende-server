@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SiteOrganizationAdmController } from 'src/controllers/site.controller';
+import { SiteOrganizationAdmController } from '../controllers/site.controller';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
 import { CreateUserUseCase } from '../use-cases/user/create-user.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
@@ -22,9 +22,7 @@ import { PrismaUserRepository } from '../repositories/prisma/prisma-user.reposit
       provide: 'OrganizationRepository',
       useClass: PrismaOrganizationRepository,
     },
-    { provide: 'UserRepository', 
-      useClass: PrismaUserRepository
- },
+    { provide: 'UserRepository', useClass: PrismaUserRepository },
   ],
 })
 export class SiteOrganizationAdmModule {}

@@ -1,11 +1,17 @@
-import { IsString, IsNotEmpty, IsDateString, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
 
 export class AverageWaitTimeReportDto {
   @ApiProperty({
     description: 'Data inicial do período (YYYY-MM-DD)',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -13,7 +19,7 @@ export class AverageWaitTimeReportDto {
 
   @ApiProperty({
     description: 'Data final do período (YYYY-MM-DD)',
-    example: '2025-01-31'
+    example: '2025-01-31',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -22,7 +28,7 @@ export class AverageWaitTimeReportDto {
   @ApiProperty({
     description: 'ID do serviço (opcional)',
     example: 1,
-    required: false
+    required: false,
   })
   @IsNumber()
   @IsOptional()
@@ -32,7 +38,7 @@ export class AverageWaitTimeReportDto {
 export class AverageServiceTimeReportDto {
   @ApiProperty({
     description: 'Data inicial do período (YYYY-MM-DD)',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -40,7 +46,7 @@ export class AverageServiceTimeReportDto {
 
   @ApiProperty({
     description: 'Data final do período (YYYY-MM-DD)',
-    example: '2025-01-31'
+    example: '2025-01-31',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -49,7 +55,7 @@ export class AverageServiceTimeReportDto {
   @ApiProperty({
     description: 'ID do serviço (opcional)',
     example: 1,
-    required: false
+    required: false,
   })
   @IsNumber()
   @IsOptional()
@@ -59,7 +65,7 @@ export class AverageServiceTimeReportDto {
 export class CompletedCardsReportDto {
   @ApiProperty({
     description: 'Data inicial do período (YYYY-MM-DD)',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -67,7 +73,7 @@ export class CompletedCardsReportDto {
 
   @ApiProperty({
     description: 'Data final do período (YYYY-MM-DD)',
-    example: '2025-01-31'
+    example: '2025-01-31',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -76,7 +82,7 @@ export class CompletedCardsReportDto {
   @ApiProperty({
     description: 'ID do serviço (opcional)',
     example: 1,
-    required: false
+    required: false,
   })
   @IsNumber()
   @IsOptional()

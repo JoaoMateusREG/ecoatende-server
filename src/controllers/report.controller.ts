@@ -30,7 +30,11 @@ export class ReportController {
 
   @Get('average-wait-time/organization/:organizationCnpj')
   @ApiOperation({ summary: 'Obter tempo médio de espera das fichas' })
-  @ApiParam({ name: 'organizationCnpj', description: 'CNPJ da organização', example: '60301979000160' })
+  @ApiParam({
+    name: 'organizationCnpj',
+    description: 'CNPJ da organização',
+    example: '60301979000160',
+  })
   @ApiResponse({
     status: 200,
     description: 'Tempo médio de espera em minutos',
@@ -41,61 +45,69 @@ export class ReportController {
         organizationCnpj: { type: 'string', example: '60301979000160' },
         startDate: { type: 'string', example: '2025-01-01' },
         endDate: { type: 'string', example: '2025-01-31' },
-        serviceId: { type: 'number', example: 1, nullable: true }
-      }
-    }
+        serviceId: { type: 'number', example: 1, nullable: true },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @ApiResponse({ status: 403, description: 'Acesso negado - organização não autorizada' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - organização não autorizada',
+  })
   async getAverageWaitTime(
     @Param('organizationCnpj') organizationCnpj: string,
     @Query() query: AverageWaitTimeReportDto,
-    @CurrentSession() session: SessionData
+    @CurrentSession() session: SessionData,
   ) {
     try {
       // Valida se o usuário está acessando dados da sua própria organização
       if (organizationCnpj !== session.organizationCnpj) {
         throw new HttpException(
-          { error: 'Acesso negado - você só pode acessar dados da sua organização' },
-          HttpStatus.FORBIDDEN
+          {
+            error:
+              'Acesso negado - você só pode acessar dados da sua organização',
+          },
+          HttpStatus.FORBIDDEN,
         );
       }
 
       // Configura startDate para início do dia (00:00:00)
       const startDate = new Date(query.startDate + 'T00:00:00');
-      
+
       // Configura endDate para fim do dia (23:59:59.999)
       const endDate = new Date(query.endDate + 'T23:59:59.999');
 
-      const averageWaitTimeMinutes = await this.getAverageWaitTimeUseCase.execute(
-        organizationCnpj,
-        startDate,
-        endDate,
-        query.serviceId
-      );
+      const averageWaitTimeMinutes =
+        await this.getAverageWaitTimeUseCase.execute(
+          organizationCnpj,
+          startDate,
+          endDate,
+          query.serviceId,
+        );
 
       return {
         averageWaitTimeMinutes,
         organizationCnpj,
         startDate: query.startDate,
         endDate: query.endDate,
-        serviceId: query.serviceId || null
+        serviceId: query.serviceId || null,
       };
     } catch (error: any) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        { error: error.message },
-        HttpStatus.BAD_REQUEST
-      );
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Get('average-service-time/organization/:organizationCnpj')
   @ApiOperation({ summary: 'Obter tempo médio de atendimento das fichas' })
-  @ApiParam({ name: 'organizationCnpj', description: 'CNPJ da organização', example: '60301979000160' })
+  @ApiParam({
+    name: 'organizationCnpj',
+    description: 'CNPJ da organização',
+    example: '60301979000160',
+  })
   @ApiResponse({
     status: 200,
     description: 'Tempo médio de atendimento em minutos',
@@ -106,61 +118,69 @@ export class ReportController {
         organizationCnpj: { type: 'string', example: '60301979000160' },
         startDate: { type: 'string', example: '2025-01-01' },
         endDate: { type: 'string', example: '2025-01-31' },
-        serviceId: { type: 'number', example: 1, nullable: true }
-      }
-    }
+        serviceId: { type: 'number', example: 1, nullable: true },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @ApiResponse({ status: 403, description: 'Acesso negado - organização não autorizada' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - organização não autorizada',
+  })
   async getAverageServiceTime(
     @Param('organizationCnpj') organizationCnpj: string,
     @Query() query: AverageServiceTimeReportDto,
-    @CurrentSession() session: SessionData
+    @CurrentSession() session: SessionData,
   ) {
     try {
       // Valida se o usuário está acessando dados da sua própria organização
       if (organizationCnpj !== session.organizationCnpj) {
         throw new HttpException(
-          { error: 'Acesso negado - você só pode acessar dados da sua organização' },
-          HttpStatus.FORBIDDEN
+          {
+            error:
+              'Acesso negado - você só pode acessar dados da sua organização',
+          },
+          HttpStatus.FORBIDDEN,
         );
       }
 
       // Configura startDate para início do dia (00:00:00)
       const startDate = new Date(query.startDate + 'T00:00:00');
-      
+
       // Configura endDate para fim do dia (23:59:59.999)
       const endDate = new Date(query.endDate + 'T23:59:59.999');
 
-      const averageServiceTimeMinutes = await this.getAverageServiceTimeUseCase.execute(
-        organizationCnpj,
-        startDate,
-        endDate,
-        query.serviceId
-      );
+      const averageServiceTimeMinutes =
+        await this.getAverageServiceTimeUseCase.execute(
+          organizationCnpj,
+          startDate,
+          endDate,
+          query.serviceId,
+        );
 
       return {
         averageServiceTimeMinutes,
         organizationCnpj,
         startDate: query.startDate,
         endDate: query.endDate,
-        serviceId: query.serviceId || null
+        serviceId: query.serviceId || null,
       };
     } catch (error: any) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        { error: error.message },
-        HttpStatus.BAD_REQUEST
-      );
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Get('completed-cards-count/organization/:organizationCnpj')
   @ApiOperation({ summary: 'Obter quantidade de fichas concluídas' })
-  @ApiParam({ name: 'organizationCnpj', description: 'CNPJ da organização', example: '60301979000160' })
+  @ApiParam({
+    name: 'organizationCnpj',
+    description: 'CNPJ da organização',
+    example: '60301979000160',
+  })
   @ApiResponse({
     status: 200,
     description: 'Quantidade de fichas concluídas',
@@ -171,61 +191,69 @@ export class ReportController {
         organizationCnpj: { type: 'string', example: '60301979000160' },
         startDate: { type: 'string', example: '2025-01-01' },
         endDate: { type: 'string', example: '2025-01-31' },
-        serviceId: { type: 'number', example: 1, nullable: true }
-      }
-    }
+        serviceId: { type: 'number', example: 1, nullable: true },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @ApiResponse({ status: 403, description: 'Acesso negado - organização não autorizada' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - organização não autorizada',
+  })
   async getCompletedCardsCount(
     @Param('organizationCnpj') organizationCnpj: string,
     @Query() query: CompletedCardsReportDto,
-    @CurrentSession() session: SessionData
+    @CurrentSession() session: SessionData,
   ) {
     try {
       // Valida se o usuário está acessando dados da sua própria organização
       if (organizationCnpj !== session.organizationCnpj) {
         throw new HttpException(
-          { error: 'Acesso negado - você só pode acessar dados da sua organização' },
-          HttpStatus.FORBIDDEN
+          {
+            error:
+              'Acesso negado - você só pode acessar dados da sua organização',
+          },
+          HttpStatus.FORBIDDEN,
         );
       }
 
       // Configura startDate para início do dia (00:00:00)
       const startDate = new Date(query.startDate + 'T00:00:00');
-      
+
       // Configura endDate para fim do dia (23:59:59.999)
       const endDate = new Date(query.endDate + 'T23:59:59.999');
 
-      const completedCardsCount = await this.getCompletedCardsCountUseCase.execute(
-        organizationCnpj,
-        startDate,
-        endDate,
-        query.serviceId
-      );
+      const completedCardsCount =
+        await this.getCompletedCardsCountUseCase.execute(
+          organizationCnpj,
+          startDate,
+          endDate,
+          query.serviceId,
+        );
 
       return {
         completedCardsCount,
         organizationCnpj,
         startDate: query.startDate,
         endDate: query.endDate,
-        serviceId: query.serviceId || null
+        serviceId: query.serviceId || null,
       };
     } catch (error: any) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        { error: error.message },
-        HttpStatus.BAD_REQUEST
-      );
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Get('summary/organization/:organizationCnpj')
   @ApiOperation({ summary: 'Obter resumo completo de relatórios' })
-  @ApiParam({ name: 'organizationCnpj', description: 'CNPJ da organização', example: '60301979000160' })
+  @ApiParam({
+    name: 'organizationCnpj',
+    description: 'CNPJ da organização',
+    example: '60301979000160',
+  })
   @ApiResponse({
     status: 200,
     description: 'Resumo completo dos relatórios',
@@ -238,56 +266,62 @@ export class ReportController {
         serviceId: { type: 'number', example: 1, nullable: true },
         averageWaitTimeMinutes: { type: 'number', example: 15 },
         averageServiceTimeMinutes: { type: 'number', example: 25 },
-        completedCardsCount: { type: 'number', example: 150 }
-      }
-    }
+        completedCardsCount: { type: 'number', example: 150 },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  @ApiResponse({ status: 403, description: 'Acesso negado - organização não autorizada' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado - organização não autorizada',
+  })
   async getReportSummary(
     @Param('organizationCnpj') organizationCnpj: string,
     @Query() query: AverageWaitTimeReportDto,
-    @CurrentSession() session: SessionData
+    @CurrentSession() session: SessionData,
   ) {
     try {
       // Valida se o usuário está acessando dados da sua própria organização
       if (organizationCnpj !== session.organizationCnpj) {
         throw new HttpException(
-          { error: 'Acesso negado - você só pode acessar dados da sua organização' },
-          HttpStatus.FORBIDDEN
+          {
+            error:
+              'Acesso negado - você só pode acessar dados da sua organização',
+          },
+          HttpStatus.FORBIDDEN,
         );
       }
 
       // Configura startDate para início do dia (00:00:00)
       const startDate = new Date(query.startDate + 'T00:00:00');
-      
+
       // Configura endDate para fim do dia (23:59:59.999)
       const endDate = new Date(query.endDate + 'T23:59:59.999');
 
       const [
         averageWaitTimeMinutes,
         averageServiceTimeMinutes,
-        completedCardsCount
+        completedCardsCount,
       ] = await Promise.all([
         this.getAverageWaitTimeUseCase.execute(
           organizationCnpj,
           startDate,
           endDate,
-          query.serviceId
+          query.serviceId,
         ),
         this.getAverageServiceTimeUseCase.execute(
           organizationCnpj,
           startDate,
           endDate,
-          query.serviceId
+          query.serviceId,
         ),
         this.getCompletedCardsCountUseCase.execute(
           organizationCnpj,
           startDate,
           endDate,
-          query.serviceId
-        )
+          query.serviceId,
+        ),
       ]);
 
       return {
@@ -297,16 +331,13 @@ export class ReportController {
         serviceId: query.serviceId || null,
         averageWaitTimeMinutes,
         averageServiceTimeMinutes,
-        completedCardsCount
+        completedCardsCount,
       };
     } catch (error: any) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        { error: error.message },
-        HttpStatus.BAD_REQUEST
-      );
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
 }

@@ -1,19 +1,14 @@
-import { 
-  Controller, 
-  Post, 
-  Body, 
+import {
+  Controller,
+  Post,
+  Body,
   HttpStatus,
   HttpCode,
   HttpException,
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBody
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
 import { FindUserByCpfUseCase } from '../use-cases/user/find-user-by-cpf.use-case';
@@ -21,7 +16,6 @@ import { CreateUserUseCase } from '../use-cases/user/create-user.use-case';
 import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
-import { User } from 'src/entities/user';
 
 class OrganizationAndAdmDto {
   organization: CreateOrganizationDto;
@@ -54,38 +48,55 @@ export class SiteOrganizationAdmController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar nova organização e ADM pelo site (com registro no Gateway)' })
+  @ApiOperation({
+    summary: 'Criar nova organização e ADM pelo site (com registro no Gateway)',
+  })
   @ApiBody({ type: OrganizationAndAdmDto })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Organização e ADM criados com sucesso',
-    type: Object 
+    type: Object,
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
-  @ApiResponse({ status: 500, description: 'Erro interno no servidor ou Gateway' })
+  @ApiResponse({
+    status: 500,
+    description: 'Erro interno no servidor ou Gateway',
+  })
   async create(
-    @Body() organizationAndAdm: OrganizationAndAdmDto
+    @Body() organizationAndAdm: OrganizationAndAdmDto,
   ): Promise<CreateOrganizationResponse> {
     try {
-      const existingOrganization = await this.findOrganizationByCnpjUseCase.execute(organizationAndAdm.organization.cnpj);
+      const existingOrganization =
+        await this.findOrganizationByCnpjUseCase.execute(
+          organizationAndAdm.organization.cnpj,
+        );
 
       if (existingOrganization) {
-        throw new BadRequestException(`Organização com CNPJ ${organizationAndAdm.organization.cnpj} já existe. Faça login ou entre em contato com o suporte.`);
+        throw new BadRequestException(
+          `Organização com CNPJ ${organizationAndAdm.organization.cnpj} já existe. Faça login ou entre em contato com o suporte.`,
+        );
       }
 
-      const existingUser = await this.findUserByCnpjUseCase.execute(organizationAndAdm.adm.cpf);
+      const existingUser = await this.findUserByCnpjUseCase.execute(
+        organizationAndAdm.adm.cpf,
+      );
 
       if (existingUser) {
-        throw new BadRequestException(`Usuário com o CPF ${organizationAndAdm.adm.cpf} já existe. Faça login ou entre em contato com o suporte.`);
+        throw new BadRequestException(
+          `Usuário com o CPF ${organizationAndAdm.adm.cpf} já existe. Faça login ou entre em contato com o suporte.`,
+        );
       }
 
       // 1. Registrar organização no Gateway
-      const gatewayResponse = await this.createdOrganizationGatewayUseCase.execute(
-        organizationAndAdm.organization,
-      );
+      const gatewayResponse =
+        await this.createdOrganizationGatewayUseCase.execute(
+          organizationAndAdm.organization,
+        );
 
       if (!gatewayResponse?.id) {
-        throw new InternalServerErrorException('Gateway não retornou um customerId válido');
+        throw new InternalServerErrorException(
+          'Gateway não retornou um customerId válido',
+        );
       }
 
       const customerId = gatewayResponse.id;
@@ -101,34 +112,44 @@ export class SiteOrganizationAdmController {
       );
 
       if (!organization?.cnpj) {
-        throw new InternalServerErrorException('Falha ao criar organização no banco de dados');
+        throw new InternalServerErrorException(
+          'Falha ao criar organização no banco de dados',
+        );
       }
 
-      const adm = await this.createUserUseCase.execute(organizationAndAdm.adm);
+      const organizationAdm = await this.createUserUseCase.execute({
+        ...organizationAndAdm.adm,
+        role: 'ORGANIZATION_ADMIN',
+      });
 
       return {
         organization: {
           cnpj: organization.cnpj,
           name: organization.name,
-          customerId: organization.customerId? organization.customerId : '',
+          customerId: organization.customerId ? organization.customerId : '',
         },
         adm: {
-          cpf: adm.cpf,
-          name: adm.name,
+          cpf: organizationAdm.cpf,
+          name: organizationAdm.name,
         },
         message: 'Organização e ADM criados com sucesso',
       };
-      
     } catch (error: any) {
-      console.error('Erro no fluxo de criação da organização e do ADM:', error.message);
-      
+      console.error(
+        'Erro no fluxo de criação da organização e do ADM:',
+        error.message,
+      );
+
       // Re-lançar exceções do NestJS sem modificar
       if (error instanceof HttpException) {
         throw error;
       }
 
       // Tratar erros de validação
-      if (error.message?.includes('validation') || error.message?.includes('invalid')) {
+      if (
+        error.message?.includes('validation') ||
+        error.message?.includes('invalid')
+      ) {
         throw new BadRequestException({
           error: 'Dados inválidos',
           details: error.message,

@@ -1,4 +1,4 @@
-import { Subscription } from "../entities/subscription";
+import { Subscription } from '../entities/subscription';
 
 export interface SubscriptionRepository {
   create(subscription: Subscription): Promise<Subscription>;

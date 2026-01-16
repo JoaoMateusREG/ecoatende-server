@@ -19,14 +19,14 @@ export interface GatewaySubscriptionWebhook {
 }
 
 export interface GatewayCreateSubscription {
-    billingType: string;
-    cycle: string;
-    customer: string;
-    value: number;
-    nextDueDate: string;
-    description?: string;
-    callback: {
-        successUrl: string;
-        autoRedirect: boolean;
-    };
+  billingType: string;
+  cycle: string;
+  customer: string;
+  value: number;
+  nextDueDate: string;
+  description?: string;
+  callback: {
+    successUrl: string;
+    autoRedirect: boolean;
+  };
 }

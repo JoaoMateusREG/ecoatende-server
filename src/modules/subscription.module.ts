@@ -3,14 +3,14 @@ import { CreateSubscriptionUseCase } from '../use-cases/subscription/create-subs
 import { CreateSubscriptionGatewayUseCase } from '../use-cases/subscription/create-subscription-gateway.use-case';
 import { UpdateSubscriptionGatewayUseCase } from '../use-cases/subscription/update-subscription.use-case';
 import { DeleteSubscriptionUseCase } from '../use-cases/subscription/delete-subscription.use-case';
-import { FindSubscriptionByIdUseCase } from 'src/use-cases/subscription/find-subscription-by-id.use-case';
-import { FindSubscriptionByCustomerUseCase } from 'src/use-cases/subscription/find-subscription-by-customer.use-case';
-import { FindSubscriptionByOrganizationUseCase } from 'src/use-cases/subscription/find-subscription-by-organization.use-case';
-import { FindSubscriptionByStatusUseCase } from 'src/use-cases/subscription/find-subscription-by-status.use-case';
+import { FindSubscriptionByIdUseCase } from '../use-cases/subscription/find-subscription-by-id.use-case';
+import { FindSubscriptionByCustomerUseCase } from '../use-cases/subscription/find-subscription-by-customer.use-case';
+import { FindSubscriptionByOrganizationUseCase } from '../use-cases/subscription/find-subscription-by-organization.use-case';
+import { FindSubscriptionByStatusUseCase } from '../use-cases/subscription/find-subscription-by-status.use-case';
 import { PrismaSubscriptionRepository } from '../repositories/prisma/prisma-subscription.repository';
 import { SubscriptionController } from '../controllers/subscription.controller';
 import { AuthModule } from '../auth/auth.module';
-import { PrismaOrganizationRepository } from 'src/repositories/prisma/prisma-organization.repository';
+import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-organization.repository';
 
 @Module({
   imports: [AuthModule],
@@ -30,8 +30,8 @@ import { PrismaOrganizationRepository } from 'src/repositories/prisma/prisma-org
     },
     {
       provide: 'OrganizationRepository',
-      useClass: PrismaOrganizationRepository
-    }
-  ]
+      useClass: PrismaOrganizationRepository,
+    },
+  ],
 })
-export class SubscriptionModule {} 
+export class SubscriptionModule {}

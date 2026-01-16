@@ -25,6 +25,7 @@ enum CardPriority {
 
 enum UserRole {
   ADMIN
+  ORGANIZATION_ADMIN
   USER
 }
 
@@ -82,7 +83,7 @@ model Card {
   datehourConcluded DateTime?
   organization      Organization @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj  String
-  service           Service      @relation(fields: [serviceId], references: [id])
+  service           Service      @relation(fields: [serviceId], references: [id],  onDelete: Cascade)
   serviceId         Int
   user              User?        @relation("UserCards", fields: [userCpf], references: [cpf])
   userCpf           String?

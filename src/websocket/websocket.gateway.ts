@@ -38,7 +38,7 @@ interface WebSocketMessage {
       'http://www.atende.eco.br',
       'https://www.atende.eco.br',
       'http://atende.eco.br',
-      'https://atende.eco.br'
+      'https://atende.eco.br',
     ],
     credentials: true,
   },
@@ -63,7 +63,7 @@ export class WebsocketGateway
   async handleConnection(client: Socket) {
     const connectionId = this.generateConnectionId();
     const sessionId = this.extractSessionId(client);
-    
+
     // Valida a sessão se fornecida
     let session: SessionData | null = null;
     if (sessionId) {
@@ -74,7 +74,9 @@ export class WebsocketGateway
           await this.sessionService.renewSession(sessionId);
         }
       } catch (error) {
-        this.logger.warn(`Sessão inválida para conexão ${connectionId}: ${sessionId}`);
+        this.logger.warn(
+          `Sessão inválida para conexão ${connectionId}: ${sessionId}`,
+        );
       }
     }
 
@@ -84,12 +86,14 @@ export class WebsocketGateway
       connectedAt: new Date(),
       sessionId: session?.sessionId,
       cpf: session?.cpf,
-      organizationCnpj: session?.organizationCnpj
+      organizationCnpj: session?.organizationCnpj,
     };
-    
+
     this.conexoes.push(conexao);
 
-    this.logger.log(`🔗 Nova conexão estabelecida: ${connectionId}${session ? ` (usuário: ${session.cpf})` : ' (não autenticado)'}`);
+    this.logger.log(
+      `🔗 Nova conexão estabelecida: ${connectionId}${session ? ` (usuário: ${session.cpf})` : ' (não autenticado)'}`,
+    );
     this.logStatus();
 
     // Adiciona o connectionId ao socket para referência
@@ -114,15 +118,17 @@ export class WebsocketGateway
   }
 
   handleDisconnect(client: Socket) {
-    const conexao = this.conexoes.find(c => c.socket === client);
+    const conexao = this.conexoes.find((c) => c.socket === client);
     if (conexao) {
       const duration = Date.now() - conexao.connectedAt.getTime();
       const durationMinutes = Math.round(duration / 60000);
-      
-      this.logger.log(`🔌 Conexão desconectada: ${conexao.connectionId} (${conexao.organizationCnpj || 'sem organização'}) - Duração: ${durationMinutes}min`);
+
+      this.logger.log(
+        `🔌 Conexão desconectada: ${conexao.connectionId} (${conexao.organizationCnpj || 'sem organização'}) - Duração: ${durationMinutes}min`,
+      );
     }
-    
-    const index = this.conexoes.findIndex(c => c.socket === client);
+
+    const index = this.conexoes.findIndex((c) => c.socket === client);
     if (index !== -1) {
       this.conexoes.splice(index, 1);
       this.logStatus();
@@ -131,51 +137,81 @@ export class WebsocketGateway
 
   @SubscribeMessage('ping')
   handlePing(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    const conexao = this.conexoes.find(c => c.socket === client);
-    this.logger.log(`📨 Ping recebido de ${conexao?.connectionId || 'desconhecida'}: ${JSON.stringify(data)}`);
+    const conexao = this.conexoes.find((c) => c.socket === client);
+    this.logger.log(
+      `📨 Ping recebido de ${conexao?.connectionId || 'desconhecida'}: ${JSON.stringify(data)}`,
+    );
     return { event: 'pong', data: { message: 'pong', timestamp: Date.now() } };
   }
 
   @SubscribeMessage('auth')
-  async handleAuth(@MessageBody() data: WebSocketMessage, @ConnectedSocket() client: Socket) {
-    const conexao = this.conexoes.find(c => c.socket === client);
+  async handleAuth(
+    @MessageBody() data: WebSocketMessage,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const conexao = this.conexoes.find((c) => c.socket === client);
     if (conexao) {
       // Se já tem sessão válida, usa os dados da sessão
       if (conexao.sessionId && conexao.cpf) {
-        const session = await this.sessionService.validateSession(conexao.sessionId);
+        const session = await this.sessionService.validateSession(
+          conexao.sessionId,
+        );
         if (session) {
           conexao.organizationCnpj = session.organizationCnpj;
-          this.logger.log(`🔐 Autenticação via sessão: ${conexao.connectionId} -> ${session.organizationCnpj}`);
+          this.logger.log(
+            `🔐 Autenticação via sessão: ${conexao.connectionId} -> ${session.organizationCnpj}`,
+          );
           client.join(session.organizationCnpj);
-          return { event: 'auth_success', data: { message: 'Autenticado via sessão', organizationCnpj: session.organizationCnpj } };
+          return {
+            event: 'auth_success',
+            data: {
+              message: 'Autenticado via sessão',
+              organizationCnpj: session.organizationCnpj,
+            },
+          };
         }
       }
 
       // Fallback para autenticação manual (se não tem sessão)
       const oldOrg = conexao.organizationCnpj;
       conexao.organizationCnpj = data.organizationCnpj;
-      
+
       if (oldOrg !== data.organizationCnpj) {
-        this.logger.log(`🔐 Autenticação manual: ${conexao.connectionId} -> ${data.organizationCnpj}`);
+        this.logger.log(
+          `🔐 Autenticação manual: ${conexao.connectionId} -> ${data.organizationCnpj}`,
+        );
         client.join(data.organizationCnpj);
       }
     }
-    
-    return { event: 'auth_success', data: { message: 'Autenticado com sucesso' } };
+
+    return {
+      event: 'auth_success',
+      data: { message: 'Autenticado com sucesso' },
+    };
   }
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: WebSocketMessage, @ConnectedSocket() client: Socket) {
-    const conexao = this.conexoes.find(c => c.socket === client);
-    this.logger.log(`📨 Mensagem recebida de ${conexao?.connectionId || 'desconhecida'}: ${data.tipo}`);
-    
+  handleMessage(
+    @MessageBody() data: WebSocketMessage,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const conexao = this.conexoes.find((c) => c.socket === client);
+    this.logger.log(
+      `📨 Mensagem recebida de ${conexao?.connectionId || 'desconhecida'}: ${data.tipo}`,
+    );
+
     // Envia mensagem para todas as conexões da mesma organização
     if (conexao?.organizationCnpj) {
       this.server.to(conexao.organizationCnpj).emit('message', data);
-      this.logger.debug(`📤 Mensagem ${data.tipo} enviada para organização ${conexao.organizationCnpj}`);
+      this.logger.debug(
+        `📤 Mensagem ${data.tipo} enviada para organização ${conexao.organizationCnpj}`,
+      );
     }
-    
-    return { event: 'message_received', data: { received: data, timestamp: Date.now() } };
+
+    return {
+      event: 'message_received',
+      data: { received: data, timestamp: Date.now() },
+    };
   }
 
   // Método público para enviar mensagens para uma organização específica
@@ -188,15 +224,20 @@ export class WebsocketGateway
   getConnectionStats() {
     const stats = {
       totalConnections: this.conexoes.length,
-      activeConnections: this.conexoes.filter(c => c.socket.connected).length,
-      organizations: [...new Set(this.conexoes.map(c => c.organizationCnpj).filter(Boolean))],
-      connectionsByOrg: {} as Record<string, number>
+      activeConnections: this.conexoes.filter((c) => c.socket.connected).length,
+      organizations: [
+        ...new Set(
+          this.conexoes.map((c) => c.organizationCnpj).filter(Boolean),
+        ),
+      ],
+      connectionsByOrg: {} as Record<string, number>,
     };
 
     // Conta conexões por organização
-    this.conexoes.forEach(c => {
+    this.conexoes.forEach((c) => {
       if (c.organizationCnpj) {
-        stats.connectionsByOrg[c.organizationCnpj] = (stats.connectionsByOrg[c.organizationCnpj] || 0) + 1;
+        stats.connectionsByOrg[c.organizationCnpj] =
+          (stats.connectionsByOrg[c.organizationCnpj] || 0) + 1;
       }
     });
 
@@ -205,7 +246,10 @@ export class WebsocketGateway
 
   // Método privado para gerar ID único de conexão
   private generateConnectionId(): string {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   }
 
   // Método privado para log de status
@@ -214,7 +258,9 @@ export class WebsocketGateway
     const orgDetails = Object.entries(stats.connectionsByOrg)
       .map(([org, count]) => `${org}: ${count}`)
       .join(', ');
-    
-    this.logger.log(`📊 Status: ${stats.totalConnections} total, ${stats.activeConnections} ativas, ${stats.organizations.length} organizações [${orgDetails}]`);
+
+    this.logger.log(
+      `📊 Status: ${stats.totalConnections} total, ${stats.activeConnections} ativas, ${stats.organizations.length} organizações [${orgDetails}]`,
+    );
   }
-} 
+}
