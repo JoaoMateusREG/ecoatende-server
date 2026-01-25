@@ -18,8 +18,7 @@ export interface CreateSubscriptionGatewayDto {
 
 @Injectable()
 export class CreateSubscriptionGatewayUseCase {
-  private readonly GATEWAY_URL =
-    'https://api-sandbox.asaas.com/v3/subscriptions';
+  private readonly GATEWAY_URL = process.env.API_ASAAS + '/subscriptions';
   private readonly GATEWAY_API_KEY = process.env.ACESS_TOKEN_ASAAS;
   private readonly http: AxiosInstance;
 

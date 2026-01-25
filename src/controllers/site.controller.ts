@@ -16,6 +16,7 @@ import { CreateUserUseCase } from '../use-cases/user/create-user.use-case';
 import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
+import { UserRole } from '../utils/user-role';
 
 class OrganizationAndAdmDto {
   organization: CreateOrganizationDto;
@@ -119,7 +120,7 @@ export class SiteOrganizationAdmController {
 
       const organizationAdm = await this.createUserUseCase.execute({
         ...organizationAndAdm.adm,
-        role: 'ORGANIZATION_ADMIN',
+        role: UserRole.ORGANIZATION_ADMIN,
       });
 
       return {

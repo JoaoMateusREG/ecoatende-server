@@ -6,7 +6,6 @@ import {
   IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TransformCNPJ } from '../transformers/document-transformers';
 
 export class AverageWaitTimeReportDto {
   @ApiProperty({

@@ -3,6 +3,7 @@ import type { ServiceRepository } from '../../repositories/service.repository';
 import type { UserRepository } from '../../repositories/user.repository';
 import { UpdateServiceDto } from '../../dto/update-service.dto';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class UpdateServiceUseCase {
   constructor(
@@ -32,11 +33,11 @@ export class UpdateServiceUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error('Você não tem permissão para atualizar serviços');
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode atualizar serviços da própria organização
         if (
           requestingUser.organizationCnpj !== existingService.organizationCnpj

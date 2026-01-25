@@ -8,6 +8,7 @@ import { User } from '../entities/user';
 import { Organization } from '../entities/organization';
 import { isValidCPF } from '../utils/cpf-validator';
 import * as bcrypt from 'bcryptjs';
+import { UserRole } from '../utils/user-role';
 
 @Injectable()
 export class SetupService {
@@ -39,6 +40,8 @@ export class SetupService {
     const organization = Organization.create({
       cnpj: createFirstOrganizationDto.cnpj,
       name: createFirstOrganizationDto.name,
+      email: createFirstOrganizationDto.email,
+      phone: createFirstOrganizationDto.phone,
     });
 
     return await this.organizationRepository.create(organization);
@@ -81,7 +84,7 @@ export class SetupService {
       cpf: createFirstAdminDto.cpf,
       name: createFirstAdminDto.name,
       password: hashedPassword,
-      role: 'ADMIN',
+      role: UserRole.ADMIN,
       organizationCnpj: organization.cnpj,
     });
 

@@ -16,14 +16,13 @@ export interface UpdateSubscriptionGatewayDto {
 
 @Injectable()
 export class UpdateSubscriptionGatewayUseCase {
-  private readonly GATEWAY_BASE_HOST =
-    'https://api-sandbox.asaas.com/v3/subscriptions';
+  private readonly GATEWAY_URL = process.env.API_ASAAS + '/subscriptions';
   private readonly GATEWAY_API_KEY = process.env.ACESS_TOKEN_ASAAS;
   private readonly http: AxiosInstance;
 
   constructor() {
     this.http = axios.create({
-      baseURL: this.GATEWAY_BASE_HOST,
+      baseURL: this.GATEWAY_URL,
       headers: {
         'Content-Type': 'application/json',
         access_token: `${this.GATEWAY_API_KEY}`,

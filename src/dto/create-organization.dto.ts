@@ -33,16 +33,14 @@ export class CreateOrganizationDto {
     example: 'empresaltds@exemple.com',
   })
   @IsString()
-  @IsOptional()
-  email?: string;
+  email: string;
 
   @ApiProperty({
     description: 'Contato da organização',
     example: '88 99999-9999',
   })
   @IsString()
-  @IsOptional()
-  phone?: string;
+  phone: string;
 
   @ApiProperty({
     description: 'ID do cliente no sistema do gateway de pagamento',

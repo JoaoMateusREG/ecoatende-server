@@ -7,8 +7,8 @@ import { Payment } from './payment';
 export interface Organization {
   cnpj: string;
   name: string;
-  email?: string;
-  phone?: string;
+  email: string;
+  phone: string;
   creationDate?: Date;
   customerId?: string;
   subscription?: Subscription[];
@@ -24,8 +24,8 @@ export class Organization {
   constructor(
     public cnpj: string,
     public name: string,
-    public email?: string,
-    public phone?: string,
+    public email: string,
+    public phone: string,
     public creationDate?: Date,
     public customerId?: string,
     public subscription?: Subscription[],
@@ -40,8 +40,8 @@ export class Organization {
   static create(data: {
     cnpj: string;
     name: string;
-    email?: string;
-    phone?: string;
+    email: string;
+    phone: string;
     customerId?: string;
     subscription?: Subscription[];
     creationDate?: Date;

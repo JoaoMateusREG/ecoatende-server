@@ -1,5 +1,6 @@
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class DeleteUserUseCase {
   constructor(
@@ -23,11 +24,11 @@ export class DeleteUserUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error('Você não tem permissão para deletar usuários');
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode deletar usuários da própria organização
         if (requestingUser.organizationCnpj !== userToDelete.organizationCnpj) {
           throw new Error(

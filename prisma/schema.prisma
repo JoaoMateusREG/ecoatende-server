@@ -32,8 +32,8 @@ enum UserRole {
 model Organization {
   cnpj           String        @id @unique
   name           String
-  email          String?        @unique
-  phone          String?
+  email          String        @unique
+  phone          String
   creationDate   DateTime      @default(now())
   users          User[]
   cards          Card[]

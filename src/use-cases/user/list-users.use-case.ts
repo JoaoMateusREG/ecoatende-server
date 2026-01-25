@@ -1,6 +1,7 @@
 import { User } from '../../entities/user';
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class ListUsersUseCase {
   constructor(
@@ -18,12 +19,12 @@ export class ListUsersUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         // USER só pode ver a si mesmo
         return [requestingUser];
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode ver usuários da própria organização
         return this.userRepository.findByOrganization(
           requestingUser.organizationCnpj,

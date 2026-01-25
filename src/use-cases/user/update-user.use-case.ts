@@ -2,6 +2,7 @@ import { User } from '../../entities/user';
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import { UserRole } from '../../utils/user-role';
 
 export class UpdateUserUseCase {
   constructor(
@@ -24,21 +25,21 @@ export class UpdateUserUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         // USER só pode editar a si mesmo
         if (requestingUser.cpf !== user.cpf) {
           throw new Error('Você não tem permissão para editar outros usuários');
         }
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode editar usuários da própria organização
         if (requestingUser.organizationCnpj !== currentUser.organizationCnpj) {
           throw new Error(
             'Você só pode editar usuários da sua própria organização',
           );
         }
-        if (currentUser.role == 'ADMIN') {
+        if (currentUser.role == UserRole.ADMIN) {
           throw new Error(
             'Você não tem permissão para editar adiministradores',
           );
