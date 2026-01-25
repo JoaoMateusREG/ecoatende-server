@@ -1,4 +1,4 @@
-import { User } from "../entities/user";
+import { User } from '../entities/user';
 
 export interface UserRepository {
   create(user: User): Promise<User>;
@@ -11,4 +11,4 @@ export interface UserRepository {
   findActive(): Promise<User[]>;
   findByCpfAndPassword(cpf: string, password: string): Promise<User | null>;
   mapToEntity(data: any): User;
-} 
+}

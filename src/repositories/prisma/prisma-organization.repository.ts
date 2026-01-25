@@ -1,8 +1,10 @@
-import { prisma } from "../../infra/prisma/client";
-import { OrganizationRepository } from "../organization.repository";
-import { Organization } from "../../entities/organization";
-import { User } from "../../entities/user";
-import { Service } from "../../entities/service";
+import { prisma } from '../../infra/prisma/client';
+import { OrganizationRepository } from '../organization.repository';
+import { Organization } from '../../entities/organization';
+import { User } from '../../entities/user';
+import { Service } from '../../entities/service';
+import { Payment } from '../../entities/payment';
+import { Subscription } from '../../entities/subscription';
 
 export class PrismaOrganizationRepository implements OrganizationRepository {
   async create(organization: Organization): Promise<Organization> {
@@ -10,9 +12,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       data: {
         cnpj: organization.cnpj,
         name: organization.name,
+        email: organization.email,
+        phone: organization.phone,
+        customerId: organization.customerId,
         active: organization.active,
-        logo: organization.logo
-      }
+        logo: organization.logo,
+      },
     });
 
     return this.mapToEntity(created);
@@ -23,9 +28,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       where: { cnpj: organization.cnpj },
       data: {
         name: organization.name,
+        email: organization.email,
+        phone: organization.phone,
+        customerId: organization.customerId,
         active: organization.active,
-        logo: organization.logo
-      }
+        logo: organization.logo,
+      },
     });
 
     return this.mapToEntity(updated);
@@ -37,7 +45,11 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
 
   async findByCnpj(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
-      where: { cnpj }
+      where: { cnpj },
+      include: {
+        subscription: true,
+        payments: true,
+      },
     });
 
     return organization ? this.mapToEntity(organization) : null;
@@ -45,22 +57,20 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
 
   async findByName(name: string): Promise<Organization | null> {
     const organization = await prisma.organization.findFirst({
-      where: { name }
+      where: { name },
     });
 
     return organization ? this.mapToEntity(organization) : null;
   }
 
   async findAll(): Promise<Organization[]> {
-    const organizations = await prisma.organization.findMany({
-    });
+    const organizations = await prisma.organization.findMany({});
 
     return organizations.map(this.mapToEntity);
   }
 
   async findFirst(): Promise<Organization | null> {
-    const organization = await prisma.organization.findFirst({
-    });
+    const organization = await prisma.organization.findFirst({});
 
     return organization ? this.mapToEntity(organization) : null;
   }
@@ -72,9 +82,9 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
         users: true,
         services: {
           include: {
-            users: true
-          }
-        }
+            users: true,
+          },
+        },
       },
     });
 
@@ -87,10 +97,10 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       include: {
         services: {
           include: {
-            users: true
-          }
+            users: true,
+          },
         },
-        users: true
+        users: true,
       },
     });
 
@@ -101,10 +111,17 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
       include: {
-        cards: true
+        cards: true,
       },
     });
 
+    return organization ? this.mapToEntity(organization) : null;
+  }
+
+  async findByCustomer(customerId: string): Promise<Organization | null> {
+    const organization = await prisma.organization.findUnique({
+      where: { customerId },
+    });
     return organization ? this.mapToEntity(organization) : null;
   }
 
@@ -112,6 +129,10 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
     return Organization.create({
       cnpj: data.cnpj,
       name: data.name,
+      email: data.email,
+      phone: data.phone,
+      customerId: data.customerId,
+      creationDate: data.creationDate,
       users: data.users?.map((user: any) =>
         User.create({
           cpf: user.cpf,
@@ -120,8 +141,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           role: user.role,
           organizationCnpj: user.organizationCnpj,
           isActive: user.isActive,
-          picture: user.picture
-        })
+          picture: user.picture,
+        }),
       ),
       services: data.services?.map((service: any) =>
         Service.create({
@@ -133,21 +154,40 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           color: service.color ?? undefined,
           canCreateCards: service.canCreateCards,
           cardLimit: service.cardLimit ?? undefined,
-          users: service.users?.map((user: any) =>
-            User.create({
-              cpf: user.cpf,
-              name: user.name,
-              password: user.password,
-              role: user.role,
-              organizationCnpj: user.organizationCnpj,
-              isActive: user.isActive,
-              picture: user.picture
-            })
-          )
-        })
+          users: service.users ?? [],
+        }),
       ),
-      active: data.active,
-      logo: data.logo
+      payments: data.payments?.map((payment: any) =>
+        Payment.create({
+          id: payment.id,
+          dateCreated: payment.dateCreated,
+          customer: payment.customer,
+          organizationCnpj: payment.organizationCnpj,
+          subscriptionId: payment.subscriptionId,
+          dueDate: payment.dueDate,
+          originalDueDate: payment.originalDueDate,
+          value: payment.value,
+          netValue: payment.netValue,
+          originalValue: payment.originalValue ? payment.originalValue : null,
+          billingType: payment.billingType,
+          status: payment.status,
+          invoiceUrl: payment.invoiceUrl,
+          transactionReceiptUrl: payment.transactionReceiptUrl,
+        }),
+      ),
+      subscription: data.subscription?.map((subscription: any) =>
+        Subscription.create({
+          id: subscription.id,
+          dateCreated: subscription.dateCreated,
+          customer: subscription.customer,
+          value: subscription.value,
+          nextDueDate: subscription.nextDueDate,
+          cycle: subscription.cycle,
+          billingType: subscription.billingType,
+          status: subscription.status,
+          organizationCnpj: subscription.organizationCnpj,
+        }),
+      ),
     });
   };
-} 
+}

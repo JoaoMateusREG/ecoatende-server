@@ -16,7 +16,7 @@ import { AuthModule } from '../auth/auth.module';
     {
       provide: 'CardRepository',
       useClass: PrismaCardRepository,
-    }
-  ]
+    },
+  ],
 })
 export class ReportModule {}

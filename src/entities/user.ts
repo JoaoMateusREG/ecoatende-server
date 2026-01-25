@@ -1,12 +1,13 @@
-import { Service } from "./service";
-import { Organization } from "./organization";
-import { Card } from "./card";
+import { Service } from './service';
+import { Organization } from './organization';
+import { Card } from './card';
+import { UserRole } from '../utils/user-role';
 
 export interface User {
   cpf: string;
   name: string;
   password: string;
-  role?: string;
+  role?: UserRole;
   organizationCnpj: string;
   services?: Service[];
   cards?: Card[];
@@ -21,12 +22,12 @@ export class User {
     public name: string,
     public password: string,
     public organizationCnpj: string,
-    public role?: string,
+    public role?: UserRole,
     public services?: Service[],
     public cards?: Card[],
     public picture?: string,
     public isActive?: boolean,
-    public organization?: Organization
+    public organization?: Organization,
   ) {}
 
   static create(data: {
@@ -34,7 +35,7 @@ export class User {
     name: string;
     password: string;
     organizationCnpj: string;
-    role?: string;
+    role?: UserRole;
     services?: Service[];
     cards?: Card[];
     picture?: string;
@@ -51,7 +52,7 @@ export class User {
       data.cards,
       data.picture,
       data.isActive,
-      data.organization
+      data.organization,
     );
   }
-} 
+}

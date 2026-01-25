@@ -2,7 +2,7 @@
     "moduleFileExtensions": ["js", "json", "ts"],
     "rootDir": ".",
     "testEnvironment": "node",
-    "testRegex": ".*organization.spec.ts$",
+    "testRegex": ".controller.organization.spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     }

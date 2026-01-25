@@ -15,7 +15,7 @@ export interface SessionData {
 export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   private sessions: Map<string, SessionData> = new Map();
-  private readonly SESSION_DURATION_HOURS = 24; // 24 horas
+  private readonly SESSION_DURATION_HOURS = 12; // 12 horas
 
   /**
    * Cria uma nova sessão para o usuário
@@ -50,28 +50,37 @@ export class SessionService {
   }
 
   /**
+   * Retorna os dados da sessao pelo CPF
+   */
+  async cpfIdentification(cpf: string): Promise<SessionData | null> {
+    const session = this.sessions.get(cpf);
+    
+    if (!session) {
+      return null;
+    }
+
+    return session;
+  }
+
+    /**
    * Valida uma sessão e retorna os dados se válida
    */
   async validateSession(sessionId: string): Promise<SessionData | null> {
     const session = this.sessions.get(sessionId);
     
     if (!session) {
-      this.logger.debug(`Sessão não encontrada: ${sessionId}`);
       return null;
     }
 
     if (!session.isActive) {
-      this.logger.debug(`Sessão inativa: ${sessionId}`);
       return null;
     }
 
     if (new Date() > session.expiresAt) {
-      this.logger.debug(`Sessão expirada: ${sessionId}`);
       this.sessions.delete(sessionId);
       return null;
     }
 
-    this.logger.debug(`Sessão válida: ${sessionId} para usuário ${session.cpf}`);
     return session;
   }
 
@@ -83,7 +92,6 @@ export class SessionService {
     if (session) {
       session.isActive = false;
       this.sessions.delete(sessionId);
-      this.logger.log(`Sessão invalidada: ${sessionId}`);
       return true;
     }
     return false;
@@ -103,7 +111,6 @@ export class SessionService {
       }
     }
 
-    this.logger.log(`${invalidatedCount} sessões invalidadas para usuário ${cpf}`);
     return invalidatedCount;
   }
 
@@ -121,7 +128,6 @@ export class SessionService {
         this.cleanupExpiredSession(sessionId);
       }, this.SESSION_DURATION_HOURS * 60 * 60 * 1000);
 
-      this.logger.debug(`Sessão renovada: ${sessionId}`);
       return true;
     }
     return false;
@@ -152,7 +158,6 @@ export class SessionService {
     const session = this.sessions.get(sessionId);
     if (session && new Date() > session.expiresAt) {
       this.sessions.delete(sessionId);
-      this.logger.debug(`Sessão expirada removida: ${sessionId}`);
     }
   }
 
@@ -170,7 +175,6 @@ export class SessionService {
       }
     }
 
-    this.logger.log(`${cleanedCount} sessões expiradas removidas`);
     return cleanedCount;
   }
 }
