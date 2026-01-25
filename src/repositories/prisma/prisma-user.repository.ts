@@ -1,8 +1,8 @@
-import { prisma } from "../../infra/prisma/client";
-import { UserRepository } from "../user.repository";
-import { User } from "../../entities/user";
-import { Service } from "../../entities/service";
-import { Organization } from "../../entities/organization";
+import { prisma } from '../../infra/prisma/client';
+import { UserRepository } from '../user.repository';
+import { User } from '../../entities/user';
+import { Service } from '../../entities/service';
+import { Organization } from '../../entities/organization';
 
 export class PrismaUserRepository implements UserRepository {
   async create(user: User): Promise<User> {
@@ -14,11 +14,11 @@ export class PrismaUserRepository implements UserRepository {
         role: user.role as any,
         organizationCnpj: user.organizationCnpj,
         isActive: user.isActive || true,
-        picture: user.picture ?? undefined
+        picture: user.picture ?? undefined,
       },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -34,11 +34,11 @@ export class PrismaUserRepository implements UserRepository {
         role: user.role as any,
         organizationCnpj: user.organizationCnpj,
         isActive: user.isActive,
-        picture: user.picture ?? undefined
+        picture: user.picture ?? undefined,
       },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -54,7 +54,7 @@ export class PrismaUserRepository implements UserRepository {
       where: { cpf },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -66,7 +66,7 @@ export class PrismaUserRepository implements UserRepository {
       where: { role: role as any },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -78,7 +78,7 @@ export class PrismaUserRepository implements UserRepository {
       where: { organizationCnpj },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -90,13 +90,13 @@ export class PrismaUserRepository implements UserRepository {
       where: {
         services: {
           some: {
-            id: serviceId
-          }
-        }
+            id: serviceId,
+          },
+        },
       },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -108,21 +108,24 @@ export class PrismaUserRepository implements UserRepository {
       where: { isActive: true },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
     return users.map(this.mapToEntity);
   }
 
-  async findByCpfAndPassword(cpf: string, password: string): Promise<User | null> {
+  async findByCpfAndPassword(
+    cpf: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await prisma.user.findFirst({
-      where: { 
-        cpf
+      where: {
+        cpf,
       },
       include: {
         organization: true,
-        services: true
+        services: true,
       },
     });
 
@@ -133,7 +136,6 @@ export class PrismaUserRepository implements UserRepository {
     // Compara a senha fornecida com o hash armazenado
     const bcrypt = require('bcryptjs');
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
     if (!isPasswordValid) {
       return null;
     }
@@ -148,7 +150,7 @@ export class PrismaUserRepository implements UserRepository {
       password: data.password,
       role: data.role,
       organizationCnpj: data.organizationCnpj,
-      services: data.services?.map((service: any) => 
+      services: data.services?.map((service: any) =>
         Service.create({
           id: service.id,
           name: service.name,
@@ -157,16 +159,22 @@ export class PrismaUserRepository implements UserRepository {
           canCreateCards: service.canCreateCards,
           cardLimit: service.cardLimit ?? undefined,
           category: service.category ?? undefined,
-          color: service.color ?? undefined
-        })
+          color: service.color ?? undefined,
+        }),
       ),
       isActive: data.isActive,
       picture: data.picture,
-      organization: data.organization ? Organization.create({
-        cnpj: data.organization.cnpj,
-        name: data.organization.name,
-        active: data.organization.active
-      }) : undefined,
+      organization: data.organization
+        ? Organization.create({
+            cnpj: data.organization.cnpj,
+            name: data.organization.name,
+            email: data.organization.email,
+            phone: data.organization.phone,
+            customerId: data.organization.customerId,
+            creationDate: data.organization.creationDate,
+            active: data.organization.active,
+          })
+        : undefined,
     });
   };
-} 
+}

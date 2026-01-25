@@ -1,6 +1,6 @@
-import { Organization } from "./organization";
-import { User } from "./user";
-import { Card } from "./card";
+import { Organization } from './organization';
+import { User } from './user';
+import { Card } from './card';
 
 export interface Service {
   id: number;
@@ -28,7 +28,7 @@ export class Service {
     public color?: string,
     public users?: User[],
     public cards?: Card[],
-    public organization?: Organization
+    public organization?: Organization,
   ) {}
 
   static create(data: {
@@ -55,7 +55,7 @@ export class Service {
       data.color,
       data.users,
       data.cards,
-      data.organization
+      data.organization,
     );
   }
-} 
+}

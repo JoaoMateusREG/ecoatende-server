@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { SessionService } from './session.service';
 import { SessionAuthGuard } from './session-auth.guard';
 import { PrismaUserRepository } from '../repositories/prisma/prisma-user.repository';
+import { PrismaPaymentsRepository } from '../repositories/prisma/prisma-payments.repository';
 
 @Module({
   controllers: [AuthController],
@@ -14,6 +15,10 @@ import { PrismaUserRepository } from '../repositories/prisma/prisma-user.reposit
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,
+    },
+        {
+      provide: 'PaymentRepository',
+      useClass: PrismaPaymentsRepository,
     }
   ],
   exports: [AuthService, SessionService, SessionAuthGuard],

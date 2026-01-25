@@ -23,7 +23,7 @@ import { PrismaCardRepository } from '../repositories/prisma/prisma-card.reposit
 import { PrismaServiceRepository } from '../repositories/prisma/prisma-service.repository';
 import { WebsocketModule } from '../websocket/websocket.module';
 import { AuthModule } from '../auth/auth.module';
-import { CardNumberGenerator } from 'src/utils/card-number-generator';
+import { CardNumberGenerator } from '../utils/card-number-generator';
 
 @Module({
   imports: [WebsocketModule, AuthModule],
@@ -60,7 +60,7 @@ import { CardNumberGenerator } from 'src/utils/card-number-generator';
     {
       provide: 'CreateCardUseCase',
       useClass: PrismaServiceRepository,
-    }
-  ]
+    },
+  ],
 })
-export class CardModule {} 
+export class CardModule {}

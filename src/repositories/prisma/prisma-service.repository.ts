@@ -1,8 +1,8 @@
-import { prisma } from "../../infra/prisma/client";
-import { ServiceRepository } from "../service.repository";
-import { Service } from "../../entities/service";
-import { Organization } from "../../entities/organization";
-import { User } from "../../entities/user";
+import { prisma } from '../../infra/prisma/client';
+import { ServiceRepository } from '../service.repository';
+import { Service } from '../../entities/service';
+import { Organization } from '../../entities/organization';
+import { User } from '../../entities/user';
 
 export class PrismaServiceRepository implements ServiceRepository {
   async create(service: Service): Promise<Service> {
@@ -14,11 +14,11 @@ export class PrismaServiceRepository implements ServiceRepository {
         canCreateCards: service.canCreateCards,
         cardLimit: service.cardLimit ?? 150,
         category: service.category ?? undefined,
-        color: service.color ?? undefined
+        color: service.color ?? undefined,
       },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -35,11 +35,11 @@ export class PrismaServiceRepository implements ServiceRepository {
         canCreateCards: service.canCreateCards,
         cardLimit: service.cardLimit ?? undefined,
         category: service.category ?? undefined,
-        color: service.color ?? undefined
+        color: service.color ?? undefined,
       },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -55,7 +55,7 @@ export class PrismaServiceRepository implements ServiceRepository {
       where: { id },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -67,7 +67,7 @@ export class PrismaServiceRepository implements ServiceRepository {
       where: { name: name },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -79,7 +79,7 @@ export class PrismaServiceRepository implements ServiceRepository {
       where: { organizationCnpj },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -91,13 +91,13 @@ export class PrismaServiceRepository implements ServiceRepository {
       where: {
         users: {
           some: {
-            cpf: userCpf
-          }
-        }
+            cpf: userCpf,
+          },
+        },
       },
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -108,7 +108,7 @@ export class PrismaServiceRepository implements ServiceRepository {
     const services = await prisma.service.findMany({
       include: {
         organization: true,
-        users: true
+        users: true,
       },
     });
 
@@ -121,9 +121,9 @@ export class PrismaServiceRepository implements ServiceRepository {
       where: { id: serviceId },
       data: {
         users: {
-          set: userCpfs.map(cpf => ({ cpf }))
-        }
-      }
+          set: userCpfs.map((cpf) => ({ cpf })),
+        },
+      },
     });
   }
 
@@ -135,12 +135,18 @@ export class PrismaServiceRepository implements ServiceRepository {
       organizationCnpj: data.organizationCnpj,
       canCreateCards: data.canCreateCards,
       cardLimit: data.cardLimit,
-      organization: data.organization ? Organization.create({
-        cnpj: data.organization.cnpj,
-        name: data.organization.name,
-        active: data.organization.active
-      }) : undefined,
-      users: data.users?.map((user: any) => 
+      organization: data.organization
+        ? Organization.create({
+            cnpj: data.organization.cnpj,
+            name: data.organization.name,
+            email: data.organization.email,
+            phone: data.organization.phone,
+            customerId: data.organization.customerId,
+            creationDate: data.organization.creationDate,
+            active: data.organization.active,
+          })
+        : undefined,
+      users: data.users?.map((user: any) =>
         User.create({
           cpf: user.cpf,
           name: user.name,
@@ -148,11 +154,11 @@ export class PrismaServiceRepository implements ServiceRepository {
           role: user.role,
           organizationCnpj: user.organizationCnpj,
           isActive: user.isActive,
-          picture: user.picture
-        })
+          picture: user.picture,
+        }),
       ),
       category: data.category,
-      color: data.color
+      color: data.color,
     });
   };
-} 
+}

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrganizationController } from '../controllers/organization.controller';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
+import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
 import { UpdateOrganizationUseCase } from '../use-cases/organization/update-organization.use-case';
 import { DeleteOrganizationUseCase } from '../use-cases/organization/delete-organization.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
@@ -10,6 +11,7 @@ import { FindOrganizationWithUsersUseCase } from '../use-cases/organization/find
 import { FindOrganizationWithServicesUseCase } from '../use-cases/organization/find-organization-with-services.use-case';
 import { FindOrganizationWithCardsUseCase } from '../use-cases/organization/find-organization-with-cards.use-case';
 import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-organization.repository';
+import { PrismaUserRepository } from '../repositories/prisma/prisma-user.repository';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -17,6 +19,7 @@ import { AuthModule } from '../auth/auth.module';
   controllers: [OrganizationController],
   providers: [
     CreateOrganizationUseCase,
+    CreatedOrganizationGatewayUseCase,
     UpdateOrganizationUseCase,
     DeleteOrganizationUseCase,
     FindOrganizationByCnpjUseCase,
@@ -28,7 +31,11 @@ import { AuthModule } from '../auth/auth.module';
     {
       provide: 'OrganizationRepository',
       useClass: PrismaOrganizationRepository,
-    }
-  ]
+    },
+    {
+      provide: 'UserRepository',
+      useClass: PrismaUserRepository,
+    },
+  ],
 })
-export class OrganizationModule {} 
+export class OrganizationModule {}

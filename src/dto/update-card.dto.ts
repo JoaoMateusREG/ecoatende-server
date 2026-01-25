@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsNotEmpty, IsEnum, IsBoolean, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNotEmpty,
+  IsEnum,
+  IsBoolean,
+  IsDateString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CardPriority, CardStatus } from '../entities/card';
 import { TransformCPF } from '../transformers/document-transformers';
@@ -7,7 +14,7 @@ export class UpdateCardDto {
   @ApiProperty({
     description: 'Número do card/ficha',
     example: 'A001',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -18,7 +25,7 @@ export class UpdateCardDto {
     description: 'Prioridade do card',
     enum: CardPriority,
     example: CardPriority.NORMAL,
-    required: false
+    required: false,
   })
   @IsEnum(CardPriority)
   @IsOptional()
@@ -28,7 +35,7 @@ export class UpdateCardDto {
     description: 'Status do card',
     enum: CardStatus,
     example: CardStatus.WAITING,
-    required: false
+    required: false,
   })
   @IsEnum(CardStatus)
   @IsOptional()
@@ -37,7 +44,7 @@ export class UpdateCardDto {
   @ApiProperty({
     description: 'Indica se o card foi concluído',
     example: false,
-    required: false
+    required: false,
   })
   @IsBoolean()
   @IsOptional()
@@ -46,7 +53,7 @@ export class UpdateCardDto {
   @ApiProperty({
     description: 'Data e hora do início do atendimento',
     example: '2024-01-15T10:30:00Z',
-    required: false
+    required: false,
   })
   @IsDateString()
   @IsOptional()
@@ -55,23 +62,21 @@ export class UpdateCardDto {
   @ApiProperty({
     description: 'Data e hora da conclusão',
     example: '2024-01-15T11:30:00Z',
-    required: false
+    required: false,
   })
   @IsDateString()
   @IsOptional()
   datehourConcluded?: string;
 
   @ApiProperty({
-    description: 'CPF do usuário responsável (aceita formatação: XXX.XXX.XXX-XX ou XXXXXXXXXXX). Exemplo válido: 123.456.789-09',
+    description:
+      'CPF do usuário responsável (aceita formatação: XXX.XXX.XXX-XX ou XXXXXXXXXXX). Exemplo válido: 123.456.789-09',
     example: '123.456.789-09',
-    examples: [
-      '123.456.789-09',
-      '12345678909'
-    ],
-    required: false
+    examples: ['123.456.789-09', '12345678909'],
+    required: false,
   })
   @IsString()
   @IsOptional()
   @TransformCPF()
   userCpf?: string;
-} 
+}

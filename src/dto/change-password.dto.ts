@@ -5,7 +5,7 @@ export class ChangePasswordDto {
   @ApiProperty({
     description: 'Senha atual',
     example: 'senha123',
-    minLength: 6
+    minLength: 6,
   })
   @IsString()
   @IsNotEmpty()
@@ -15,10 +15,10 @@ export class ChangePasswordDto {
   @ApiProperty({
     description: 'Nova senha',
     example: 'novaSenha123',
-    minLength: 6
+    minLength: 6,
   })
   @IsString()
   @IsNotEmpty()
   @MinLength(6, { message: 'Senha deve ter pelo menos 6 caracteres' })
   newPassword: string;
-} 
+}

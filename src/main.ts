@@ -16,12 +16,10 @@ async function bootstrap() {
     origin: [
       'http://138.2.244.250:3418',
       'https://138.2.244.250:3418',
-      'http://134.65.25.161:3418',
-      'https://134.65.25.161:3418',
-      'http://www.atende.eco.br',
-      'https://www.atende.eco.br',
-      'http://atende.eco.br',
-      'https://atende.eco.br'
+      'https://atende.eco.br',
+      'https://site.atende.eco.br',
+      'http://localhost:6287',
+      'http://localhost:3418',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
@@ -54,9 +52,15 @@ async function bootstrap() {
   const port = process.env.PORT ?? 9868;
   const host = process.env.HOST ?? '0.0.0.0';
   await app.listen(port, host);
-  
+
   console.log(`🚀 Servidor rodando em http://${host}:${port}`);
-  console.log(`📡 WebSocket disponível em: ws://${host}:${port}/ecoatende/websocket`);
+  console.log(
+    `📡 WebSocket disponível em: ws://${host}:${port}/ecoatende/websocket`,
+  );
   console.log(`📚 Swagger disponível em: http://${host}:${port}/api`);
 }
 bootstrap();
+
+export function apiCall(route, body = {}, method = 'GET') {
+  console.log(route, body, method);
+}

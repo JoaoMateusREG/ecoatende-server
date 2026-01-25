@@ -1,30 +1,34 @@
 import type { CardRepository } from '../repositories/card.repository';
-import { Service } from 'src/entities/service';
 import { Injectable, Inject } from '@nestjs/common';
 
 @Injectable()
 export class CardNumberGenerator {
-  constructor(@Inject('CardRepository') private cardRepository: CardRepository) {}
-
-
+  constructor(
+    @Inject('CardRepository') private cardRepository: CardRepository,
+  ) {}
 
   async generateCardNumber(
     serviceId: number,
     servicePrefix: string,
     date: Date = new Date(),
-    cardLimit?: number
+    cardLimit?: number,
   ): Promise<string> {
     // Formata a data para YYYY-MM-DD
     const dateStr = date.toISOString().split('T')[0];
 
     // Busca o último cartão do serviço para a data específica
-    const lastCard = await this.cardRepository.findLastCardByServiceAndDate(serviceId, date);
+    const lastCard = await this.cardRepository.findLastCardByServiceAndDate(
+      serviceId,
+      date,
+    );
 
     let nextNumber = 1;
 
     if (lastCard) {
       // Extrai o número do último cartão (ex: "A100" -> 100)
-      const lastNumber = parseInt(lastCard.card.substring(servicePrefix.length));
+      const lastNumber = parseInt(
+        lastCard.card.substring(servicePrefix.length),
+      );
       if (!isNaN(lastNumber)) {
         nextNumber = lastNumber + 1;
       }

@@ -1,9 +1,9 @@
-import { prisma } from "../../infra/prisma/client";
-import { CardRepository } from "../card.repository";
-import { Card } from "../../entities/card";
-import { Service } from "../../entities/service";
-import { Organization } from "../../entities/organization";
-import { User } from "../../entities/user";
+import { prisma } from '../../infra/prisma/client';
+import { CardRepository } from '../card.repository';
+import { Card } from '../../entities/card';
+import { Service } from '../../entities/service';
+import { Organization } from '../../entities/organization';
+import { User } from '../../entities/user';
 
 export class PrismaCardRepository implements CardRepository {
   async create(card: Card): Promise<Card> {
@@ -18,10 +18,10 @@ export class PrismaCardRepository implements CardRepository {
         concluded: card.concluded,
         datehourConcluded: card.datehourConcluded,
         organizationCnpj: card.organizationCnpj,
-        userCpf: card.userCpf
+        userCpf: card.userCpf,
       },
       include: {
-        service: true
+        service: true,
       },
     });
 
@@ -41,8 +41,8 @@ export class PrismaCardRepository implements CardRepository {
         concluded: card.concluded,
         datehourConcluded: card.datehourConcluded,
         organizationCnpj: card.organizationCnpj,
-        userCpf: card.userCpf
-      }
+        userCpf: card.userCpf,
+      },
     });
 
     return this.mapToEntity(updated);
@@ -61,7 +61,7 @@ export class PrismaCardRepository implements CardRepository {
       where: { id },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
@@ -73,17 +73,20 @@ export class PrismaCardRepository implements CardRepository {
       where: { serviceId },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
     return cards.map(this.mapToEntity);
   }
 
-  async findByNumberAndDate(cardNumber: string, date: Date): Promise<Card | null> {
+  async findByNumberAndDate(
+    cardNumber: string,
+    date: Date,
+  ): Promise<Card | null> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -92,12 +95,12 @@ export class PrismaCardRepository implements CardRepository {
         card: cardNumber,
         datehour: {
           gte: startOfDay,
-          lte: endOfDay
-        }
+          lte: endOfDay,
+        },
       },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
@@ -108,18 +111,22 @@ export class PrismaCardRepository implements CardRepository {
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
 
     const cards = await prisma.card.findMany({
-      where: { status: 'FINISHED', organizationCnpj: organizationCnpj, datehourConcluded: {
-        gte: startOfDay,
-        lte: endOfDay
-      } },
+      where: {
+        status: 'FINISHED',
+        organizationCnpj: organizationCnpj,
+        datehourConcluded: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
@@ -129,7 +136,6 @@ export class PrismaCardRepository implements CardRepository {
   async countByServiceAndDate(serviceId: number, date: Date): Promise<number> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -138,16 +144,18 @@ export class PrismaCardRepository implements CardRepository {
         serviceId,
         datehour: {
           gte: startOfDay,
-          lte: endOfDay
-        }
-      }
+          lte: endOfDay,
+        },
+      },
     });
   }
 
-  async findLastCardByServiceAndDate(serviceId: number, date: Date): Promise<Card | null> {
+  async findLastCardByServiceAndDate(
+    serviceId: number,
+    date: Date,
+  ): Promise<Card | null> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -157,12 +165,12 @@ export class PrismaCardRepository implements CardRepository {
         serviceId,
         datehour: {
           gte: startOfDay,
-          lte: endOfDay
-        }
+          lte: endOfDay,
+        },
       },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
@@ -175,7 +183,6 @@ export class PrismaCardRepository implements CardRepository {
       // Extrai o número do cartão (ex: "A100" -> 100)
       const aNumber = parseInt(a.card.replace(/[^0-9]/g, ''));
       const bNumber = parseInt(b.card.replace(/[^0-9]/g, ''));
-      
       // Ordena numericamente (maior número primeiro)
       return bNumber - aNumber;
     });
@@ -186,7 +193,7 @@ export class PrismaCardRepository implements CardRepository {
 
   async findPendingByServices(serviceIds?: number[]): Promise<Card[]> {
     const where: any = { status: 'WAITING' };
-    
+
     if (serviceIds && serviceIds.length > 0) {
       where.serviceId = { in: serviceIds };
     }
@@ -195,7 +202,7 @@ export class PrismaCardRepository implements CardRepository {
       where,
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
@@ -204,25 +211,32 @@ export class PrismaCardRepository implements CardRepository {
 
   async countPendingByOrganization(organizationCnpj: string): Promise<number> {
     const where: any = { status: 'WAITING' };
-    
+
     where.organizationCnpj = organizationCnpj;
 
     return await prisma.card.count({
-      where
+      where,
     });
   }
 
-  async findTodayCreatedByOrganizationAndService(organizationCnpj: string, serviceId: number): Promise<Card[]> {
+  async findTodayCreatedByOrganizationAndService(
+    organizationCnpj: string,
+    serviceId: number,
+  ): Promise<Card[]> {
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
 
     const cards = await prisma.card.findMany({
-      where: { organizationCnpj, serviceId, datehour: { gte: startOfDay, lte: endOfDay } },
-      include: { service: true, organization: true }
+      where: {
+        organizationCnpj,
+        serviceId,
+        datehour: { gte: startOfDay, lte: endOfDay },
+      },
+      include: { service: true, organization: true },
     });
 
     return cards.map(this.mapToEntity);
@@ -230,7 +244,7 @@ export class PrismaCardRepository implements CardRepository {
 
   async findInAttendanceByServices(serviceIds?: number[]): Promise<Card[]> {
     const where: any = { status: 'IN_ATTENDANCE' };
-    
+
     if (serviceIds && serviceIds.length > 0) {
       where.serviceId = { in: serviceIds };
     }
@@ -239,18 +253,20 @@ export class PrismaCardRepository implements CardRepository {
       where,
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
     return cards.map(this.mapToEntity);
   }
 
-  async findTodayCalledByOrganization(organizationCnpj: string): Promise<Card[]> {
+  async findTodayCalledByOrganization(
+    organizationCnpj: string,
+  ): Promise<Card[]> {
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -260,23 +276,25 @@ export class PrismaCardRepository implements CardRepository {
         status: { in: ['CALLED', 'IN_ATTENDANCE', 'FINISHED'] },
         datehourAttend: {
           gte: startOfDay,
-          lte: endOfDay
-        }
+          lte: endOfDay,
+        },
       },
       include: {
         service: true,
-        organization: true
+        organization: true,
       },
     });
 
     return cards.map(this.mapToEntity);
   }
 
-  async countConcludedTodayByOrganization(organizationCnpj: string): Promise<number> {
+  async countConcludedTodayByOrganization(
+    organizationCnpj: string,
+  ): Promise<number> {
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -286,32 +304,39 @@ export class PrismaCardRepository implements CardRepository {
         status: 'FINISHED',
         datehourConcluded: {
           gte: startOfDay,
-          lte: endOfDay
-        }
-      }
+          lte: endOfDay,
+        },
+      },
     });
   }
 
-  async countInAttendanceByOrganization(organizationCnpj: string): Promise<number> {
+  async countInAttendanceByOrganization(
+    organizationCnpj: string,
+  ): Promise<number> {
     return await prisma.card.count({
       where: {
         organizationCnpj: organizationCnpj,
-        status: 'IN_ATTENDANCE'
-      }
+        status: 'IN_ATTENDANCE',
+      },
     });
   }
 
-  async getAverageWaitTime(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number> {
+  async getAverageWaitTime(
+    organizationCnpj: string,
+    startDate: Date,
+    endDate: Date,
+    serviceId?: number,
+  ): Promise<number> {
     const where: any = {
       organizationCnpj: organizationCnpj,
       status: { in: ['CALLED', 'IN_ATTENDANCE', 'FINISHED'] },
       datehour: {
         gte: startDate,
-        lte: endDate
+        lte: endDate,
       },
       datehourAttend: {
-        not: null
-      }
+        not: null,
+      },
     };
 
     if (serviceId) {
@@ -322,8 +347,8 @@ export class PrismaCardRepository implements CardRepository {
       where,
       select: {
         datehour: true,
-        datehourAttend: true
-      }
+        datehourAttend: true,
+      },
     });
 
     if (cards.length === 0) {
@@ -339,17 +364,22 @@ export class PrismaCardRepository implements CardRepository {
     return Math.round(totalWaitTime / cards.length / (1000 * 60)); // Retorna em minutos
   }
 
-  async getAverageServiceTime(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number> {
+  async getAverageServiceTime(
+    organizationCnpj: string,
+    startDate: Date,
+    endDate: Date,
+    serviceId?: number,
+  ): Promise<number> {
     const where: any = {
       organizationCnpj: organizationCnpj,
       status: 'FINISHED',
       datehourAttend: {
         gte: startDate,
-        lte: endDate
+        lte: endDate,
       },
       datehourConcluded: {
-        not: null
-      }
+        not: null,
+      },
     };
 
     if (serviceId) {
@@ -360,8 +390,8 @@ export class PrismaCardRepository implements CardRepository {
       where,
       select: {
         datehourAttend: true,
-        datehourConcluded: true
-      }
+        datehourConcluded: true,
+      },
     });
 
     if (cards.length === 0) {
@@ -370,21 +400,27 @@ export class PrismaCardRepository implements CardRepository {
 
     const totalServiceTime = cards.reduce((total, card) => {
       if (!card.datehourConcluded || !card.datehourAttend) return total;
-      const serviceTime = card.datehourConcluded.getTime() - card.datehourAttend.getTime();
+      const serviceTime =
+        card.datehourConcluded.getTime() - card.datehourAttend.getTime();
       return total + serviceTime;
     }, 0);
 
     return Math.round(totalServiceTime / cards.length / (1000 * 60)); // Retorna em minutos
   }
 
-  async getCompletedCardsCount(organizationCnpj: string, startDate: Date, endDate: Date, serviceId?: number): Promise<number> {
+  async getCompletedCardsCount(
+    organizationCnpj: string,
+    startDate: Date,
+    endDate: Date,
+    serviceId?: number,
+  ): Promise<number> {
     const where: any = {
       organizationCnpj: organizationCnpj,
       status: 'FINISHED',
       datehourConcluded: {
         gte: startDate,
-        lte: endDate
-      }
+        lte: endDate,
+      },
     };
 
     if (serviceId) {
@@ -407,30 +443,40 @@ export class PrismaCardRepository implements CardRepository {
       datehourConcluded: data.datehourConcluded,
       organizationCnpj: data.organizationCnpj,
       userCpf: data.userCpf,
-      service: data.service ? Service.create({
-        id: data.service.id,
-        name: data.service.name,
-        prefix: data.service.prefix,
-        organizationCnpj: data.service.organizationCnpj,
-        canCreateCards: data.service.canCreateCards,
-        cardLimit: data.service.cardLimit ?? undefined,
-        category: data.service.category ?? undefined,
-        color: data.service.color ?? undefined
-      }) : undefined,
-      organization: data.organization ? Organization.create({
-        cnpj: data.organization.cnpj,
-        name: data.organization.name,
-        active: data.organization.active
-      }) : undefined,
-      user: data.user ? User.create({
-        cpf: data.user.cpf,
-        name: data.user.name,
-        password: data.user.password,
-        role: data.user.role,
-        organizationCnpj: data.user.organizationCnpj,
-        isActive: data.user.isActive,
-        picture: data.user.picture
-      }) : undefined
+      service: data.service
+        ? Service.create({
+            id: data.service.id,
+            name: data.service.name,
+            prefix: data.service.prefix,
+            organizationCnpj: data.service.organizationCnpj,
+            canCreateCards: data.service.canCreateCards,
+            cardLimit: data.service.cardLimit ?? undefined,
+            category: data.service.category ?? undefined,
+            color: data.service.color ?? undefined,
+          })
+        : undefined,
+      organization: data.organization
+        ? Organization.create({
+            cnpj: data.organization.cnpj,
+            name: data.organization.name,
+            email: data.organization.email,
+            phone: data.organization.phone,
+            customerId: data.organization.customerId,
+            creationDate: data.organization.creationDate,
+            active: data.organization.active,
+          })
+        : undefined,
+      user: data.user
+        ? User.create({
+            cpf: data.user.cpf,
+            name: data.user.name,
+            password: data.user.password,
+            role: data.user.role,
+            organizationCnpj: data.user.organizationCnpj,
+            isActive: data.user.isActive,
+            picture: data.user.picture,
+          })
+        : undefined,
     });
   };
-} 
+}

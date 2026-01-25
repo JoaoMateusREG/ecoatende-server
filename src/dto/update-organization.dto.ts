@@ -5,7 +5,7 @@ export class UpdateOrganizationDto {
   @ApiProperty({
     description: 'Nome da organização',
     example: 'Empresa XYZ Ltda',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -13,9 +13,33 @@ export class UpdateOrganizationDto {
   name?: string;
 
   @ApiProperty({
+    description: 'Email da organização',
+    example: 'empresaltds@exemple.com',
+  })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({
+    description: 'Contato da organização',
+    example: '88 99999-9999',
+  })
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({
+    description: 'ID do cliente no sistema de pagamentos',
+    example: '@$2dfsgfsvsbnsghfsdhsh6465dfsh6s15',
+    required: false,
+  })
+  @IsOptional()
+  customerId?: string;
+
+  @ApiProperty({
     description: 'Se a organização está ativa',
     example: true,
-    required: false
+    required: false,
   })
   @IsBoolean()
   @IsOptional()
@@ -24,9 +48,9 @@ export class UpdateOrganizationDto {
   @ApiProperty({
     description: 'Logo da organização',
     example: 'https://example.com/logo.png',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
   logo?: string;
-} 
+}
