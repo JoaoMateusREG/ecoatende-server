@@ -3,6 +3,7 @@ import type { ServiceRepository } from '../../repositories/service.repository';
 import type { UserRepository } from '../../repositories/user.repository';
 import { CreateServiceDto } from '../../dto/create-service.dto';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class CreateServiceUseCase {
   constructor(
@@ -24,11 +25,11 @@ export class CreateServiceUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error('Você não tem permissão para criar serviços');
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode criar serviços na própria organização
         if (
           requestingUser.organizationCnpj !== createServiceDto.organizationCnpj

@@ -2,6 +2,7 @@ import { Organization } from '../../entities/organization';
 import type { OrganizationRepository } from '../../repositories/organization.repository';
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class FindAllOrganizationsUseCase {
   constructor(
@@ -22,8 +23,8 @@ export class FindAllOrganizationsUseCase {
 
       // Verifica permissões baseado no role
       if (
-        requestingUser.role === 'USER' ||
-        requestingUser.role === 'ORGANIZATION_ADMIN'
+        requestingUser.role === UserRole.USER ||
+        requestingUser.role === UserRole.ORGANIZATION_ADMIN
       ) {
         // USER e ORGANIZATION_ADMIN só podem ver a própria organização
         const organization = await this.organizationRepository.findByCnpj(

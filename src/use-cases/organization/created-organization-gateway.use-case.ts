@@ -10,7 +10,7 @@ interface GatewayResponse {
 
 @Injectable()
 export class CreatedOrganizationGatewayUseCase {
-  private readonly GATEWAY_URL = 'https://api-sandbox.asaas.com/v3/customers';
+  private readonly GATEWAY_URL = process.env.API_ASAAS + '/customers';
   private readonly GATEWAY_API_KEY = process.env.ACESS_TOKEN_ASAAS;
   private readonly http: AxiosInstance;
 

@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../utils/user-role';
 
 export class UpdateUserDto {
   @ApiProperty({

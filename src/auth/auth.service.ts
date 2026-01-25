@@ -4,6 +4,7 @@ import type { UserRepository } from '../repositories/user.repository';
 import { LoginDto } from './dto/login.dto';
 import { SessionService } from './session.service';
 import type { PaymentRepository } from '../repositories/payment.repository';
+import { UserRole } from '../utils/user-role';
 
 export interface LoginResponse {
   sessionId: string;
@@ -113,8 +114,8 @@ export class AuthService {
     if (!user.organization?.active) {
       throw new UnauthorizedException('Organização inativa');
     }
-    
-    if (user.role !== 'ADMIN'){
+
+    if (user.role !== UserRole.ADMIN){
       throw new UnauthorizedException('Apenas os administradores da empresa podem acessar')
     }
 

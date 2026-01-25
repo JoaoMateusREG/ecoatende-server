@@ -86,7 +86,7 @@ export class SubscriptionController {
     }
   }
 
-  //rota que o webhook vai utilizar - precisa retornar sempre 200
+  //rota que o webhook vai utilizar
   @Post()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Criar uma nova inscrição' })

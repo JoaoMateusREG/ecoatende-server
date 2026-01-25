@@ -2,6 +2,7 @@ import type { ServiceRepository } from '../../repositories/service.repository';
 import type { CardRepository } from '../../repositories/card.repository';
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class DeleteServiceUseCase {
   constructor(
@@ -27,11 +28,11 @@ export class DeleteServiceUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error('Você não tem permissão para deletar serviços');
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         throw new Error('Você não tem permissão para deletar serviços');
       }
 

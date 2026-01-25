@@ -21,4 +21,20 @@ export class CreateFirstOrganizationDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    description: 'Email da organização',
+    example: 'empresa@exemplo.com',
+  })
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({
+    description: 'Contato da organização',
+    example: '8199999-9999',
+  })
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
 }

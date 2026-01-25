@@ -8,8 +8,7 @@ import {
   Param,
   HttpStatus,
   HttpCode,
-  HttpException,
-  UseGuards,
+  HttpException
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreatePaymentUseCase } from '../use-cases/payment/create-payment.use-case';
@@ -19,7 +18,7 @@ import { FindPaymentByIdUseCase } from '../use-cases/payment/find-payment-by-id.
 import { FindPaymentBySubscriptionUseCase } from '../use-cases/payment/find-payment-by-subscription.use-case';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { UpdatePaymentDto } from '../dto/update-payment.dto';
-import { Subscription } from 'rxjs';
+import { Subscription } from '../entities/subscription';
 import { FindPaymentByCustomerUseCase } from '../use-cases/payment/find-by-customer.use-case';
 
 @ApiTags('Payments')

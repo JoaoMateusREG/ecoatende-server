@@ -1,5 +1,4 @@
 import type { CardRepository } from '../repositories/card.repository';
-import { Service } from 'src/entities/service';
 import { Injectable, Inject } from '@nestjs/common';
 
 @Injectable()

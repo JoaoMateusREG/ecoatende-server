@@ -11,7 +11,7 @@ import {
   TransformCPF,
   TransformCNPJ,
 } from '../transformers/document-transformers';
-import { UserRole } from '@prisma/client';
+import { UserRole } from 'src/utils/user-role';
 
 export class CreateUserDto {
   @ApiProperty({

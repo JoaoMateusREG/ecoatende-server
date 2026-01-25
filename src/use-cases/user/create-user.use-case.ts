@@ -4,6 +4,7 @@ import { CreateUserDto } from "../../dto/create-user.dto";
 import { isValidCPF } from "../../utils/cpf-validator";
 import * as bcrypt from 'bcryptjs';
 import { Inject } from "@nestjs/common";
+import { UserRole } from "../../utils/user-role";
 
 export class CreateUserUseCase {
   constructor(@Inject('UserRepository') private userRepository: UserRepository) {}
@@ -23,17 +24,17 @@ export class CreateUserUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error("Você não tem permissão para criar usuários");
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode criar usuários da própria organização
         if (requestingUser.organizationCnpj !== createUserDto.organizationCnpj) {
           throw new Error("Você só pode criar usuários da sua própria organização");
         }
 
-        if (createUserDto.role == 'ADMIN' || 'ORGANIZATION_ADMIN' ) {
+        if (createUserDto.role == UserRole.USER || createUserDto.role == UserRole.ORGANIZATION_ADMIN) {
           throw new Error("Você não tem permissão para criar adiministradores");
         }
       }

@@ -3,6 +3,7 @@ import type { OrganizationRepository } from '../../repositories/organization.rep
 import type { UserRepository } from '../../repositories/user.repository';
 import { CreateOrganizationDto } from '../../dto/create-organization.dto';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class CreateOrganizationUseCase {
   constructor(
@@ -25,7 +26,7 @@ export class CreateOrganizationUseCase {
       }
 
       // Apenas ADMIN pode criar organizações
-      if (requestingUser.role !== 'ADMIN') {
+      if (requestingUser.role !== UserRole.ADMIN) {
         throw new Error('Você não tem permissão para criar organizações');
       }
     }

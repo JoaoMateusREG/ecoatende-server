@@ -2,6 +2,7 @@ import { Service } from '../../entities/service';
 import type { ServiceRepository } from '../../repositories/service.repository';
 import type { UserRepository } from '../../repositories/user.repository';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class FindServiceByIdUseCase {
   constructor(
@@ -30,8 +31,8 @@ export class FindServiceByIdUseCase {
 
       // Verifica permissões baseado no role
       if (
-        requestingUser.role === 'USER' ||
-        requestingUser.role === 'ORGANIZATION_ADMIN'
+        requestingUser.role === UserRole.USER ||
+        requestingUser.role === UserRole.ORGANIZATION_ADMIN
       ) {
         // USER e ORGANIZATION_ADMIN só podem ver serviços da própria organização
         if (requestingUser.organizationCnpj !== service.organizationCnpj) {

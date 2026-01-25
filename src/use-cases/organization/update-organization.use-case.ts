@@ -3,6 +3,7 @@ import type { OrganizationRepository } from '../../repositories/organization.rep
 import type { UserRepository } from '../../repositories/user.repository';
 import { UpdateOrganizationDto } from '../../dto/update-organization.dto';
 import { Inject } from '@nestjs/common';
+import { UserRole } from '../../utils/user-role';
 
 export class UpdateOrganizationUseCase {
   constructor(
@@ -33,11 +34,11 @@ export class UpdateOrganizationUseCase {
       }
 
       // Verifica permissões baseado no role
-      if (requestingUser.role === 'USER') {
+      if (requestingUser.role === UserRole.USER) {
         throw new Error('Você não tem permissão para atualizar organizações');
       }
 
-      if (requestingUser.role === 'ORGANIZATION_ADMIN') {
+      if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
         // ORGANIZATION_ADMIN só pode atualizar a própria organização
         if (requestingUser.organizationCnpj !== updateOrganizationDto.cnpj) {
           throw new Error('Você só pode atualizar sua própria organização');
