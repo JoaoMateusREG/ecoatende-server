@@ -3,6 +3,7 @@ import { Payment } from '../../entities/payment';
 import type { PaymentRepository } from '../../repositories/payment.repository';
 import { CreatePaymentDto } from '../../dto/create-payment.dto';
 import type { OrganizationRepository } from '../../repositories/organization.repository';
+import { SendMessage } from '../../services/notification.service';
 
 export class CreatePaymentUseCase {
   constructor(
@@ -36,18 +37,16 @@ export class CreatePaymentUseCase {
         transactionReceiptUrl: createPaymentDto.transactionReceiptUrl,
       });
 
-      // 🔍 Verifica se já existe um pagamento com esse ID
       const existingPayment = await this.paymentRepository.findById(payment.id);
 
       if (existingPayment) {
-        // ✅ Atualiza o registro existente
         return await this.paymentRepository.update(payment);
       } else {
-        // 🆕 Cria um novo pagamento
         return await this.paymentRepository.create(payment);
       }
     } catch (error) {
       console.error('Erro ao criar/atualizar pagamento:', error);
+      SendMessage('Erro ao criar/atualizar pagamento', error.message, '10');
       throw error;
     }
   }

@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
+import { SendMessage } from '../../services/notification.service';
 
 interface GatewayResponse {
   object: string;
@@ -66,6 +67,11 @@ export class CreateSubscriptionGatewayUseCase {
     } catch (error: any) {
       if (error.response) {
         console.error('Erro de resposta do Gateway:', error.response.data);
+        SendMessage(
+          'Erro ao criar assinatura',
+          `Falha na API do Gateway: ${error.response.data} (${error.response.status})`,
+          '10',
+        );
         throw new InternalServerErrorException({
           message: `Falha na API do Gateway (${error.response.status})`,
           gatewayError: error.response.data,
