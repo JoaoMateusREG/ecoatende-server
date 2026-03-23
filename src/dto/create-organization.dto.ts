@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsDate,
   IsOptional,
+  IsInt,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
@@ -71,4 +72,12 @@ export class CreateOrganizationDto {
   @IsString()
   @IsOptional()
   logo?: string;
+
+  @ApiProperty({
+    description: 'Dias de carência para o bloqueio por falta de pagamento',
+    example: 31,
+  })
+  @IsInt()
+  @IsOptional()
+  gracePeriodDays?: number;
 }

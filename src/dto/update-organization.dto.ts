@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsBoolean, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateOrganizationDto {
@@ -53,4 +53,13 @@ export class UpdateOrganizationDto {
   @IsString()
   @IsOptional()
   logo?: string;
+
+  @ApiProperty({
+    description: 'Dias de carência para o bloqueio por falta de pagamento',
+    example: 31,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  gracePeriodDays?: number;
 }

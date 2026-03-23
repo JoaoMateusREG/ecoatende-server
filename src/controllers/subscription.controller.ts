@@ -9,7 +9,9 @@ import {
   HttpStatus,
   HttpCode,
   HttpException,
+  UseGuards
 } from '@nestjs/common';
+import { AsaasWebhookGuard } from '../auth/asaas-webhook.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSubscriptionGatewayUseCase } from '../use-cases/subscription/create-subscription-gateway.use-case';
 import { UpdateSubscriptionGatewayUseCase } from '../use-cases/subscription/update-subscription.use-case';
@@ -88,6 +90,7 @@ export class SubscriptionController {
 
   //rota que o webhook vai utilizar
   @Post()
+  @UseGuards(AsaasWebhookGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Criar uma nova inscrição' })
   @ApiResponse({

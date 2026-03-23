@@ -41,6 +41,7 @@ export class CreateOrganizationUseCase {
       creationDate: new Date(),
       active: createOrganizationDto.active,
       logo: createOrganizationDto.logo,
+      gracePeriodDays: createOrganizationDto.gracePeriodDays,
     });
 
     return this.organizationRepository.create(organization);

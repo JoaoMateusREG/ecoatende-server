@@ -43,6 +43,7 @@ model Organization {
   customerId     String?       @unique
   active         Boolean?      @default(true)
   logo           String?
+  gracePeriodDays Int?
 }
 
 model User {
