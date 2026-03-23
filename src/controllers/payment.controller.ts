@@ -8,8 +8,10 @@ import {
   Param,
   HttpStatus,
   HttpCode,
-  HttpException
+  HttpException,
+  UseGuards
 } from '@nestjs/common';
+import { AsaasWebhookGuard } from '../auth/asaas-webhook.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreatePaymentUseCase } from '../use-cases/payment/create-payment.use-case';
 import { UpdatePaymentUseCase } from '../use-cases/payment/update-payment.use-case';
@@ -35,6 +37,7 @@ export class PaymentController {
 
   // rota utilizada pelo webhook para criar pagamento no sistema
   @Post()
+  @UseGuards(AsaasWebhookGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Criar um novo pagamento' })
   @ApiResponse({
@@ -89,11 +92,11 @@ export class PaymentController {
         invoiceUrl: payment.invoiceUrl,
         transactionReceiptUrl: payment.transactionReceiptUrl,
       };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
+    } catch (error: any) {
+      throw new HttpException(
+        { success: false, error: error.message },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
   }
 

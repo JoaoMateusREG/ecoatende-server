@@ -18,6 +18,7 @@ export interface Organization {
   payments?: Payment[];
   active?: boolean;
   logo?: string;
+  gracePeriodDays?: number;
 }
 
 export class Organization {
@@ -35,6 +36,7 @@ export class Organization {
     public payments?: Payment[],
     public active?: boolean,
     public logo?: string,
+    public gracePeriodDays?: number,
   ) {}
 
   static create(data: {
@@ -51,6 +53,7 @@ export class Organization {
     payments?: Payment[];
     active?: boolean;
     logo?: string;
+    gracePeriodDays?: number;
   }): Organization {
     return new Organization(
       data.cnpj,
@@ -66,6 +69,7 @@ export class Organization {
       data.payments,
       data.active,
       data.logo,
+      data.gracePeriodDays,
     );
   }
 }

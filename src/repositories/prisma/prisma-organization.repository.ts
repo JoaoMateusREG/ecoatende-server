@@ -17,6 +17,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
         customerId: organization.customerId,
         active: organization.active,
         logo: organization.logo,
+        gracePeriodDays: organization.gracePeriodDays,
       },
     });
 
@@ -33,6 +34,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
         customerId: organization.customerId,
         active: organization.active,
         logo: organization.logo,
+        gracePeriodDays: organization.gracePeriodDays,
       },
     });
 
@@ -133,6 +135,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       phone: data.phone,
       customerId: data.customerId,
       creationDate: data.creationDate,
+      gracePeriodDays: data.gracePeriodDays,
       users: data.users?.map((user: any) =>
         User.create({
           cpf: user.cpf,

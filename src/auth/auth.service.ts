@@ -47,32 +47,35 @@ export class AuthService {
       throw new UnauthorizedException('Organização inativa');
     }
 
-    // Busca todos os pagamentos da organização
-    const payments = await this.paymentRepository.findByOrganizationCnpj(user.organizationCnpj);
+    if (user.role !== UserRole.ADMIN) {
+      // Busca todos os pagamentos da organização
+      const payments = await this.paymentRepository.findByOrganizationCnpj(user.organizationCnpj);
 
-    // Filtra pagamentos com status RECEIVED e ordena por dueDate (mais recente primeiro)
-    const receivedPayments = payments
-      .filter(payment => payment.status === 'RECEIVED')
-      .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+      // Filtra pagamentos com status RECEIVED e ordena por dueDate (mais recente primeiro)
+      const receivedPayments = payments
+        .filter(payment => payment.status === 'RECEIVED')
+        .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
 
-    // Se não houver nenhum pagamento recebido, bloqueia o login
-    if (receivedPayments.length === 0) {
-      throw new UnauthorizedException('Nenhum pagamento confirmado. Entre em contato com o suporte.');
-    }
+      // Se não houver nenhum pagamento recebido, bloqueia o login
+      if (receivedPayments.length === 0) {
+        throw new UnauthorizedException('Nenhum pagamento confirmado. Entre em contato com o suporte.');
+      }
 
-    // Verifica se o último pagamento recebido está dentro do prazo
-    const lastReceivedPayment = receivedPayments[0];
-    const dueDate = new Date(lastReceivedPayment.dueDate);
-    
-    // Adiciona 31 dias à data de vencimento
-    const expirationDate = new Date(dueDate);
-    expirationDate.setDate(expirationDate.getDate() + 31);
-    
-    const currentDate = new Date();
-    
-    // Se a data atual for maior que a data de expiração, bloqueia o login
-    if (currentDate > expirationDate) {
-      throw new UnauthorizedException('Pagamento expirado. Entre em contato com o suporte.');
+      // Verifica se o último pagamento recebido está dentro do prazo
+      const lastReceivedPayment = receivedPayments[0];
+      const dueDate = new Date(lastReceivedPayment.dueDate);
+      
+      // Adiciona o período de carência da organização (padrão 31 dias) à data de vencimento
+      const expirationDate = new Date(dueDate);
+      const gracePeriod = user.organization?.gracePeriodDays ?? 31;
+      expirationDate.setDate(expirationDate.getDate() + gracePeriod);
+      
+      const currentDate = new Date();
+      
+      // Se a data atual for maior que a data de expiração, bloqueia o login
+      if (currentDate > expirationDate) {
+        throw new UnauthorizedException('Pagamento expirado. Entre em contato com o suporte.');
+      }
     }
 
     // Cria uma sessão para o usuário
