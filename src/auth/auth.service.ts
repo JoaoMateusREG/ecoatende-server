@@ -115,7 +115,7 @@ export class AuthService {
       throw new UnauthorizedException('Organização inativa');
     }
 
-    if (user.role !== UserRole.ADMIN){
+    if (user.role !== UserRole.ADMIN && user.role !== UserRole.ORGANIZATION_ADMIN){
       throw new UnauthorizedException('Apenas os administradores da empresa podem acessar')
     }
 
