@@ -39,7 +39,7 @@ export class CreateOrganizationUseCase {
       phone: createOrganizationDto.phone,
       customerId: createOrganizationDto.customerId,
       creationDate: new Date(),
-      active: createOrganizationDto.active,
+      active: createOrganizationDto.active ?? true,
       logo: createOrganizationDto.logo,
       gracePeriodDays: createOrganizationDto.gracePeriodDays,
     });
