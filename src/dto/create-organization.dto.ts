@@ -55,7 +55,8 @@ export class CreateOrganizationDto {
     example: true,
   })
   @IsBoolean()
-  active: boolean;
+  @IsOptional()
+  active?: boolean;
 
   @ApiProperty({
     description: 'Data de criação da organização',
