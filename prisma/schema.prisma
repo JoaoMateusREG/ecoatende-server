@@ -44,6 +44,7 @@ model Organization {
   active         Boolean?      @default(true)
   logo           String?
   gracePeriodDays Int?
+  panel           Panel?
 }
 
 model User {
@@ -121,4 +122,23 @@ model Payment {
   status                String
   invoiceUrl            String?
   transactionReceiptUrl String?
+}
+
+model Panel {
+  id                Int          @id @default(autoincrement())
+  message           String
+  headerBg          String
+  logoBg            String
+  alertBg           String
+  currentCardBg     String
+  headerText        String
+  marqueeText       String
+  titleText         String
+  cardText          String
+  serviceText       String
+  currentCardText   String
+  youtubePlaylistId String
+  logoUrl           String
+  organization      Organization @relation(fields: [organizationCnpj], references: [cnpj], onDelete: Cascade)
+  organizationCnpj  String       @unique
 }

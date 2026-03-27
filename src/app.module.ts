@@ -11,7 +11,9 @@ import { ReportModule } from './modules/report.module';
 import { PaymentModule } from './modules/payment.module';
 import { SubscriptionModule } from './modules/subscription.module';
 import { SiteOrganizationAdmModule } from './modules/site.module';
+import { PanelModule } from './modules/panel.module';
 import { AppController } from './app.controller';
+import { CloudflareModule } from './modules/cloudflare.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { AppController } from './app.controller';
     PaymentModule,
     SubscriptionModule,
     SiteOrganizationAdmModule,
+    PanelModule,
+    CloudflareModule,
   ],
   controllers: [AppController],
   providers: [AppService],
