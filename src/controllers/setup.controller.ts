@@ -32,6 +32,8 @@ export class SetupController {
           properties: {
             cnpj: { type: 'string', example: '12.345.678/0001-90' },
             name: { type: 'string', example: 'Empresa XYZ Ltda' },
+            email: { type: 'string', example: 'contato@empresaxyz.com.br' },
+            phone: { type: 'string', example: '11999999999' },
           },
         },
       },
