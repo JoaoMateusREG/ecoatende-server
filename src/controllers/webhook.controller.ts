@@ -30,6 +30,12 @@ const PAYMENT_EVENTS = [
   'PAYMENT_CHECKOUT_VIEWED',
 ];
 
+const SUBSCRIPTION_EVENTS = [
+  'SUBSCRIPTION_CREATED',
+  'SUBSCRIPTION_UPDATED',
+  'SUBSCRIPTION_DELETED',
+];
+
 @ApiTags('Webhook')
 @Controller('webhook')
 @UseGuards(AsaasWebhookGuard)
@@ -45,18 +51,20 @@ export class WebhookController {
   async handle(@Body() body: any) {
     const { event, payment, subscription } = body;
 
-    // Evento de assinatura — propaga erro para o Asaas retentar
-    if (subscription && event === 'PAYMENT_CREATED') {
+    // Evento de assinatura (SUBSCRIPTION_CREATED, SUBSCRIPTION_UPDATED, etc.)
+    // Propaga erro para o Asaas retentar
+    if (subscription && SUBSCRIPTION_EVENTS.includes(event)) {
       await this.createSubscriptionUseCase.execute(subscription);
       SendMessage(
-        'Nova assinatura recebida',
-        `Assinatura criada/atualizada para o cliente ${subscription.customer} | Valor: R$ ${subscription.value}`,
+        `Assinatura: ${event}`,
+        `Cliente: ${subscription.customer} | Valor: R$ ${subscription.value} | Status: ${subscription.status}`,
         '10',
       );
       return { success: true, handled: 'subscription' };
     }
 
-    // Pagamento vinculado a assinatura — propaga erro para o Asaas retentar
+    // Evento de pagamento vinculado a assinatura
+    // Propaga erro para o Asaas retentar
     if (payment && payment.subscription && PAYMENT_EVENTS.includes(event)) {
       await this.createPaymentUseCase.execute(payment);
       SendMessage(
@@ -67,11 +75,12 @@ export class WebhookController {
       return { success: true, handled: 'payment' };
     }
 
-    // Pagamento sem assinatura (Pix avulso, etc.) — ignora silenciosamente
+    // Pagamento sem assinatura vinculada (Pix avulso, etc.)
+    // Ignora silenciosamente — não trava o webhook
     if (payment && !payment.subscription) {
       SendMessage(
         'Webhook ignorado',
-        `Evento [${event}] recebido sem assinatura vinculada | Pagamento: ${payment.id} | Cliente: ${payment.customer} | Valor: R$ ${payment.value}`,
+        `Evento [${event}] sem assinatura vinculada | ID: ${payment.id} | Cliente: ${payment.customer} | Valor: R$ ${payment.value}`,
         '1',
       );
       return { success: true, handled: 'ignored' };

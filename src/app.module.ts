@@ -14,6 +14,7 @@ import { SiteOrganizationAdmModule } from './modules/site.module';
 import { PanelModule } from './modules/panel.module';
 import { AppController } from './app.controller';
 import { CloudflareModule } from './modules/cloudflare.module';
+import { WebhookModule } from './modules/webhook.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CloudflareModule } from './modules/cloudflare.module';
     SiteOrganizationAdmModule,
     PanelModule,
     CloudflareModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

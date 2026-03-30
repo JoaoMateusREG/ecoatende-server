@@ -29,10 +29,11 @@ export class CreatePaymentDto {
   @ApiProperty({
     description: 'ID da assinatura associada ao pagamento',
     example: 'sub_1234567890',
+    required: false,
   })
   @IsString()
-  @IsNotEmpty()
-  subscription: string;
+  @IsOptional()
+  subscription?: string;
 
   @ApiProperty({
     description: 'Data de vencimento do pagamento',

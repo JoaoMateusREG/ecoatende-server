@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Put,
   Delete,
   Body,
@@ -36,69 +35,7 @@ export class PaymentController {
   ) {}
 
   // rota utilizada pelo webhook para criar pagamento no sistema
-  @Post()
-  @UseGuards(AsaasWebhookGuard)
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Criar um novo pagamento' })
-  @ApiResponse({
-    status: 200,
-    description: 'Pagamento criado com sucesso.',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', example: 'pay_1234567890' },
-        dateCreated: {
-          type: 'string',
-          format: 'date-time',
-          example: '2023-10-01T12:00:00Z',
-        },
-        subscription: { type: 'string', example: 'sub_1234567890' },
-        amount: { type: 'number', example: 99.99 },
-        paymentDate: {
-          type: 'string',
-          format: 'date-time',
-          example: '2023-10-05T15:30:00Z',
-        },
-        status: { type: 'string', example: 'completed' },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Erro ao criar pagamento.',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: false },
-        error: { type: 'string', example: 'Mensagem de erro' },
-      },
-    },
-  })
-  async create(@Body('payment') createPaymentDto: CreatePaymentDto) {
-    try {
-      const payment = await this.createPaymentUseCase.execute(createPaymentDto);
-      return {
-        id: payment.id,
-        dateCreated: payment.dateCreated,
-        customer: payment.customer,
-        subscriptionId: payment.subscriptionId,
-        dueDate: payment.dueDate,
-        originalDueDate: payment.originalDueDate,
-        value: payment.value,
-        netValue: payment.netValue,
-        billingType: payment.billingType,
-        status: payment.status,
-        originalValue: payment.originalValue,
-        invoiceUrl: payment.invoiceUrl,
-        transactionReceiptUrl: payment.transactionReceiptUrl,
-      };
-    } catch (error: any) {
-      throw new HttpException(
-        { success: false, error: error.message },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-  }
+  // DEPRECIADA: use POST /webhook/asaas
 
   @Put(':id')
   @ApiOperation({ summary: 'Atualizar um pagamento existente' })
