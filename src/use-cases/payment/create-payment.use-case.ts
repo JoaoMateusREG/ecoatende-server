@@ -14,6 +14,10 @@ export class CreatePaymentUseCase {
 
   async execute(createPaymentDto: CreatePaymentDto): Promise<Payment> {
     try {
+      if (!createPaymentDto.subscription) {
+        throw new Error('Pagamento sem assinatura vinculada não pode ser registrado');
+      }
+
       const organization = await this.organizationRepository.findByCustomer(
         createPaymentDto.customer,
       );
@@ -25,7 +29,7 @@ export class CreatePaymentUseCase {
         dateCreated: createPaymentDto.dateCreated,
         customer: createPaymentDto.customer,
         organizationCnpj: organizationCnpj,
-        subscriptionId: createPaymentDto.subscription,
+        subscriptionId: createPaymentDto.subscription!,
         dueDate: createPaymentDto.dueDate,
         originalDueDate: createPaymentDto.originalDueDate,
         value: createPaymentDto.value,
