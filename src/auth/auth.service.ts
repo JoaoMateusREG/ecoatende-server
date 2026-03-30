@@ -53,7 +53,7 @@ export class AuthService {
 
       // Filtra pagamentos com status RECEIVED e ordena por dueDate (mais recente primeiro)
       const receivedPayments = payments
-        .filter(payment => payment.status === 'RECEIVED')
+        .filter(payment => payment.status === 'RECEIVED' || payment.status === 'RECEIVED_IN_CASH')
         .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
 
       // Se não houver nenhum pagamento recebido, bloqueia o login
