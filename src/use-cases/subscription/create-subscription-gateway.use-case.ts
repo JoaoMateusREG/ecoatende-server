@@ -13,8 +13,16 @@ interface GatewayResponse {
   nextDueDate: string;
 }
 
+export interface SubscriptionEquipments {
+  system?: boolean;
+  totem?: boolean;
+  thermicImpressor?: boolean;
+  computer?: boolean;
+}
+
 export interface CreateSubscriptionGatewayDto {
   customer: string;
+  equipments: SubscriptionEquipments;
 }
 
 @Injectable()
@@ -48,16 +56,30 @@ export class CreateSubscriptionGatewayUseCase {
     return `${year}-${month}-${day}`;
   }
 
+  private calculateValue(equipments: SubscriptionEquipments): number {
+    const prices = {
+      system: Number(process.env.SYSTEM ?? 0),
+      totem: Number(process.env.TOTEM ?? 0),
+      thermicImpressor: Number(process.env.TERMIC_IMPRESSOR ?? 0),
+      computer: Number(process.env.COMPUTER ?? 0),
+    };
+
+    return Object.entries(equipments).reduce((total, [key, selected]) => {
+      return selected ? total + (prices[key as keyof typeof prices] ?? 0) : total;
+    }, 0);
+  }
+
   async execute(
     subscriptionData: CreateSubscriptionGatewayDto,
   ): Promise<GatewayResponse> {
     const nextDueDate = this.getCurrentFormattedDate();
+    const value = this.calculateValue(subscriptionData.equipments);
 
     const payload = {
       billingType: 'UNDEFINED',
       cycle: 'MONTHLY',
       customer: subscriptionData.customer,
-      value: 99,
+      value,
       nextDueDate: nextDueDate,
     };
 
