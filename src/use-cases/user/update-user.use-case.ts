@@ -33,16 +33,14 @@ export class UpdateUserUseCase {
       }
 
       if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
-        // ORGANIZATION_ADMIN só pode editar usuários da própria organização
-        if (requestingUser.organizationCnpj !== currentUser.organizationCnpj) {
-          throw new Error(
-            'Você só pode editar usuários da sua própria organização',
-          );
+        // Não pode editar ADMIN
+        if (currentUser.role === UserRole.ADMIN) {
+          throw new Error('Você não tem permissão para editar administradores');
         }
-        if (currentUser.role == UserRole.ADMIN) {
-          throw new Error(
-            'Você não tem permissão para editar adiministradores',
-          );
+
+        // Só pode editar usuários da própria organização
+        if (requestingUser.organizationCnpj !== currentUser.organizationCnpj) {
+          throw new Error('Você só pode editar usuários da sua própria organização');
         }
       }
 

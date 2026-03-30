@@ -34,8 +34,8 @@ export class CreateUserUseCase {
           throw new Error("Você só pode criar usuários da sua própria organização");
         }
 
-        if (createUserDto.role == UserRole.USER || createUserDto.role == UserRole.ORGANIZATION_ADMIN) {
-          throw new Error("Você não tem permissão para criar adiministradores");
+        if (createUserDto.role === UserRole.ADMIN) {
+          throw new Error("Você não tem permissão para criar administradores");
         }
       }
     }
