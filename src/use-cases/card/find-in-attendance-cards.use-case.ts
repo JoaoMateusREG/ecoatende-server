@@ -7,7 +7,7 @@ export class FindInAttendanceCardsUseCase {
     @Inject('CardRepository') private cardRepository: CardRepository,
   ) {}
 
-  async execute(serviceIds?: number[]): Promise<Card[]> {
-    return this.cardRepository.findInAttendanceByServices(serviceIds);
+  async execute(serviceIds?: number[], userCpf?: string): Promise<Card[]> {
+    return this.cardRepository.findInAttendanceByServices(serviceIds, userCpf);
   }
 }

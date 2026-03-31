@@ -16,7 +16,7 @@ export interface CardRepository {
   countByServiceAndDate(serviceId: number, date: Date): Promise<number>;
   findPendingByServices(serviceIds?: number[]): Promise<Card[]>;
   countPendingByOrganization(organizationCnpj: string): Promise<number>;
-  findInAttendanceByServices(serviceIds?: number[]): Promise<Card[]>;
+  findInAttendanceByServices(serviceIds?: number[], userCpf?: string): Promise<Card[]>;
   findTodayCalledByOrganization(organizationCnpj: string): Promise<Card[]>;
   findLastCardByServiceAndDate(
     serviceId: number,

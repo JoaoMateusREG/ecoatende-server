@@ -43,6 +43,9 @@ export class PrismaCardRepository implements CardRepository {
         organizationCnpj: card.organizationCnpj,
         userCpf: card.userCpf,
       },
+      include: {
+        service: true,
+      },
     });
 
     return this.mapToEntity(updated);
@@ -242,11 +245,15 @@ export class PrismaCardRepository implements CardRepository {
     return cards.map(this.mapToEntity);
   }
 
-  async findInAttendanceByServices(serviceIds?: number[]): Promise<Card[]> {
+  async findInAttendanceByServices(serviceIds?: number[], userCpf?: string): Promise<Card[]> {
     const where: any = { status: 'IN_ATTENDANCE' };
 
     if (serviceIds && serviceIds.length > 0) {
       where.serviceId = { in: serviceIds };
+    }
+
+    if (userCpf) {
+      where.userCpf = userCpf;
     }
 
     const cards = await prisma.card.findMany({

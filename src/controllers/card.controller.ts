@@ -477,9 +477,9 @@ export class CardController {
   @Get('in-attendance')
   @ApiOperation({ summary: 'Listar cards em atendimento' })
   @ApiResponse({ status: 200, description: 'Lista de cards em atendimento' })
-  async findInAttendance() {
+  async findInAttendance(@CurrentSession() session: SessionData) {
     try {
-      const cards = await this.findInAttendanceCardsUseCase.execute();
+      const cards = await this.findInAttendanceCardsUseCase.execute(undefined, session.cpf);
       return cards;
     } catch (error: any) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
@@ -518,11 +518,15 @@ export class CardController {
     status: 200,
     description: 'Lista de cards em atendimento do serviço',
   })
-  async findInAttendanceByService(@Param('serviceId') serviceId: string) {
+  async findInAttendanceByService(
+    @Param('serviceId') serviceId: string,
+    @CurrentSession() session: SessionData,
+  ) {
     try {
-      const cards = await this.findInAttendanceCardsUseCase.execute([
-        parseInt(serviceId),
-      ]);
+      const cards = await this.findInAttendanceCardsUseCase.execute(
+        [parseInt(serviceId)],
+        session.cpf,
+      );
       return cards;
     } catch (error: any) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
@@ -604,7 +608,10 @@ export class CardController {
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
   @ApiResponse({ status: 200, description: 'Atendimento iniciado com sucesso' })
   @ApiResponse({ status: 404, description: 'Card não encontrado' })
-  async startAttendance(@Param('id') id: string) {
+  async startAttendance(
+    @Param('id') id: string,
+    @CurrentSession() session: SessionData,
+  ) {
     try {
       const card = await this.findCardByIdUseCase.execute(parseInt(id));
       if (!card) {
@@ -614,11 +621,12 @@ export class CardController {
         );
       }
 
-      // Atualiza o status para IN_ATTENDANCE
+      // Atualiza o status para IN_ATTENDANCE salvando o CPF do atendente
       const updatedCard = await this.updateCardUseCase.execute({
         id: parseInt(id),
         status: 'IN_ATTENDANCE' as any,
         datehourAttend: new Date().toISOString(),
+        userCpf: session.cpf,
       });
 
       // Envia mensagem WebSocket para notificar sobre o início do atendimento
@@ -632,6 +640,7 @@ export class CardController {
           datehour: updatedCard.datehour.toISOString(),
           serviceId: updatedCard.serviceId,
           serviceName: updatedCard.service?.name,
+          userCpf: updatedCard.userCpf,
           eventType: 'card_called',
         },
       });
