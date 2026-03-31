@@ -3,6 +3,7 @@ import type { CardRepository } from '../../repositories/card.repository';
 import type { ServiceRepository } from '../../repositories/service.repository';
 import { CreateCardDto } from '../../dto/create-card.dto';
 import { CardNumberGenerator } from '../../utils/card-number-generator';
+import { nowBrasilia } from '../../utils/date.utils';
 import { Inject } from '@nestjs/common';
 
 export class CreateCardUseCase {
@@ -27,7 +28,7 @@ export class CreateCardUseCase {
     }
 
     // Geração do número da ficha
-    const today = new Date();
+    const today = nowBrasilia();
 
     // Passamos a responsabilidade de gerar e verificar o limite para a classe geradora
     const cardNumber = await this.cardNumberGenerator.generateCardNumber(

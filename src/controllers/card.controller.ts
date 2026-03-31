@@ -41,6 +41,7 @@ import { CreateCardDto } from '../dto/create-card.dto';
 import { UpdateCardDto } from '../dto/update-card.dto';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
 import type { SessionData } from '../auth/session.service';
+import { nowBrasilia } from '../utils/date.utils';
 
 @ApiTags('Cards/Fichas')
 @Controller('cards')
@@ -625,7 +626,7 @@ export class CardController {
       const updatedCard = await this.updateCardUseCase.execute({
         id: parseInt(id),
         status: 'IN_ATTENDANCE' as any,
-        datehourAttend: new Date().toISOString(),
+        datehourAttend: nowBrasilia().toISOString(),
         userCpf: session.cpf,
       });
 
@@ -674,7 +675,7 @@ export class CardController {
         id: parseInt(id),
         status: 'FINISHED' as any,
         concluded: true,
-        datehourConcluded: new Date().toISOString(),
+        datehourConcluded: nowBrasilia().toISOString(),
       });
 
       // Envia mensagem WebSocket para notificar sobre a conclusão do card
