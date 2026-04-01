@@ -17,6 +17,11 @@ enum CardStatus {
   FINISHED
 }
 
+enum ServiceType {
+  SERVICE
+  SUB_SERVICE
+}
+
 enum CardPriority {
   NORMAL
   PREFERENTIAL
@@ -72,6 +77,7 @@ model Service {
   color            String?
   users            User[]       @relation("UserServices")
   cards            Card[]
+  type             ServiceType? @default(SERVICE)
 }
 
 model Card {

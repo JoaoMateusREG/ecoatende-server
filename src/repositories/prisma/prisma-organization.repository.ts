@@ -153,6 +153,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           name: service.name,
           prefix: service.prefix,
           organizationCnpj: service.organizationCnpj,
+          type: service.type,
           category: service.category ?? undefined,
           color: service.color ?? undefined,
           canCreateCards: service.canCreateCards,

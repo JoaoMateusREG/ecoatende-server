@@ -2,12 +2,18 @@ import { Organization } from './organization';
 import { User } from './user';
 import { Card } from './card';
 
+export enum ServiceType {
+  SERVICE= 'SERVICE',
+  SUB_SERVICE= 'SUB_SERVICE',
+}
+
 export interface Service {
   id: number;
   name: string;
   prefix: string;
   organizationCnpj: string;
   canCreateCards: boolean;
+  type: ServiceType;
   cardLimit?: number;
   category?: string;
   color?: string;
@@ -23,6 +29,7 @@ export class Service {
     public prefix: string,
     public organizationCnpj: string,
     public canCreateCards: boolean,
+    public type: ServiceType,
     public cardLimit?: number,
     public category?: string,
     public color?: string,
@@ -37,6 +44,7 @@ export class Service {
     prefix: string;
     organizationCnpj: string;
     canCreateCards: boolean;
+    type: ServiceType;
     cardLimit?: number;
     category?: string;
     color?: string;
@@ -50,6 +58,7 @@ export class Service {
       data.prefix,
       data.organizationCnpj,
       data.canCreateCards,
+      data.type,
       data.cardLimit,
       data.category,
       data.color,

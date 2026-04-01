@@ -17,6 +17,7 @@ export interface LoginResponse {
       id: number;
       name: string;
       prefix: string;
+      type: string;
     }>;
   };
 }
@@ -94,7 +95,8 @@ export class AuthService {
         services: user.services?.map(service => ({
           id: service.id,
           name: service.name,
-          prefix: service.prefix
+          prefix: service.prefix,
+          type: service.type
         })) || []
       },
     };
@@ -138,7 +140,8 @@ export class AuthService {
         services: user.services?.map(service => ({
           id: service.id,
           name: service.name,
-          prefix: service.prefix
+          prefix: service.prefix,
+          type: service.type
         })) || []
       },
     };

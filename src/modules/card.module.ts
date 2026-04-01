@@ -16,6 +16,7 @@ import { CountConcludedTodayCardsByOrganizationUseCase } from '../use-cases/card
 import { CountInAttendanceCardsByOrganizationUseCase } from '../use-cases/card/count-in-attendance-cards-by-organization.use-case';
 import { GetCardsSummaryByOrganizationUseCase } from '../use-cases/card/get-cards-summary-by-organization.use-case';
 import { FindInAttendanceCardsUseCase } from '../use-cases/card/find-in-attendance-cards.use-case';
+import { ForwardCardUseCase } from '../use-cases/card/forward-card.use-case';
 import { GetAverageWaitTimeUseCase } from '../use-cases/card/get-average-wait-time.use-case';
 import { GetAverageServiceTimeUseCase } from '../use-cases/card/get-average-service-time.use-case';
 import { GetCompletedCardsCountUseCase } from '../use-cases/card/get-completed-cards-count.use-case';
@@ -40,6 +41,7 @@ import { CardNumberGenerator } from '../utils/card-number-generator';
     FindTodayConcludedCardsUseCase,
     CountCardsByServiceAndDateUseCase,
     FindInAttendanceCardsUseCase,
+    ForwardCardUseCase,
     CountCardsByOrganizationUseCase,
     CountConcludedTodayCardsByOrganizationUseCase,
     CountInAttendanceCardsByOrganizationUseCase,

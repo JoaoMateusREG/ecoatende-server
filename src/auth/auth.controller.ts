@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpStatus, HttpCode, HttpException, Res, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import type { Response, Request } from 'express';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SessionAuthGuard } from './session-auth.guard';
@@ -35,7 +35,8 @@ export class AuthController {
                 properties: {
                   id: { type: 'number', example: 1 },
                   name: { type: 'string', example: 'CIRURGIA' },
-                  prefix: { type: 'string', example: 'C' }
+                  prefix: { type: 'string', example: 'C' },
+                  type: { type: 'string', example: 'SERVICE' }
                 }
               }
             }

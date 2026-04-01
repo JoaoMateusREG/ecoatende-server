@@ -37,6 +37,7 @@ import { FindTodayConcludedCardsUseCase } from '../use-cases/card/find-concluded
 import { FindTodayCreatedByOrganizationAndServiceUseCase } from '../use-cases/card/find-today-created-by-organization-and-service.use-case';
 import { CountCardsByServiceAndDateUseCase } from '../use-cases/card/count-cards-by-service-and-date.use-case';
 import { FindInAttendanceCardsUseCase } from '../use-cases/card/find-in-attendance-cards.use-case';
+import { ForwardCardUseCase } from '../use-cases/card/forward-card.use-case';
 import { CreateCardDto } from '../dto/create-card.dto';
 import { UpdateCardDto } from '../dto/update-card.dto';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
@@ -64,6 +65,7 @@ export class CardController {
     private readonly findTodayConcludedCardsUseCase: FindTodayConcludedCardsUseCase,
     private readonly countCardsByServiceAndDateUseCase: CountCardsByServiceAndDateUseCase,
     private readonly findInAttendanceCardsUseCase: FindInAttendanceCardsUseCase,
+    private readonly forwardCardUseCase: ForwardCardUseCase,
     private readonly websocketGateway: WebsocketGateway,
   ) {}
 
@@ -695,6 +697,42 @@ export class CardController {
       if (error instanceof HttpException) {
         throw error;
       }
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put(':id/forward/:serviceId')
+  @ApiOperation({ summary: 'Encaminhar ficha para outro serviço' })
+  @ApiParam({ name: 'id', description: 'ID da ficha', example: '1' })
+  @ApiParam({ name: 'serviceId', description: 'ID do serviço de destino', example: '2' })
+  @ApiResponse({ status: 200, description: 'Ficha encaminhada com sucesso' })
+  @ApiResponse({ status: 404, description: 'Ficha ou serviço não encontrado' })
+  async forwardCard(
+    @Param('id') id: string,
+    @Param('serviceId') serviceId: string,
+  ) {
+    try {
+      const updatedCard = await this.forwardCardUseCase.execute(
+        parseInt(id),
+        parseInt(serviceId),
+      );
+
+      this.websocketGateway.sendToOrganization(updatedCard.organizationCnpj, {
+        tipo: 'card_update',
+        organizationCnpj: updatedCard.organizationCnpj,
+        dados: {
+          id: updatedCard.id,
+          card: updatedCard.card,
+          status: 'pending',
+          serviceId: updatedCard.serviceId,
+          serviceName: updatedCard.service?.name,
+          eventType: 'card_forwarded',
+        },
+      });
+
+      return updatedCard;
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }

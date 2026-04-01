@@ -9,6 +9,7 @@ import {
   IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceType } from '../entities/service';
 
 export class UpdateServiceDto {
   @ApiProperty({
@@ -51,6 +52,16 @@ export class UpdateServiceDto {
   @IsBoolean()
   @IsOptional()
   canCreateCards?: boolean;
+
+  @ApiProperty({
+    description:
+      'Tipo do serviço (SERVICE para serviço principal, SUB_SERVICE para subserviço)',
+    example: 'SERVICE',
+    default: 'SERVICE',
+  })
+  @IsString()
+  @IsOptional()
+  type?: ServiceType;
 
   @ApiProperty({
     description: 'Categoria do serviço',

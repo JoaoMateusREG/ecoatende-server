@@ -457,6 +457,7 @@ export class PrismaCardRepository implements CardRepository {
             prefix: data.service.prefix,
             organizationCnpj: data.service.organizationCnpj,
             canCreateCards: data.service.canCreateCards,
+            type: data.service.type,
             cardLimit: data.service.cardLimit ?? undefined,
             category: data.service.category ?? undefined,
             color: data.service.color ?? undefined,

@@ -49,6 +49,7 @@ export class CreateServiceUseCase {
       name: createServiceDto.name,
       prefix: createServiceDto.prefix,
       organizationCnpj: createServiceDto.organizationCnpj,
+      type: createServiceDto.type,
       cardLimit: createServiceDto.cardLimit ?? 150,
       category: createServiceDto.category ?? undefined,
       color: createServiceDto.color ?? undefined,

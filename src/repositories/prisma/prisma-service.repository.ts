@@ -12,6 +12,7 @@ export class PrismaServiceRepository implements ServiceRepository {
         prefix: service.prefix,
         organizationCnpj: service.organizationCnpj,
         canCreateCards: service.canCreateCards,
+        type: service.type,
         cardLimit: service.cardLimit ?? 150,
         category: service.category ?? undefined,
         color: service.color ?? undefined,
@@ -33,6 +34,7 @@ export class PrismaServiceRepository implements ServiceRepository {
         prefix: service.prefix,
         organizationCnpj: service.organizationCnpj,
         canCreateCards: service.canCreateCards,
+        type: service.type,
         cardLimit: service.cardLimit ?? undefined,
         category: service.category ?? undefined,
         color: service.color ?? undefined,
@@ -134,6 +136,7 @@ export class PrismaServiceRepository implements ServiceRepository {
       prefix: data.prefix,
       organizationCnpj: data.organizationCnpj,
       canCreateCards: data.canCreateCards,
+      type: data.type,
       cardLimit: data.cardLimit,
       organization: data.organization
         ? Organization.create({
