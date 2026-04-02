@@ -1,4 +1,4 @@
-import { Card } from '../../entities/card';
+import { Card, CardStatus } from '../../entities/card';
 import type { CardRepository } from '../../repositories/card.repository';
 import type { ServiceRepository } from '../../repositories/service.repository';
 import { Inject } from '@nestjs/common';
@@ -27,6 +27,11 @@ export class ForwardCardUseCase {
     const updatedCard = Card.create({
       ...card,
       serviceId: targetServiceId,
+      status: CardStatus.WAITING,
+      concluded: false,
+      datehourAttend: undefined,
+      datehourConcluded: undefined,
+      userCpf: undefined,
     });
 
     return this.cardRepository.update(updatedCard);
