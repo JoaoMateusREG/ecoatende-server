@@ -13,9 +13,6 @@ export class CardNumberGenerator {
     date: Date = new Date(),
     cardLimit?: number,
   ): Promise<string> {
-    // Formata a data para YYYY-MM-DD
-    const dateStr = date.toISOString().split('T')[0];
-
     // Busca o último cartão do serviço para a data específica
     const lastCard = await this.cardRepository.findLastCardByServiceAndDate(
       serviceId,
@@ -25,10 +22,9 @@ export class CardNumberGenerator {
     let nextNumber = 1;
 
     if (lastCard) {
-      // Extrai o número do último cartão (ex: "A100" -> 100)
-      const lastNumber = parseInt(
-        lastCard.card.substring(servicePrefix.length),
-      );
+      // Extrai apenas os dígitos do número do último cartão (ignora prefixo e 'P')
+      const digits = lastCard.card.replace(/[^0-9]/g, '');
+      const lastNumber = parseInt(digits);
       if (!isNaN(lastNumber)) {
         nextNumber = lastNumber + 1;
       }
@@ -44,7 +40,7 @@ export class CardNumberGenerator {
       throw new Error(`Limite máximo de cartões atingido para este serviço`);
     }
 
-    // Retorna o cartão no formato: PREFIX + NÚMERO
+    // Retorna o cartão no formato: PREFIX + NÚMERO (sem o P de preferencial, adicionado no use case)
     return `${servicePrefix}${nextNumber}`;
   }
 }

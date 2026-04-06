@@ -31,12 +31,17 @@ export class CreateCardUseCase {
     const today = nowBrasilia();
 
     // Passamos a responsabilidade de gerar e verificar o limite para a classe geradora
-    const cardNumber = await this.cardNumberGenerator.generateCardNumber(
+    const baseCardNumber = await this.cardNumberGenerator.generateCardNumber(
       serviceId,
       service.prefix,
       today,
       service.cardLimit,
     );
+
+    // Adiciona 'P' na frente se for preferencial
+    const cardNumber = createCardDto.priority === 'PREFERENTIAL'
+      ? `P${baseCardNumber}`
+      : baseCardNumber;
 
     // Cria a entidade Card a partir do DTO
     const card = Card.create({

@@ -20,13 +20,13 @@ export class CreateServiceDto {
   name: string;
 
   @ApiProperty({
-    description: 'Prefixo do serviço (máximo 2 caracteres)',
+    description: 'Prefixo do serviço (máximo 1 caractere)',
     example: 'A',
-    maxLength: 2,
+    maxLength: 1,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(2, { message: 'Prefixo deve ter no máximo 2 caracteres' })
+  @MaxLength(1, { message: 'Prefixo deve ter no máximo 1 caractere' })
   prefix: string;
 
   @ApiProperty({
