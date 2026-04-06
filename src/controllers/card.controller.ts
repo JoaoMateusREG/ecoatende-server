@@ -46,7 +46,6 @@ import { nowBrasilia } from '../utils/date.utils';
 
 @ApiTags('Cards/Fichas')
 @Controller('cards')
-@UseGuards(SessionAuthGuard)
 export class CardController {
   constructor(
     private readonly createCardUseCase: CreateCardUseCase,
@@ -99,6 +98,7 @@ export class CardController {
   }
 
   @Put(':id')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Atualizar card' })
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
   @ApiResponse({ status: 200, description: 'Card atualizado com sucesso' })
@@ -151,6 +151,7 @@ export class CardController {
   }
 
   @Delete(':id')
+  @UseGuards(SessionAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Deletar card' })
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
@@ -164,6 +165,7 @@ export class CardController {
   }
 
   @Get()
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards com filtros' })
   @ApiQuery({
     name: 'serviceId',
@@ -238,6 +240,7 @@ export class CardController {
   }
 
   @Get('service/:serviceId')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Buscar cards por serviço' })
   @ApiParam({ name: 'serviceId', description: 'ID do serviço', example: '1' })
   @ApiResponse({ status: 200, description: 'Lista de cards do serviço' })
@@ -253,6 +256,7 @@ export class CardController {
   }
 
   @Get('today-created/organization/:organizationCnpj/service/:serviceId')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({
     summary: 'Buscar cards criados hoje por organização e serviço',
   })
@@ -283,6 +287,7 @@ export class CardController {
   }
 
   @Get('summary/organization/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({
     summary:
       'Obter resumo de cards por organização (pendentes, em atendimento e concluídos hoje)',
@@ -328,6 +333,7 @@ export class CardController {
   }
 
   @Get('pending/organization/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Contar cards pendentes por organização' })
   @ApiParam({
     name: 'organizationCnpj',
@@ -371,6 +377,7 @@ export class CardController {
   }
 
   @Get('pending/:serviceId')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards pendentes por serviço' })
   @ApiParam({ name: 'serviceId', description: 'ID do serviço', example: '1' })
   @ApiResponse({
@@ -389,6 +396,7 @@ export class CardController {
   }
 
   @Get('today-called/organization/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Contar cards chamados hoje por organização' })
   @ApiParam({
     name: 'organizationCnpj',
@@ -430,6 +438,7 @@ export class CardController {
   }
 
   @Get('today-concluded/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards concluídos hoje por organização' })
   @ApiParam({
     name: 'organizationCnpj',
@@ -453,6 +462,7 @@ export class CardController {
   }
 
   @Get('concluded/organization/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Contar cards concluídos hoje por organização' })
   @ApiParam({
     name: 'organizationCnpj',
@@ -478,6 +488,7 @@ export class CardController {
   }
 
   @Get('in-attendance')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards em atendimento' })
   @ApiResponse({ status: 200, description: 'Lista de cards em atendimento' })
   async findInAttendance(@CurrentSession() session: SessionData) {
@@ -490,6 +501,7 @@ export class CardController {
   }
 
   @Get('in-attendance/organization/:organizationCnpj')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Contar cards em atendimento por organização' })
   @ApiParam({
     name: 'organizationCnpj',
@@ -515,6 +527,7 @@ export class CardController {
   }
 
   @Get('in-attendance/:serviceId')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards em atendimento por serviço' })
   @ApiParam({ name: 'serviceId', description: 'ID do serviço', example: '1' })
   @ApiResponse({
@@ -537,6 +550,7 @@ export class CardController {
   }
 
   @Get('count/:serviceId/:date')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Contar cards por serviço e data' })
   @ApiParam({ name: 'serviceId', description: 'ID do serviço', example: '1' })
   @ApiParam({
@@ -565,6 +579,7 @@ export class CardController {
   }
 
   @Get('number/:cardNumber/date/:date')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Buscar card por número e data' })
   @ApiParam({
     name: 'cardNumber',
@@ -607,6 +622,7 @@ export class CardController {
   }
 
   @Put(':id/start-attendance')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Iniciar atendimento de um card' })
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
   @ApiResponse({ status: 200, description: 'Atendimento iniciado com sucesso' })
@@ -658,6 +674,7 @@ export class CardController {
   }
 
   @Put(':id/complete')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Concluir um card' })
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
   @ApiResponse({ status: 200, description: 'Card concluído com sucesso' })
@@ -702,6 +719,7 @@ export class CardController {
   }
 
   @Put(':id/forward/:serviceId')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Encaminhar ficha para outro serviço' })
   @ApiParam({ name: 'id', description: 'ID da ficha', example: '1' })
   @ApiParam({ name: 'serviceId', description: 'ID do serviço de destino', example: '2' })
@@ -738,6 +756,7 @@ export class CardController {
   }
 
   @Get(':id')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Buscar card por ID' })
   @ApiParam({ name: 'id', description: 'ID do card', example: '1' })
   @ApiResponse({ status: 200, description: 'Card encontrado' })
