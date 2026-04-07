@@ -55,7 +55,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true em produção (HTTPS)
         sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        maxAge: this.authService.getSessionCookieMaxAgeMs(),
         path: '/'
       });
 
@@ -113,7 +113,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true em produção (HTTPS)
         sameSite: 'strict',
-        maxAge: 12 * 60 * 60 * 1000, // 12 horas
+        maxAge: this.authService.getSessionCookieMaxAgeMs(),
         path: '/'
       });
 
@@ -136,7 +136,12 @@ export class AuthController {
     status: 200, 
     description: 'Logout realizado com sucesso. Cookie de autenticação removido.'
   })
-  async logout(@Res({ passthrough: true }) response: Response) {
+  async logout(@Req() request: any, @Res({ passthrough: true }) response: Response) {
+    const sessionId = request.cookies?.session_id;
+    if (sessionId) {
+      await this.authService.logoutSession(sessionId);
+    }
+
     // Remove o cookie HttpOnly
     response.clearCookie('session_id', {
       httpOnly: true,
@@ -157,10 +162,20 @@ export class AuthController {
     description: 'Sessão renovada com sucesso'
   })
   @ApiResponse({ status: 401, description: 'Sessão inválida ou expirada' })
-  async renewSession(@CurrentSession() session: SessionData) {
+  async renewSession(
+    @CurrentSession() session: SessionData,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     try {
       const renewed = await this.authService.renewSession(session.sessionId);
       if (renewed) {
+        response.cookie('session_id', session.sessionId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: this.authService.getSessionCookieMaxAgeMs(),
+          path: '/',
+        });
         return { message: 'Sessão renovada com sucesso' };
       } else {
         throw new HttpException(
@@ -184,7 +199,7 @@ export class AuthController {
   })
   async getSessionStats() {
     try {
-      const stats = this.authService.getSessionStats();
+      const stats = await this.authService.getSessionStats();
       return stats;
     } catch (error: any) {
       throw new HttpException(

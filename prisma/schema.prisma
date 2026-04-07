@@ -66,18 +66,27 @@ model User {
 }
 
 model Service {
-  id               Int          @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   name             String
-  prefix           String       @db.VarChar(2)
-  organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
+  prefix           String          @db.VarChar(2)
+  organization     Organization    @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj String
-  canCreateCards   Boolean      @default(true)
-  cardLimit        Int?         @default(150)
+  canCreateCards   Boolean         @default(true)
+  cardLimit        Int?            @default(150)
   category         String?
   color            String?
-  users            User[]       @relation("UserServices")
+  users            User[]          @relation("UserServices")
   cards            Card[]
-  type             ServiceType? @default(SERVICE)
+  type             ServiceType?    @default(SERVICE)
+  counter          ServiceCounter?
+}
+
+model ServiceCounter {
+  id           Int      @id @default(autoincrement())
+  serviceId    Int      @unique
+  currentValue Int      @default(0)
+  lastReset    DateTime @default(now())
+  service      Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
 
 model Card {

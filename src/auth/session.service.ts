@@ -1,5 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { createClient, type RedisClientType } from 'redis';
 
 export interface SessionData {
   sessionId: string;
@@ -12,10 +18,101 @@ export interface SessionData {
 }
 
 @Injectable()
-export class SessionService {
+export class SessionService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SessionService.name);
-  private sessions: Map<string, SessionData> = new Map();
-  private readonly SESSION_DURATION_HOURS = 12; // 12 horas
+  private readonly redis: RedisClientType;
+  private readonly redisPrefix =
+    process.env.REDIS_KEY_PREFIX?.trim() || 'ecoatende:';
+  private readonly sessionTtlSeconds = Math.max(
+    60,
+    Number(process.env.REDIS_SESSION_TTL_SECONDS ?? 12 * 60 * 60),
+  );
+  private readonly redisUrl =
+    process.env.REDIS_URL?.trim() || 'redis://127.0.0.1:6379';
+  private readonly redisConnectTimeoutMs = Math.max(
+    1000,
+    Number(process.env.REDIS_CONNECT_TIMEOUT_MS ?? 10_000),
+  );
+
+  constructor() {
+    this.redis = createClient({
+      url: this.redisUrl,
+      socket: {
+        connectTimeout: this.redisConnectTimeoutMs,
+        reconnectStrategy: (retries) => {
+          const delay = Math.min(retries * 100, 5_000);
+          return delay;
+        },
+      },
+    });
+
+    this.redis.on('error', (error) => {
+      this.logger.error(`Erro de conexão Redis: ${error.message}`);
+    });
+  }
+
+  async onModuleInit(): Promise<void> {
+    try {
+      await this.redis.connect();
+      await this.redis.ping();
+      this.logger.log(
+        `Sessões usando Redis em ${this.redisUrl} (ttl=${this.sessionTtlSeconds}s)`,
+      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'erro desconhecido';
+      this.logger.error(`Falha ao iniciar conexão Redis: ${message}`);
+      throw error;
+    }
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.redis.isOpen) {
+      await this.redis.quit();
+    }
+  }
+
+  private getSessionKey(sessionId: string): string {
+    return `${this.redisPrefix}session:${sessionId}`;
+  }
+
+  private getUserSessionsKey(cpf: string): string {
+    return `${this.redisPrefix}user-sessions:${cpf}`;
+  }
+
+  getSessionCookieMaxAgeMs(): number {
+    return this.sessionTtlSeconds * 1000;
+  }
+
+  private parseSession(rawSession: string): SessionData | null {
+    try {
+      const parsed = JSON.parse(rawSession) as SessionData;
+      return {
+        ...parsed,
+        createdAt: new Date(parsed.createdAt),
+        expiresAt: new Date(parsed.expiresAt),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private async listSessionKeys(): Promise<string[]> {
+    const pattern = `${this.redisPrefix}session:*`;
+    const keys: string[] = [];
+    let cursor = '0';
+
+    do {
+      const result = await this.redis.scan(cursor, {
+        MATCH: pattern,
+        COUNT: 200,
+      });
+      cursor = result.cursor;
+      keys.push(...result.keys);
+    } while (cursor !== '0');
+
+    return keys;
+  }
 
   /**
    * Cria uma nova sessão para o usuário
@@ -26,7 +123,7 @@ export class SessionService {
   }): Promise<string> {
     const sessionId = uuidv4();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + this.SESSION_DURATION_HOURS * 60 * 60 * 1000);
+    const expiresAt = new Date(now.getTime() + this.sessionTtlSeconds * 1000);
 
     const session: SessionData = {
       sessionId,
@@ -38,13 +135,16 @@ export class SessionService {
       isActive: true,
     };
 
-    this.sessions.set(sessionId, session);
-    this.logger.log(`Sessão criada: ${sessionId} para usuário ${userData.cpf}`);
+    const sessionKey = this.getSessionKey(sessionId);
+    const userSessionsKey = this.getUserSessionsKey(userData.cpf);
 
-    // Agenda limpeza da sessão expirada
-    setTimeout(() => {
-      this.cleanupExpiredSession(sessionId);
-    }, this.SESSION_DURATION_HOURS * 60 * 60 * 1000);
+    await this.redis.multi()
+      .set(sessionKey, JSON.stringify(session), { EX: this.sessionTtlSeconds })
+      .sAdd(userSessionsKey, sessionId)
+      .expire(userSessionsKey, this.sessionTtlSeconds)
+      .exec();
+
+    this.logger.log(`Sessão criada: ${sessionId} para usuário ${userData.cpf}`);
 
     return sessionId;
   }
@@ -53,31 +153,44 @@ export class SessionService {
    * Retorna os dados da sessao pelo CPF
    */
   async cpfIdentification(cpf: string): Promise<SessionData | null> {
-    const session = this.sessions.get(cpf);
-    
-    if (!session) {
+    const sessionIds = await this.redis.sMembers(this.getUserSessionsKey(cpf));
+    if (sessionIds.length === 0) {
       return null;
     }
 
-    return session;
+    for (const sessionId of sessionIds) {
+      const session = await this.validateSession(sessionId);
+      if (session) {
+        return session;
+      }
+    }
+
+    return null;
   }
 
     /**
    * Valida uma sessão e retorna os dados se válida
    */
   async validateSession(sessionId: string): Promise<SessionData | null> {
-    const session = this.sessions.get(sessionId);
-    
+    const sessionKey = this.getSessionKey(sessionId);
+    const rawSession = await this.redis.get(sessionKey);
+    if (!rawSession) {
+      return null;
+    }
+
+    const session = this.parseSession(rawSession);
     if (!session) {
+      await this.redis.del(sessionKey);
       return null;
     }
 
     if (!session.isActive) {
+      await this.invalidateSession(sessionId);
       return null;
     }
 
     if (new Date() > session.expiresAt) {
-      this.sessions.delete(sessionId);
+      await this.invalidateSession(sessionId);
       return null;
     }
 
@@ -88,12 +201,22 @@ export class SessionService {
    * Invalida uma sessão (logout)
    */
   async invalidateSession(sessionId: string): Promise<boolean> {
-    const session = this.sessions.get(sessionId);
+    const sessionKey = this.getSessionKey(sessionId);
+    const rawSession = await this.redis.get(sessionKey);
+    if (!rawSession) {
+      return false;
+    }
+
+    const session = this.parseSession(rawSession);
     if (session) {
-      session.isActive = false;
-      this.sessions.delete(sessionId);
+      await this.redis.multi()
+        .del(sessionKey)
+        .sRem(this.getUserSessionsKey(session.cpf), sessionId)
+        .exec();
       return true;
     }
+
+    await this.redis.del(sessionKey);
     return false;
   }
 
@@ -101,32 +224,41 @@ export class SessionService {
    * Invalida todas as sessões de um usuário
    */
   async invalidateUserSessions(cpf: string): Promise<number> {
-    let invalidatedCount = 0;
-    
-    for (const [sessionId, session] of this.sessions.entries()) {
-      if (session.cpf === cpf && session.isActive) {
-        session.isActive = false;
-        this.sessions.delete(sessionId);
-        invalidatedCount++;
-      }
+    const userSessionsKey = this.getUserSessionsKey(cpf);
+    const sessionIds = await this.redis.sMembers(userSessionsKey);
+    if (sessionIds.length === 0) {
+      return 0;
     }
 
-    return invalidatedCount;
+    const pipeline = this.redis.multi();
+    for (const sessionId of sessionIds) {
+      pipeline.del(this.getSessionKey(sessionId));
+    }
+    pipeline.del(userSessionsKey);
+    await pipeline.exec();
+
+    return sessionIds.length;
   }
 
   /**
    * Renova uma sessão (estende o tempo de expiração)
    */
   async renewSession(sessionId: string): Promise<boolean> {
-    const session = this.sessions.get(sessionId);
+    const sessionKey = this.getSessionKey(sessionId);
+    const rawSession = await this.redis.get(sessionKey);
+    if (!rawSession) {
+      return false;
+    }
+
+    const session = this.parseSession(rawSession);
     if (session && session.isActive && new Date() <= session.expiresAt) {
       const now = new Date();
-      session.expiresAt = new Date(now.getTime() + this.SESSION_DURATION_HOURS * 60 * 60 * 1000);
-      
-      // Agenda nova limpeza
-      setTimeout(() => {
-        this.cleanupExpiredSession(sessionId);
-      }, this.SESSION_DURATION_HOURS * 60 * 60 * 1000);
+      session.expiresAt = new Date(now.getTime() + this.sessionTtlSeconds * 1000);
+
+      await this.redis.multi()
+        .set(sessionKey, JSON.stringify(session), { EX: this.sessionTtlSeconds })
+        .expire(this.getUserSessionsKey(session.cpf), this.sessionTtlSeconds)
+        .exec();
 
       return true;
     }
@@ -136,41 +268,60 @@ export class SessionService {
   /**
    * Obtém estatísticas das sessões
    */
-  getSessionStats() {
+  async getSessionStats() {
     const now = new Date();
-    const activeSessions = Array.from(this.sessions.values()).filter(
-      session => session.isActive && session.expiresAt > now
-    );
+    const sessionKeys = await this.listSessionKeys();
+    let activeSessions = 0;
+    let expiredSessions = 0;
+
+    for (const key of sessionKeys) {
+      const rawSession = await this.redis.get(key);
+      if (!rawSession) {
+        continue;
+      }
+
+      const session = this.parseSession(rawSession);
+      if (!session) {
+        continue;
+      }
+
+      if (session.isActive && session.expiresAt > now) {
+        activeSessions++;
+      } else {
+        expiredSessions++;
+      }
+    }
 
     return {
-      totalSessions: this.sessions.size,
-      activeSessions: activeSessions.length,
-      expiredSessions: Array.from(this.sessions.values()).filter(
-        session => session.expiresAt <= now
-      ).length,
+      totalSessions: sessionKeys.length,
+      activeSessions,
+      expiredSessions,
     };
-  }
-
-  /**
-   * Limpa sessões expiradas
-   */
-  private cleanupExpiredSession(sessionId: string) {
-    const session = this.sessions.get(sessionId);
-    if (session && new Date() > session.expiresAt) {
-      this.sessions.delete(sessionId);
-    }
   }
 
   /**
    * Limpa todas as sessões expiradas (para manutenção)
    */
-  cleanupAllExpiredSessions() {
-    const now = new Date();
+  async cleanupAllExpiredSessions() {
+    const sessionKeys = await this.listSessionKeys();
     let cleanedCount = 0;
 
-    for (const [sessionId, session] of this.sessions.entries()) {
+    for (const key of sessionKeys) {
+      const rawSession = await this.redis.get(key);
+      if (!rawSession) {
+        continue;
+      }
+
+      const session = this.parseSession(rawSession);
+      if (!session) {
+        await this.redis.del(key);
+        cleanedCount++;
+        continue;
+      }
+
       if (new Date() > session.expiresAt) {
-        this.sessions.delete(sessionId);
+        const sessionId = key.replace(`${this.redisPrefix}session:`, '');
+        await this.invalidateSession(sessionId);
         cleanedCount++;
       }
     }

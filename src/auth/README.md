@@ -75,6 +75,10 @@ Crie um arquivo `.env` na raiz do projeto:
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/painel_chamado"
 JWT_SECRET="sua-chave-super-secreta-aqui-mude-em-producao"
+REDIS_URL="redis://127.0.0.1:6379"
+REDIS_SESSION_TTL_SECONDS=43200
+REDIS_KEY_PREFIX="ecoatende:"
+REDIS_CONNECT_TIMEOUT_MS=10000
 ```
 
 ### **2. Instalação de Dependências**

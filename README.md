@@ -35,14 +35,16 @@ $ npm install
 
 ```bash
 # development
-$ npm run start
+$ bun run start
 
 # watch mode
-$ npm run start:dev
+$ bun run start:dev
 
 # production mode
 $ npm run start:prod
 ```
+
+> `bun run start` e `bun run start:dev` garantem que o Redis do `docker-compose` esteja ativo antes de iniciar a API.
 
 ## Run tests
 
@@ -72,16 +74,16 @@ With Mau, you can deploy your application in just a few clicks, allowing you to 
 
 ## 🐳 Docker Compose
 
-Para facilitar o desenvolvimento, você pode usar o Docker Compose para iniciar apenas o banco de dados PostgreSQL:
+Para facilitar o desenvolvimento, você pode usar o Docker Compose para iniciar apenas o Redis (com persistência AOF para sessões):
 
 ```bash
-# Iniciar o banco de dados
+# Iniciar Redis
 npm run docker:up
 
-# Parar o banco de dados
+# Parar os serviços
 npm run docker:down
 
-# Ver logs do banco
+# Ver logs
 npm run docker:logs
 ```
 
@@ -100,24 +102,25 @@ docker-compose logs -f
 
 ### Configuração
 
-O banco de dados será iniciado com as seguintes configurações:
+O Redis será iniciado com as seguintes configurações:
 - **Host**: localhost
-- **Porta**: 5433
-- **Database**: chamado
-- **Usuário**: postgres
-- **Senha**: 98214789
+- **Porta**: 6379
+- **Persistência**: AOF (`appendonly yes`) + snapshots RDB
 
 ### String de Conexão
 
 Use esta string de conexão no seu arquivo `.env`:
 
 ```env
-DATABASE_URL="postgresql://postgres:98214789@localhost:5433/chamado?schema=public"
+REDIS_URL="redis://127.0.0.1:6379"
+REDIS_SESSION_TTL_SECONDS=43200
+REDIS_KEY_PREFIX="ecoatende:"
+REDIS_CONNECT_TIMEOUT_MS=10000
 ```
 
 ### Dados Persistidos
 
-Os dados do PostgreSQL são salvos no volume `postgres_data`, então eles serão mantidos mesmo após parar o container.
+Os dados do Redis (AOF/RDB) ficam no volume `redis_data`, então serão mantidos mesmo após parar os containers.
 
 ## Resources
 

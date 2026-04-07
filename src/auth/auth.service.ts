@@ -186,7 +186,15 @@ export class AuthService {
     return this.sessionService.renewSession(sessionId);
   }
 
-  getSessionStats() {
+  async logoutSession(sessionId: string): Promise<boolean> {
+    return this.sessionService.invalidateSession(sessionId);
+  }
+
+  getSessionCookieMaxAgeMs(): number {
+    return this.sessionService.getSessionCookieMaxAgeMs();
+  }
+
+  async getSessionStats() {
     return this.sessionService.getSessionStats();
   }
 

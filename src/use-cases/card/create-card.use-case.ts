@@ -4,7 +4,7 @@ import type { ServiceRepository } from '../../repositories/service.repository';
 import { CreateCardDto } from '../../dto/create-card.dto';
 import { CardNumberGenerator } from '../../utils/card-number-generator';
 import { nowBrasilia } from '../../utils/date.utils';
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 export class CreateCardUseCase {
   constructor(
@@ -34,7 +34,6 @@ export class CreateCardUseCase {
     const baseCardNumber = await this.cardNumberGenerator.generateCardNumber(
       serviceId,
       service.prefix,
-      today,
       service.cardLimit,
     );
 
