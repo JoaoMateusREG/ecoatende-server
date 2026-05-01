@@ -87,6 +87,7 @@ export class PrismaPaymentsRepository implements PaymentRepository {
           email: organization.email,
           phone: organization.phone,
           customerId: organization.customerId,
+          gracePeriodDays: organization.gracePeriodDays,
         }),
       ),
       organizationCnpj: data.organizationCnpj,

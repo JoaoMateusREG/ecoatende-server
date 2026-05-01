@@ -174,6 +174,7 @@ export class PrismaUserRepository implements UserRepository {
             customerId: data.organization.customerId,
             creationDate: data.organization.creationDate,
             active: data.organization.active,
+            gracePeriodDays: data.organization.gracePeriodDays,
           })
         : undefined,
     });

@@ -147,6 +147,7 @@ export class PrismaServiceRepository implements ServiceRepository {
             customerId: data.organization.customerId,
             creationDate: data.organization.creationDate,
             active: data.organization.active,
+            gracePeriodDays: data.organization.gracePeriodDays,
           })
         : undefined,
       users: data.users?.map((user: any) =>
