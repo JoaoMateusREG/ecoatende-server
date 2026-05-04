@@ -23,7 +23,13 @@ async function bootstrap() {
       'http://localhost:3418',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Cookie',
+      'Cache-Control',
+      'X-Requested-With',
+    ],
     credentials: true,
   });
 
