@@ -83,6 +83,7 @@ export class CardController {
         dados: {
           id: card.id,
           card: card.card,
+          priority: card.priority,
           status: 'pending',
           datehour: card.datehour.toISOString(),
           serviceId: card.serviceId,
@@ -133,6 +134,7 @@ export class CardController {
         dados: {
           id: updatedCard.id,
           card: updatedCard.card,
+          priority: updatedCard.priority,
           status: status,
           datehour: updatedCard.datehour.toISOString(),
           serviceId: updatedCard.serviceId,
@@ -655,6 +657,7 @@ export class CardController {
         dados: {
           id: updatedCard.id,
           card: updatedCard.card,
+          priority: updatedCard.priority,
           status: 'in_attendance',
           datehour: updatedCard.datehour.toISOString(),
           serviceId: updatedCard.serviceId,
@@ -703,7 +706,7 @@ export class CardController {
         organizationCnpj: updatedCard.organizationCnpj,
         dados: {
           id: updatedCard.id,
-          status: 'concluded',
+          status: 'finished',
           datehour: updatedCard.datehourConcluded?.toISOString(),
           eventType: 'card_concluded',
         },
@@ -741,6 +744,7 @@ export class CardController {
         dados: {
           id: updatedCard.id,
           card: updatedCard.card,
+          priority: updatedCard.priority,
           status: 'pending',
           serviceId: updatedCard.serviceId,
           serviceName: updatedCard.service?.name,

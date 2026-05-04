@@ -39,6 +39,7 @@ describe('CreateOrganizationUseCase', () => {
         phone: '1234567890',
         customerId: 'cust_123',
         active: true,
+        creationDate: new Date(),
       };
 
       // Chama o use case SEM passar o CPF do usuário (sem verificação de permissão)
@@ -67,6 +68,7 @@ describe('CreateOrganizationUseCase', () => {
         phone: '1234567890',
         customerId: 'cust_123',
         active: true,
+        creationDate: new Date(),
       };
 
       // Chama o use case PASSANDO o CPF do usuário ADMIN
@@ -97,6 +99,7 @@ describe('CreateOrganizationUseCase', () => {
         phone: '1234567890',
         customerId: 'cust_123',
         active: true,
+        creationDate: new Date(),
       };
 
       // Deve lançar erro porque o usuário não é ADMIN
@@ -123,6 +126,7 @@ describe('CreateOrganizationUseCase', () => {
         phone: '1234567890',
         customerId: 'cust_123',
         active: true,
+        creationDate: new Date(),
       };
 
       // Deve lançar erro porque ORGANIZATION_ADMIN não pode criar organizações
