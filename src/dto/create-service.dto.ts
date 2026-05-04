@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsNumber,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { TransformCNPJ } from '../transformers/document-transformers';
 import { ServiceType } from '../entities/service';
@@ -59,16 +60,19 @@ export class CreateServiceDto {
   type: ServiceType;
 
   @ApiProperty({
-    description: 'Categoria do serviço',
-    example: 'Atendimento ao Cliente',
+    description: 'Limite de fichas diárias para o serviço (0 = sem limite)',
+    example: 150,
+    required: false,
   })
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   cardLimit?: number;
 
   @ApiProperty({
-    description: 'Limite de fichas diárias para o serviço',
-    example: 'Limite de 150 fichas por dia',
+    description: 'Categoria do serviço',
+    example: 'Atendimento ao Cliente',
+    required: false,
   })
   @IsString()
   @IsOptional()
