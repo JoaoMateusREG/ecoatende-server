@@ -29,6 +29,8 @@ async function bootstrap() {
       'Cookie',
       'Cache-Control',
       'X-Requested-With',
+      'Pragma',
+      'Expires',
     ],
     credentials: true,
   });
