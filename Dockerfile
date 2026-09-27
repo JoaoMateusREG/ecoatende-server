@@ -14,6 +14,9 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 COPY package.json bun.lock* ./
 COPY prisma ./prisma/
 
+# Garantir que o instalador baixe as devDependencies (Nest CLI, TypeScript) necessárias para o build
+ENV NODE_ENV=development
+
 # Instalar todas as dependências (necessárias para gerar o cliente Prisma)
 RUN bun install
 
