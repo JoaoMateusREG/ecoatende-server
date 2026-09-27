@@ -24,8 +24,8 @@ RUN npx prisma generate
 # Copiar o resto do projeto
 COPY . .
 
-# Fazer o build do NestJS de forma segura
-RUN npm run build
+# Fazer o build diretamente via compilador TypeScript (evita bugs do Nest CLI e poupa RAM no servidor)
+RUN npx tsc -p tsconfig.build.json
 
 # Remover dependências de desenvolvimento para deixar a imagem leve
 RUN npm prune --omit=dev
