@@ -3,11 +3,12 @@ FROM oven/bun:1.2-slim AS base
 
 WORKDIR /app
 
-# Instalar dependências necessárias para o Prisma Query Engine e Healthcheck
+# Instalar dependências necessárias para o Prisma Query Engine, Healthcheck e Node.js para o Nest CLI
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     openssl \
     ca-certificates \
     curl \
+    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar arquivos de dependências e definições do Prisma
