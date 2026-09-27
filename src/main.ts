@@ -40,8 +40,10 @@ async function bootstrap() {
       'X-Requested-With',
       'Pragma',
       'Expires',
+      'Accept',
     ],
     credentials: true,
+    optionsSuccessStatus: 200,
   });
 
   // Configuração global do ValidationPipe com transform
