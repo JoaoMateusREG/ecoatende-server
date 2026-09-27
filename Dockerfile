@@ -15,8 +15,8 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 
-# Instalar todas as dependências (Node/NPM não têm problema com o Nest CLI)
-RUN npm ci
+# Instalar todas as dependências (usando install no lugar de ci para ignorar package-lock.json desatualizado)
+RUN npm install --no-fund --no-audit
 
 # Gerar o cliente Prisma
 RUN npx prisma generate
