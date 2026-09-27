@@ -42,9 +42,36 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   async findById(id: string): Promise<Subscription | null> {
     const subscription = await prisma.subscription.findUnique({
       where: { id },
-      include: {
-        organization: true,
-        payments: true,
+      select: {
+        id: true,
+        dateCreated: true,
+        customer: true,
+        value: true,
+        nextDueDate: true,
+        cycle: true,
+        billingType: true,
+        status: true,
+        organizationCnpj: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            dueDate: true,
+            value: true,
+            billingType: true,
+            status: true,
+            transactionReceiptUrl: true,
+            invoiceUrl: true,
+            originalValue: true,
+            netValue: true,
+            originalDueDate: true,
+          },
+        },
       },
     });
     return subscription ? this.mapToEntity(subscription) : null;
@@ -53,9 +80,36 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   async findByOrganization(organizationCnpj: string): Promise<Subscription[]> {
     const subscriptions = await prisma.subscription.findMany({
       where: { organizationCnpj },
-      include: {
-        organization: true,
-        payments: true,
+      select: {
+        id: true,
+        dateCreated: true,
+        customer: true,
+        value: true,
+        nextDueDate: true,
+        cycle: true,
+        billingType: true,
+        status: true,
+        organizationCnpj: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            dueDate: true,
+            value: true,
+            billingType: true,
+            status: true,
+            transactionReceiptUrl: true,
+            invoiceUrl: true,
+            originalValue: true,
+            netValue: true,
+            originalDueDate: true,
+          },
+        },
       },
     });
     return subscriptions.map(this.mapToEntity);
@@ -64,9 +118,36 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   async findByStatus(status: string): Promise<Subscription[]> {
     const subscriptions = await prisma.subscription.findMany({
       where: { status },
-      include: {
-        organization: true,
-        payments: true,
+      select: {
+        id: true,
+        dateCreated: true,
+        customer: true,
+        value: true,
+        nextDueDate: true,
+        cycle: true,
+        billingType: true,
+        status: true,
+        organizationCnpj: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            dueDate: true,
+            value: true,
+            billingType: true,
+            status: true,
+            transactionReceiptUrl: true,
+            invoiceUrl: true,
+            originalValue: true,
+            netValue: true,
+            originalDueDate: true,
+          },
+        },
       },
     });
     return subscriptions.map(this.mapToEntity);
@@ -75,9 +156,36 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   async findByCustomer(customerId: string): Promise<Subscription[]> {
     const subscriptions = await prisma.subscription.findMany({
       where: { customer: customerId },
-      include: {
-        organization: true,
-        payments: true,
+      select: {
+        id: true,
+        dateCreated: true,
+        customer: true,
+        value: true,
+        nextDueDate: true,
+        cycle: true,
+        billingType: true,
+        status: true,
+        organizationCnpj: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            dueDate: true,
+            value: true,
+            billingType: true,
+            status: true,
+            transactionReceiptUrl: true,
+            invoiceUrl: true,
+            originalValue: true,
+            netValue: true,
+            originalDueDate: true,
+          },
+        },
       },
     });
     return subscriptions.map(this.mapToEntity);

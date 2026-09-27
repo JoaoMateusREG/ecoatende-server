@@ -102,13 +102,23 @@ export class WebsocketGateway
   }
 
   private extractSessionId(client: Socket): string | null {
-    // Tenta extrair do query parameter
+    // 1. Tenta extrair do cookie
+    const cookieHeader = client.handshake.headers.cookie;
+    if (cookieHeader) {
+      const cookies = cookieHeader.split(';').map(c => c.trim());
+      const sessionCookie = cookies.find(c => c.startsWith('session_id='));
+      if (sessionCookie) {
+        return sessionCookie.split('=')[1];
+      }
+    }
+
+    // 2. Tenta extrair do query parameter
     const sessionId = client.handshake.query.session_id as string;
     if (sessionId) {
       return sessionId;
     }
 
-    // Tenta extrair do header (se disponível)
+    // 3. Tenta extrair do header de autorização (se disponível)
     const authHeader = client.handshake.headers.authorization;
     if (authHeader && authHeader.startsWith('Session ')) {
       return authHeader.substring(8);
@@ -138,8 +148,8 @@ export class WebsocketGateway
   @SubscribeMessage('ping')
   handlePing(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const conexao = this.conexoes.find((c) => c.socket === client);
-    this.logger.log(
-      `📨 Ping recebido de ${conexao?.connectionId || 'desconhecida'}: ${JSON.stringify(data)}`,
+    this.logger.debug(
+      `📨 Ping recebido de ${conexao?.connectionId || 'desconhecida'}`,
     );
     return { event: 'pong', data: { message: 'pong', timestamp: Date.now() } };
   }
@@ -151,12 +161,12 @@ export class WebsocketGateway
   ) {
     const conexao = this.conexoes.find((c) => c.socket === client);
     if (conexao) {
-      // Se já tem sessão válida, usa os dados da sessão
+      // Requer sessão válida estritamente
       if (conexao.sessionId && conexao.cpf) {
         const session = await this.sessionService.validateSession(
           conexao.sessionId,
         );
-        if (session) {
+        if (session && session.organizationCnpj === data.organizationCnpj) {
           conexao.organizationCnpj = session.organizationCnpj;
           this.logger.log(
             `🔐 Autenticação via sessão: ${conexao.connectionId} -> ${session.organizationCnpj}`,
@@ -171,22 +181,15 @@ export class WebsocketGateway
           };
         }
       }
-
-      // Fallback para autenticação manual (se não tem sessão)
-      const oldOrg = conexao.organizationCnpj;
-      conexao.organizationCnpj = data.organizationCnpj;
-
-      if (oldOrg !== data.organizationCnpj) {
-        this.logger.log(
-          `🔐 Autenticação manual: ${conexao.connectionId} -> ${data.organizationCnpj}`,
-        );
-        client.join(data.organizationCnpj);
-      }
+      
+      this.logger.warn(`Tentativa de acesso WebSocket não autorizado ou manipulação de CNPJ: ${conexao.connectionId}`);
+      client.disconnect(); // Desconecta invasores sem sessão válida
+      return { event: 'erro', data: { message: 'Sessão inválida' } };
     }
 
     return {
-      event: 'auth_success',
-      data: { message: 'Autenticado com sucesso' },
+      event: 'erro',
+      data: { message: 'Conexão não encontrada' },
     };
   }
 

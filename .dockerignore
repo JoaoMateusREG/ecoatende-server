@@ -1,0 +1,17 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.vscode
+.scannerwork
+docker
+test
+coverage
+*.md
+*.log
+.prettierrc
+eslint.config.mjs
+TESTES.md
+bun.lock
+package-lock.json

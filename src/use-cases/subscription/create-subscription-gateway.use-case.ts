@@ -23,6 +23,7 @@ export interface SubscriptionEquipments {
 export interface CreateSubscriptionGatewayDto {
   customer: string;
   equipments: SubscriptionEquipments;
+  idempotencyKey?: string;
 }
 
 @Injectable()
@@ -83,8 +84,13 @@ export class CreateSubscriptionGatewayUseCase {
       nextDueDate: nextDueDate,
     };
 
+    const headers: any = {};
+    if (subscriptionData.idempotencyKey) {
+      headers['Idempotency-Key'] = subscriptionData.idempotencyKey;
+    }
+
     try {
-      const response = await this.http.post<GatewayResponse>('', payload);
+      const response = await this.http.post<GatewayResponse>('', payload, { headers });
       return response.data;
     } catch (error: any) {
       if (error.response) {

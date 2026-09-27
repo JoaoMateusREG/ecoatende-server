@@ -63,6 +63,9 @@ model User {
   cards            Card[]       @relation("UserCards")
   picture          String?
   isActive         Boolean?     @default(true)
+
+  @@index([organizationCnpj])
+  @@index([role])
 }
 
 model Service {
@@ -79,6 +82,8 @@ model Service {
   cards            Card[]
   type             ServiceType?    @default(SERVICE)
   counter          ServiceCounter?
+
+  @@index([organizationCnpj])
 }
 
 model ServiceCounter {
@@ -104,6 +109,11 @@ model Card {
   serviceId         Int
   user              User?        @relation("UserCards", fields: [userCpf], references: [cpf])
   userCpf           String?
+
+  @@index([organizationCnpj])
+  @@index([serviceId])
+  @@index([status])
+  @@index([datehour])
 }
 
 model Subscription {
@@ -118,6 +128,9 @@ model Subscription {
   organization     Organization @relation(fields: [organizationCnpj], references: [cnpj])
   organizationCnpj String
   payments         Payment[]
+
+  @@index([organizationCnpj])
+  @@index([status])
 }
 
 model Payment {
@@ -137,6 +150,9 @@ model Payment {
   status                String
   invoiceUrl            String?
   transactionReceiptUrl String?
+
+  @@index([organizationCnpj])
+  @@index([subscriptionId])
 }
 
 model Panel {

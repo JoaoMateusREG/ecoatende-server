@@ -79,9 +79,16 @@ export class PrismaServiceRepository implements ServiceRepository {
   async findByOrganization(organizationCnpj: string): Promise<Service[]> {
     const services = await prisma.service.findMany({
       where: { organizationCnpj },
-      include: {
-        organization: true,
-        users: true,
+      select: {
+        id: true,
+        name: true,
+        prefix: true,
+        organizationCnpj: true,
+        canCreateCards: true,
+        type: true,
+        cardLimit: true,
+        category: true,
+        color: true,
       },
     });
 
@@ -97,9 +104,16 @@ export class PrismaServiceRepository implements ServiceRepository {
           },
         },
       },
-      include: {
-        organization: true,
-        users: true,
+      select: {
+        id: true,
+        name: true,
+        prefix: true,
+        organizationCnpj: true,
+        canCreateCards: true,
+        type: true,
+        cardLimit: true,
+        category: true,
+        color: true,
       },
     });
 

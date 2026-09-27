@@ -48,7 +48,7 @@ export class CreatePaymentUseCase {
       } else {
         return await this.paymentRepository.create(payment);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar/atualizar pagamento:', error);
       SendMessage('Erro ao criar/atualizar pagamento', error.message, '10');
       throw error;

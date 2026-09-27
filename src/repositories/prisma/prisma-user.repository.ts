@@ -16,9 +16,27 @@ export class PrismaUserRepository implements UserRepository {
         isActive: user.isActive || true,
         picture: user.picture ?? undefined,
       },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -36,9 +54,27 @@ export class PrismaUserRepository implements UserRepository {
         isActive: user.isActive,
         picture: user.picture ?? undefined,
       },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -52,9 +88,27 @@ export class PrismaUserRepository implements UserRepository {
   async findByCpf(cpf: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: { cpf },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -64,9 +118,27 @@ export class PrismaUserRepository implements UserRepository {
   async findByRole(role: string): Promise<User | null> {
     const user = await prisma.user.findFirst({
       where: { role: role as any },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -76,9 +148,27 @@ export class PrismaUserRepository implements UserRepository {
   async findByOrganization(organizationCnpj: string): Promise<User[]> {
     const users = await prisma.user.findMany({
       where: { organizationCnpj },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -94,9 +184,27 @@ export class PrismaUserRepository implements UserRepository {
           },
         },
       },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -106,9 +214,27 @@ export class PrismaUserRepository implements UserRepository {
   async findActive(): Promise<User[]> {
     const users = await prisma.user.findMany({
       where: { isActive: true },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -123,9 +249,27 @@ export class PrismaUserRepository implements UserRepository {
       where: {
         cpf,
       },
-      include: {
-        organization: true,
-        services: true,
+      select: {
+        cpf: true,
+        name: true,
+        password: true,
+        role: true,
+        organizationCnpj: true,
+        isActive: true,
+        picture: true,
+        organization: {
+          select: {
+            cnpj: true,
+            name: true,
+            customerId: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

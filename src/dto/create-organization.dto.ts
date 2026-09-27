@@ -81,4 +81,8 @@ export class CreateOrganizationDto {
   @IsInt()
   @IsOptional()
   gracePeriodDays?: number;
+
+  @IsOptional()
+  @IsString()
+  idempotencyKey?: string;
 }

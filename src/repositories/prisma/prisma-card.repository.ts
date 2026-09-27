@@ -74,9 +74,30 @@ export class PrismaCardRepository implements CardRepository {
   async findByServiceId(serviceId: number): Promise<Card[]> {
     const cards = await prisma.card.findMany({
       where: { serviceId },
-      include: {
-        service: true,
-        organization: true,
+      take: 1000,
+      orderBy: { datehour: 'desc' },
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
       },
     });
 
@@ -127,9 +148,28 @@ export class PrismaCardRepository implements CardRepository {
           lte: endOfDay,
         },
       },
-      include: {
-        service: true,
-        organization: true,
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
       },
     });
 
@@ -203,9 +243,28 @@ export class PrismaCardRepository implements CardRepository {
 
     const cards = await prisma.card.findMany({
       where,
-      include: {
-        service: true,
-        organization: true,
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
       },
     });
 
@@ -239,7 +298,29 @@ export class PrismaCardRepository implements CardRepository {
         serviceId,
         datehour: { gte: startOfDay, lte: endOfDay },
       },
-      include: { service: true, organization: true },
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
+      },
     });
 
     return cards.map(this.mapToEntity);
@@ -258,9 +339,28 @@ export class PrismaCardRepository implements CardRepository {
 
     const cards = await prisma.card.findMany({
       where,
-      include: {
-        service: true,
-        organization: true,
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
       },
     });
 
@@ -286,9 +386,28 @@ export class PrismaCardRepository implements CardRepository {
           lte: endOfDay,
         },
       },
-      include: {
-        service: true,
-        organization: true,
+      select: {
+        id: true,
+        card: true,
+        priority: true,
+        status: true,
+        datehour: true,
+        datehourAttend: true,
+        concluded: true,
+        datehourConcluded: true,
+        organizationCnpj: true,
+        userCpf: true,
+        serviceId: true,
+        service: {
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            canCreateCards: true,
+            type: true,
+          },
+        },
       },
     });
 

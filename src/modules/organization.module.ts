@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OrganizationController } from '../controllers/organization.controller';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
 import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
+import { DeleteOrganizationGatewayUseCase } from '../use-cases/organization/delete-organization-gateway.use-case';
 import { UpdateOrganizationUseCase } from '../use-cases/organization/update-organization.use-case';
 import { DeleteOrganizationUseCase } from '../use-cases/organization/delete-organization.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
@@ -20,6 +21,7 @@ import { AuthModule } from '../auth/auth.module';
   providers: [
     CreateOrganizationUseCase,
     CreatedOrganizationGatewayUseCase,
+    DeleteOrganizationGatewayUseCase,
     UpdateOrganizationUseCase,
     DeleteOrganizationUseCase,
     FindOrganizationByCnpjUseCase,

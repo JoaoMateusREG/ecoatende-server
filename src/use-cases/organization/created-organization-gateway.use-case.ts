@@ -33,8 +33,13 @@ export class CreatedOrganizationGatewayUseCase {
       phone: organizationData.phone,
     };
 
+    const headers: any = {};
+    if (organizationData.idempotencyKey) {
+      headers['Idempotency-Key'] = organizationData.idempotencyKey;
+    }
+
     try {
-      const response = await this.http.post<GatewayResponse>('', payload);
+      const response = await this.http.post<GatewayResponse>('', payload, { headers });
       return response.data;
     } catch (error: any) {
       if (error.response) {
