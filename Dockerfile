@@ -24,8 +24,8 @@ RUN npx prisma generate
 # Copiar o resto do projeto
 COPY . .
 
-# Fazer o build diretamente via compilador TypeScript (evita bugs do Nest CLI e poupa RAM no servidor)
-RUN npx tsc -p tsconfig.build.json
+# Fazer o build do NestJS e forçar a exibição dos erros no log do Docker se falhar
+RUN npm run build > build.log 2>&1 || (echo "❌ ERROS DE COMPILAÇÃO ENCONTRADOS:" && cat build.log && exit 1)
 
 # Remover dependências de desenvolvimento para deixar a imagem leve
 RUN npm prune --omit=dev
