@@ -144,6 +144,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
             users: {
               select: {
                 cpf: true,
+                name: true,
+                role: true,
               },
             },
           },
@@ -174,6 +176,8 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
             users: {
               select: {
                 cpf: true,
+                name: true,
+                role: true,
               },
             },
           },
