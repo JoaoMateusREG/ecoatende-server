@@ -1,36 +1,56 @@
-# Usar a imagem oficial do Bun (versão Debian Slim para compatibilidade com o engine do Prisma)
-FROM oven/bun:1.2-slim AS base
+# ===================================================
+# 1. ESTÁGIO DE BUILD (Usando Node para garantir compatibilidade total com o Nest CLI)
+# ===================================================
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Instalar dependências necessárias para o Prisma Query Engine, Healthcheck e Node.js para o Nest CLI
+# Instalar dependências necessárias para o Prisma
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar os arquivos de gerenciamento
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+
+# Instalar todas as dependências (Node/NPM não têm problema com o Nest CLI)
+RUN npm ci
+
+# Gerar o cliente Prisma
+RUN npx prisma generate
+
+# Copiar o resto do projeto
+COPY . .
+
+# Fazer o build do NestJS de forma segura
+RUN npm run build
+
+# Remover dependências de desenvolvimento para deixar a imagem leve
+RUN npm prune --omit=dev
+
+# ===================================================
+# 2. ESTÁGIO DE PRODUÇÃO (Usando Bun puro para rodar com máximo desempenho)
+# ===================================================
+FROM oven/bun:1.2-slim AS production
+
+WORKDIR /app
+
+# Instalar dependências necessárias para runtime (Prisma e requisições HTTP)
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     openssl \
     ca-certificates \
     curl \
-    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar arquivos de dependências e definições do Prisma
-COPY package.json bun.lock* ./
-COPY prisma ./prisma/
+# Copiar apenas os artefatos essenciais do estágio de build
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/prisma ./prisma
+COPY docker-entrypoint.sh ./
 
-# Garantir que o instalador baixe as devDependencies (Nest CLI, TypeScript) necessárias para o build
-ENV NODE_ENV=development
-
-# Instalar todas as dependências (necessárias para gerar o cliente Prisma)
-RUN bun install
-
-# Gerar o cliente Prisma
-RUN bunx prisma generate
-
-# Copiar o restante do código da aplicação
-COPY . .
-
-# Fazer o build da aplicação NestJS
-RUN bun run build
-
-# Ajustar permissões de execução do entrypoint
 RUN chmod +x ./docker-entrypoint.sh
 
 # Configurações padrão de ambiente
@@ -41,7 +61,7 @@ ENV HOST=0.0.0.0
 # Expor a porta da API
 EXPOSE 9868
 
-# Healthcheck interno do contêiner (apontando para o Swagger /api para garantir resposta 200 OK)
+# Healthcheck apontando para o Swagger /api
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
   CMD curl -f http://localhost:${PORT}/api || exit 1
 
