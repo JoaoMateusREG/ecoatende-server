@@ -29,6 +29,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -67,6 +69,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -101,6 +105,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -131,6 +137,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -161,6 +169,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -197,6 +207,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -227,6 +239,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
@@ -262,6 +276,8 @@ export class PrismaUserRepository implements UserRepository {
             cnpj: true,
             name: true,
             customerId: true,
+            active: true,
+            gracePeriodDays: true,
           },
         },
         services: {
