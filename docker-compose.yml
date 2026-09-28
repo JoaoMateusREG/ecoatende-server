@@ -1,20 +1,19 @@
+# Docker Compose para Deploy no Coolify com Banco de Dados e Redis gerenciados pelo Coolify
 services:
-  redis:
-    image: redis:7.2-alpine
-    container_name: ecoatende-redis
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecoatende-api
     restart: unless-stopped
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
-    ports:
-      - '127.0.0.1:6380:6379'
-    volumes:
-      - redis_data:/data
-      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+    expose:
+      - "9868"
+    env_file:
+      - path: .env
+        required: false
+    networks:
+      - coolify
 
-volumes:
-  redis_data:
+networks:
+  coolify:
+    external: true

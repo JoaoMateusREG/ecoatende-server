@@ -9,6 +9,7 @@ import { PaymentController } from '../controllers/payment.controller';
 import { PrismaPaymentsRepository } from '../repositories/prisma/prisma-payments.repository';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-organization.repository';
+import { PrismaSubscriptionRepository } from '../repositories/prisma/prisma-subscription.repository';
 
 @Module({
   imports: [AuthModule],
@@ -27,6 +28,10 @@ import { PrismaOrganizationRepository } from '../repositories/prisma/prisma-orga
     {
       provide: 'OrganizationRepository',
       useClass: PrismaOrganizationRepository,
+    },
+    {
+      provide: 'SubscriptionRepository',
+      useClass: PrismaSubscriptionRepository,
     },
   ],
 })

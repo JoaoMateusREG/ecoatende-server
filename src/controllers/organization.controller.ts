@@ -19,6 +19,7 @@ import {
 } from '../decorators/current-user.decorator';
 import { CreateOrganizationUseCase } from '../use-cases/organization/create-organization.use-case';
 import { CreatedOrganizationGatewayUseCase } from '../use-cases/organization/created-organization-gateway.use-case';
+import { DeleteOrganizationGatewayUseCase } from '../use-cases/organization/delete-organization-gateway.use-case';
 import { UpdateOrganizationUseCase } from '../use-cases/organization/update-organization.use-case';
 import { DeleteOrganizationUseCase } from '../use-cases/organization/delete-organization.use-case';
 import { FindOrganizationByCnpjUseCase } from '../use-cases/organization/find-organization-by-cnpj.use-case';
@@ -37,6 +38,7 @@ export class OrganizationController {
   constructor(
     private readonly createOrganizationUseCase: CreateOrganizationUseCase,
     private readonly createdOrganizationGatewayUseCase: CreatedOrganizationGatewayUseCase,
+    private readonly deleteOrganizationGatewayUseCase: DeleteOrganizationGatewayUseCase,
     private readonly updateOrganizationUseCase: UpdateOrganizationUseCase,
     private readonly deleteOrganizationUseCase: DeleteOrganizationUseCase,
     private readonly findOrganizationByCnpjUseCase: FindOrganizationByCnpjUseCase,
@@ -68,22 +70,36 @@ export class OrganizationController {
     @Body() createOrganizationDto: CreateOrganizationDto,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
+    let customerId: string | undefined;
+
     try {
       const gatewayResponse =
         await this.createdOrganizationGatewayUseCase.execute(
           createOrganizationDto,
         );
-      const customerId = gatewayResponse.id;
+      customerId = gatewayResponse.id;
       const organizationWithCustomerId = {
         ...createOrganizationDto,
         customerId: customerId,
       };
 
-      const organization = await this.createOrganizationUseCase.execute(
-        organizationWithCustomerId,
-        currentUser.cpf,
-      );
-      return organization;
+      try {
+        const organization = await this.createOrganizationUseCase.execute(
+          organizationWithCustomerId,
+          currentUser.cpf,
+        );
+        return organization;
+      } catch (dbError: any) {
+        // Rollback no Asaas caso falhe no banco
+        if (customerId) {
+          try {
+            await this.deleteOrganizationGatewayUseCase.execute(customerId);
+          } catch (rollbackError) {
+            console.error('Falha no rollback do cliente no gateway:', rollbackError);
+          }
+        }
+        throw dbError;
+      }
     } catch (error: any) {
       console.error('Erro no fluxo de criação da organização:', error.message);
       throw new HttpException(

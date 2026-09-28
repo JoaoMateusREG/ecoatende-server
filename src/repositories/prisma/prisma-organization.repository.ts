@@ -48,9 +48,41 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   async findByCnpj(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
-      include: {
-        subscription: true,
-        payments: true,
+      select: {
+        cnpj: true,
+        name: true,
+        email: true,
+        phone: true,
+        creationDate: true,
+        customerId: true, // Need customerId for subscription creation!
+        active: true,
+        subscription: {
+          select: {
+            id: true,
+            dateCreated: true,
+            customer: true,
+            value: true,
+            nextDueDate: true,
+            cycle: true,
+            billingType: true,
+            status: true,
+            organizationCnpj: true,
+          }
+        },
+        payments: {
+          select: {
+            id: true,
+            dueDate: true,
+            value: true,
+            billingType: true,
+            status: true,
+            transactionReceiptUrl: true,
+            invoiceUrl: true,
+            originalValue: true,
+            netValue: true,
+            originalDueDate: true,
+          }
+        },
       },
     });
 
@@ -66,7 +98,17 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   }
 
   async findAll(): Promise<Organization[]> {
-    const organizations = await prisma.organization.findMany({});
+    const organizations = await prisma.organization.findMany({
+      select: {
+        cnpj: true,
+        name: true,
+        email: true,
+        phone: true,
+        active: true,
+        logo: true,
+        gracePeriodDays: true,
+      },
+    });
 
     return organizations.map(this.mapToEntity);
   }
@@ -80,11 +122,32 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   async findWithUsers(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
-      include: {
-        users: true,
+      select: {
+        cnpj: true,
+        name: true,
+        users: {
+          select: {
+            cpf: true,
+            name: true,
+            role: true,
+            isActive: true,
+            organizationCnpj: true,
+            picture: true, // picture is used in some components maybe? It doesn't hurt.
+          },
+        },
         services: {
-          include: {
-            users: true,
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            users: {
+              select: {
+                cpf: true,
+                name: true,
+                role: true,
+              },
+            },
           },
         },
       },
@@ -96,13 +159,37 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   async findWithServices(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
-      include: {
+      select: {
+        cnpj: true,
+        name: true,
         services: {
-          include: {
-            users: true,
+          select: {
+            id: true,
+            name: true,
+            prefix: true,
+            organizationCnpj: true,
+            type: true,
+            category: true,
+            color: true,
+            canCreateCards: true,
+            cardLimit: true,
+            users: {
+              select: {
+                cpf: true,
+                name: true,
+                role: true,
+              },
+            },
           },
         },
-        users: true,
+        users: {
+          select: {
+            cpf: true,
+            name: true,
+            role: true,
+            isActive: true,
+          },
+        },
       },
     });
 
@@ -112,8 +199,20 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
   async findWithCards(cnpj: string): Promise<Organization | null> {
     const organization = await prisma.organization.findUnique({
       where: { cnpj },
-      include: {
-        cards: true,
+      select: {
+        cnpj: true,
+        name: true,
+        cards: {
+          take: 1000,
+          orderBy: { datehour: 'desc' },
+          select: {
+            id: true,
+            card: true,
+            datehour: true,
+            priority: true,
+            status: true,
+          },
+        },
       },
     });
 
