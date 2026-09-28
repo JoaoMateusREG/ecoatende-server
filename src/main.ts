@@ -26,6 +26,8 @@ async function bootstrap() {
     origin: [
       'https://atende.eco.br',
       'https://site.atende.eco.br',
+      'https://sandbox.atende.eco.br',
+      'https://sandboxsite.atende.eco.br',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
