@@ -33,7 +33,13 @@ export class DeleteServiceUseCase {
       }
 
       if (requestingUser.role === UserRole.ORGANIZATION_ADMIN) {
-        throw new Error('Você não tem permissão para deletar serviços');
+        if (
+          requestingUser.organizationCnpj !== serviceToDelete.organizationCnpj
+        ) {
+          throw new Error(
+            'Você só pode deletar serviços da sua própria organização',
+          );
+        }
       }
 
       // Apenas ADMIN pode deletar serviços
