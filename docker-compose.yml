@@ -4,13 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ecoatende-api
     restart: unless-stopped
     expose:
-      - "9868"
-    env_file:
-      - path: .env
-        required: false
+      - "9000"
     networks:
       - coolify
 

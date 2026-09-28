@@ -55,11 +55,11 @@ RUN chmod +x ./docker-entrypoint.sh
 
 # Configurações padrão de ambiente
 ENV NODE_ENV=production
-ENV PORT=9868
+ENV PORT=9000
 ENV HOST=0.0.0.0
 
 # Expor a porta da API
-EXPOSE 9868
+EXPOSE 9000
 
 # Healthcheck apontando para o Swagger /api
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
