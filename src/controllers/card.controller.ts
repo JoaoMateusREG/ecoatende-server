@@ -378,6 +378,24 @@ export class CardController {
     }
   }
 
+  @Get('pending')
+  @UseGuards(SessionAuthGuard)
+  @ApiOperation({ summary: 'Listar cards pendentes por múltiplos serviços' })
+  @ApiQuery({ name: 'services', required: false, description: 'IDs dos serviços separados por vírgula' })
+  @ApiResponse({ status: 200, description: 'Lista de cards pendentes' })
+  async findPendingByMultipleServices(@Query('services') services: string) {
+    try {
+      let serviceIds: number[] | undefined = undefined;
+      if (services) {
+        serviceIds = services.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      }
+      const cards = await this.findPendingCardsUseCase.execute(serviceIds);
+      return cards;
+    } catch (error: any) {
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get('pending/:serviceId')
   @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Listar cards pendentes por serviço' })
